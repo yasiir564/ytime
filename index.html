@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTime Luxury - Timeless Elegance</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23000000"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-size="24">YTime Luxury Watches</text></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        .watch-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .watch-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md fixed w-full z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="text-2xl font-bold text-black">
+                YTime Luxury
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-800 hover:text-gold-600">Watches</a>
+                <a href="#" class="text-gray-800 hover:text-gold-600">Repair Services</a>
+                <a href="#" class="text-gray-800 hover:text-gold-600">Consultation</a>
+                <a href="#" class="bg-black text-white px-4 py-2 rounded-full">
+                    <i data-feather="shopping-cart"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-white text-center pt-40 pb-20">
+        <div class="container mx-auto">
+            <h1 class="text-5xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">
+                Timeless Elegance, Kenyan Craftsmanship
+            </h1>
+            <p class="text-xl mb-8">Discover Luxury Watches with Expert Repair Services</p>
+            <div class="space-x-4">
+                <button class="bg-white text-black px-6 py-3 rounded-full hover:bg-gray-100">
+                    Shop Now
+                </button>
+                <button class="border border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-black">
+                    Book Consultation
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Featured Watches -->
+    <section class="container mx-auto py-16">
+        <h2 class="text-4xl text-center mb-12 font-bold" style="font-family: 'Playfair Display', serif;">
+            Featured Watches
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Watch Card 1 -->
+            <div class="watch-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="relative">
+                    <img src="/api/placeholder/400/500" alt="Luxury Watch" class="w-full object-cover">
+                    <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full">
+                        New
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Classic Chronograph</h3>
+                    <p class="text-gray-600 mb-4">Elegant timepiece with precision engineering</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-black">KSh 45,000</span>
+                        <button class="bg-black text-white px-4 py-2 rounded-full">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Watch Card 2 -->
+            <div class="watch-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="relative">
+                    <img src="/api/placeholder/400/500" alt="Luxury Watch" class="w-full object-cover">
+                    <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full">
+                        Limited
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Minimalist Elegance</h3>
+                    <p class="text-gray-600 mb-4">Sleek design for the modern professional</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-black">KSh 35,000</span>
+                        <button class="bg-black text-white px-4 py-2 rounded-full">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Watch Card 3 -->
+            <div class="watch-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="relative">
+                    <img src="/api/placeholder/400/500" alt="Luxury Watch" class="w-full object-cover">
+                    <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full">
+                        Best Seller
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Vintage Masterpiece</h3>
+                    <p class="text-gray-600 mb-4">Timeless design meets modern functionality</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-black">KSh 55,000</span>
+                        <button class="bg-black text-white px-4 py-2 rounded-full">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="bg-white py-16">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl mb-12 font-bold" style="font-family: 'Playfair Display', serif;">
+                Our Services
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-100 p-8 rounded-lg">
+                    <i data-feather="tool" class="mx-auto mb-4 text-6xl text-black"></i>
+                    <h3 class="text-2xl font-bold mb-4">Watch Repair</h3>
+                    <p class="text-gray-600">Expert repair and maintenance for all watch brands</p>
+                </div>
+                <div class="bg-gray-100 p-8 rounded-lg">
+                    <i data-feather="calendar" class="mx-auto mb-4 text-6xl text-black"></i>
+                    <h3 class="text-2xl font-bold mb-4">Consultation</h3>
+                    <p class="text-gray-600">Personalized advice to find your perfect timepiece</p>
+                </div>
+                <div class="bg-gray-100 p-8 rounded-lg">
+                    <i data-feather="shield" class="mx-auto mb-4 text-6xl text-black"></i>
+                    <h3 class="text-2xl font-bold mb-4">Warranty</h3>
+                    <p class="text-gray-600">Comprehensive warranty on all our luxury watches</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- M-Pesa Payment Section -->
+    <section class="container mx-auto py-16 text-center">
+        <h2 class="text-4xl mb-8 font-bold" style="font-family: 'Playfair Display', serif;">
+            Convenient M-Pesa Payment
+        </h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Seamless purchases with Kenya's trusted mobile payment method
+        </p>
+        <button class="bg-green-600 text-white px-8 py-4 rounded-full text-xl hover:bg-green-700">
+            Pay with M-Pesa
+        </button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-2xl font-bold mb-4">YTime Luxury</h4>
+                <p>Luxury watches and expert repair services</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Quick Links</h4>
+                <ul>
+                    <li><a href="#" class="hover:text-gray-300">Watches</a></li>
+                    <li><a href="#" class="hover:text-gray-300">Repair Services</a></li>
+                    <li><a href="#" class="hover:text-gray-300">Consultation</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Contact</h4>
+                <p>+254 (0) 700 000 000</p>
+                <p>info@ytimeluxury.com</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Follow Us</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-gray-300"><i data-feather="instagram"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i data-feather="facebook"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i data-feather="twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Simple cart functionality (placeholder)
+        document.querySelectorAll('.watch-card .bg-black').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Item added to cart! Proceed to M-Pesa payment.');
+            });
+        });
+    </script>
+</body>
+</html>
