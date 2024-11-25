@@ -69,6 +69,10 @@
             transform: translateY(-15px);
             box-shadow: 15px 15px 30px #d1d1d1, -15px -15px 30px #ffffff;
         }
+
+        #cart-modal {
+            background-color: rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -92,6 +96,32 @@
         </div>
     </nav>
 
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Your Cart</h2>
+                    <button id="close-cart" class="text-gray-600 hover:text-gray-900">
+                        <i data-feather="x"></i>
+                    </button>
+                </div>
+                <div id="cart-items" class="space-y-4">
+                    <!-- Cart items will be dynamically added here -->
+                </div>
+                <div id="cart-summary" class="mt-6 pt-4 border-t">
+                    <div class="flex justify-between">
+                        <span class="font-bold">Total:</span>
+                        <span id="cart-total">KSh 0</span>
+                    </div>
+                    <button id="checkout-btn" class="w-full bg-blue-500 text-white py-3 rounded-full mt-4 hover:bg-blue-600">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <header class="relative text-white text-center pt-40 pb-20 bg-gradient-to-r from-black via-gray-800 to-gray-900">
         <div class="container mx-auto">
@@ -110,11 +140,11 @@
         <h2 class="text-4xl text-center mb-12 luxury-heading">Prestigious Brands</h2>
         <div class="flex flex-wrap justify-center items-center space-x-8">
             <!-- Brand Logos -->
-            <img src="download (3).jpg" alt="casio" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="download (7).png" alt="Hublot" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="download (8).png" alt="Seiko" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="download (4).jpg" alt="Rolex" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="download (9).png" alt="Omega" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="/api/placeholder/150/100" alt="casio" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="/api/placeholder/150/100" alt="Hublot" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="/api/placeholder/150/100" alt="Seiko" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="/api/placeholder/150/100" alt="Rolex" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="/api/placeholder/150/100" alt="Omega" class="brand-logo h-16 grayscale hover:grayscale-0">
         </div>
     </section>
 
@@ -128,6 +158,21 @@
             <div class="swiper-pagination"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <!-- Budget Section -->
+    <section id="budget" class="container mx-auto py-16 bg-white">
+        <h2 class="text-4xl text-center mb-12 luxury-heading">Budget Planning Tool</h2>
+        <div class="max-w-md mx-auto bg-gray-100 p-8 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label for="budget-input" class="block text-gray-700 mb-2">Enter Your Budget (KSh)</label>
+                <input type="number" id="budget-input" class="w-full p-2 border rounded-md" placeholder="Enter your budget">
+            </div>
+            <div id="budget-results" class="mt-4 text-center">
+                <p class="font-bold">Recommended Watches:</p>
+                <div id="budget-watch-list" class="mt-2"></div>
+            </div>
         </div>
     </section>
 
@@ -154,8 +199,6 @@
             </div>
         </div>
     </section>
-
-    
 
     <script>
         // Enhanced watch data with more brands
@@ -202,6 +245,55 @@
             }
         ];
 
+        // Cart Management
+        let cart = [];
+
+        function addToCart(watchId) {
+            const watch = watches.find(w => w.id === watchId);
+            if (watch) {
+                cart.push(watch);
+                updateCartCount();
+                renderCartItems();
+            }
+        }
+
+        function updateCartCount() {
+            const cartCount = document.getElementById('cart-count');
+            cartCount.textContent = cart.length;
+        }
+
+        function renderCartItems() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-center text-gray-500">Your cart is empty</p>';
+                cartTotalElement.textContent = 'KSh 0';
+                return;
+            }
+
+            cartItemsContainer.innerHTML = cart.map((watch, index) => `
+                <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                    <div>
+                        <h3 class="font-bold">${watch.brand} ${watch.model}</h3>
+                        <p class="text-gray-600">KSh ${watch.price.toLocaleString()}</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700">
+                        <i data-feather="trash-2"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, watch) => sum + watch.price, 0);
+            cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            renderCartItems();
+        }
+
         function renderWatches() {
             const collection = document.getElementById('watch-collection');
             collection.innerHTML = watches.map(watch => `
@@ -221,11 +313,66 @@
             `).join('');
         }
 
-        // Previous cart and modal functions remain the same
+       function budgetPlanning() {
+            const budgetInput = document.getElementById('budget-input');
+            const budgetResults = document.getElementById('budget-watch-list');
+
+            budgetInput.addEventListener('input', () => {
+                const budget = parseFloat(budgetInput.value);
+                const affordableWatches = watches.filter(watch => watch.price <= budget);
+
+                if (affordableWatches.length > 0) {
+                    budgetResults.innerHTML = affordableWatches.map(watch => `
+                        <div class="bg-white p-4 rounded-md shadow-sm mb-2">
+                            <p>${watch.brand} ${watch.model}</p>
+                            <p class="text-green-600">KSh ${watch.price.toLocaleString()}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    budgetResults.innerHTML = '<p class="text-red-500">No watches found within your budget</p>';
+                }
+            });
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const total = cart.reduce((sum, watch) => sum + watch.price, 0);
+            alert(`Thank you for your purchase!\nTotal: KSh ${total.toLocaleString()}`);
+            
+            // Reset cart
+            cart = [];
+            updateCartCount();
+            renderCartItems();
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Render watches and initialize components
             renderWatches();
+            budgetPlanning();
             feather.replace();
+
+            // Cart modal interactions
+            const cartButton = document.getElementById('cart-button');
+            const cartModal = document.getElementById('cart-modal');
+            const closeCartButton = document.getElementById('close-cart');
+            const checkoutButton = document.getElementById('checkout-btn');
+
+            cartButton.addEventListener('click', () => {
+                cartModal.classList.remove('hidden');
+                cartModal.classList.add('flex');
+            });
+
+            closeCartButton.addEventListener('click', () => {
+                cartModal.classList.add('hidden');
+                cartModal.classList.remove('flex');
+            });
+
+            checkoutButton.addEventListener('click', checkout);
 
             // Initialize Swiper for watches
             new Swiper('.watch-swiper', {
