@@ -85,12 +85,12 @@
     <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-md p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="/api/placeholder/50/50" alt="YTime Logo" class="h-10 mr-4">
+                <img src="Y-Time Luxury.png" alt="YTime Logo" class="h-10 mr-4">
                 <span class="text-xl font-bold text-gray-800">YTime Luxury</span>
             </div>
             <div class="flex items-center space-x-6">
                 <a href="#watches" class="nav-link text-gray-800">Watches</a>
-                <a href="#brands" class="nav-link text-gray-800">Brands</a>
+                <a href="#brands" class="nav-link text-gray-800">Shop</a>
                 <a href="#services" class="nav-link text-gray-800">Services</a>
                 <a href="#budget" class="nav-link text-gray-800">Budget Tool</a>
                 <button id="cart-button" class="relative bg-blue-500 text-white p-2 rounded-full">
@@ -326,17 +326,17 @@
 
     // Watch Collections
     const luxuryWatchCollection = [
-        { name: 'Rolex Submariner', price: 1250000, brand: 'Rolex', category: 'Diver', image: '/api/placeholder/300/400' },
-        { name: 'Omega Speedmaster', price: 890000, brand: 'Omega', category: 'Chronograph', image: '/api/placeholder/300/400' },
-        { name: 'Hublot Big Bang', price: 2500000, brand: 'Hublot', category: 'Dress', image: '/api/placeholder/300/400' },
-        { name: 'IWC Portugieser', price: 1600000, brand: 'IWC', category: 'Dress', image: '/api/placeholder/300/400' }
+        { name: 'Rolex precidential', price: 4000, brand: 'Rolex', category: 'Diver', image: 'WhatsApp Image 2024-10-28 at 04.14.49_9afd1b67.jpg' },
+        { name: 'Casio Vintage', price: 3500, brand: 'Casio', category: 'Chronograph', image: 'BLK2.webp' },
+        { name: 'Hublot ', price: 7000, brand: 'Hublot', category: 'Dress', image: 'WhatsApp Image 2024-10-28 at 04.14.49_bc9419c3.jpg' },
+        { name: 'Poedegar', price: 6000, brand: 'Poedegar', category: 'Dress', image: 'WhatsApp Image 2024-10-28 at 04.14.49_aa4e22b1.jpg' }
     ];
 
     const popularWatches = [
-        { name: 'Casio G-Shock', price: 25000, brand: 'Casio', category: 'Diver', image: '/api/placeholder/300/400' },
-        { name: 'Seiko Presage', price: 75000, brand: 'Seiko', category: 'Dress', image: '/api/placeholder/300/400' },
-        { name: 'Tag Heuer Carrera', price: 450000, brand: 'Tag Heuer', category: 'Chronograph', image: '/api/placeholder/300/400' },
-        { name: 'Citizen Eco-Drive', price: 35000, brand: 'Citizen', category: 'Diver', image: '/api/placeholder/300/400' }
+        { name: 'Casio G-Shock', price: 3500, brand: 'Casio', category: 'Diver', image: '2B0778BF-6E8F-43DD-A4EE-F99361FEE3C2.webp' },
+        { name: 'Seiko Presage', price: 3000, brand: 'Seiko', category: 'Dress', image: 'images (1).jpg' },
+        { name: 'Curren', price: 4500, brand: 'Curren', category: 'Chronograph', image: 'photo1708701713.webp' },
+        { name: 'Citizen ', price: 3500, brand: 'Citizen', category: 'Diver', image: 'download (5).jpg' }
     ];
 
     function renderWatches(watches, containerId, isSlider = false) {
