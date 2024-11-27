@@ -1,278 +1,290 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Heart, Star, CheckCircle, XCircle } from 'lucide-react';
-
-const watches = [
-  {
-    id: 1,
-    name: 'Rolex Presidential',
-    brand: 'Rolex',
-    price: 4000,
-    description: 'Elegant presidential timepiece with Swiss precision engineering.',
-    image: 'rolex-presidential.jpg',
-    stock: 5,
-    category: 'Dress',
-    rating: 4.5
-  },
-  {
-    id: 2,
-    name: 'Casio G-Shock',
-    brand: 'Casio',
-    price: 3500,
-    description: 'Rugged, shock-resistant watch perfect for adventurers.',
-    image: 'casio-gshock.jpg',
-    stock: 10,
-    category: 'Sports',
-    rating: 4.7
-  },
-  {
-    id: 3,
-    name: 'Hublot Classic Fusion',
-    brand: 'Hublot',
-    price: 7000,
-    description: 'Luxury chronograph with sophisticated design and Swiss craftsmanship.',
-    image: 'hublot-fusion.jpg',
-    stock: 3,
-    category: 'Chronograph',
-    rating: 4.9
-  }
-];
-
-const WatchShop = () => {
-  const [cart, setCart] = useState([]);
-  const [selectedWatch, setSelectedWatch] = useState(null);
-  const [comment, setComment] = useState('');
-  const [comments, setComments] = useState({});
-  const [mpesaNumber, setMpesaNumber] = useState('');
-  const [filters, setFilters] = useState({
-    category: 'All',
-    minPrice: 0,
-    maxPrice: 10000
-  });
-
-  const addToCart = (watch) => {
-    if (watch.stock > 0) {
-      setCart([...cart, { ...watch, quantity: 1 }]);
-    }
-  };
-
-  const removeFromCart = (watchId) => {
-    setCart(cart.filter(item => item.id !== watchId));
-  };
-
-  const filteredWatches = watches.filter(watch => 
-    (filters.category === 'All' || watch.category === filters.category) &&
-    watch.price >= filters.minPrice &&
-    watch.price <= filters.maxPrice
-  );
-
-  const submitComment = () => {
-    if (selectedWatch && comment) {
-      setComments({
-        ...comments,
-        [selectedWatch.id]: [...(comments[selectedWatch.id] || []), comment]
-      });
-      setComment('');
-    }
-  };
-
-  const initiatePayment = () => {
-    if (mpesaNumber && cart.length > 0) {
-      alert(`Initiating M-Pesa payment for KSh ${calculateTotal()} to ${mpesaNumber}`);
-      // Implement actual M-Pesa integration here
-    }
-  };
-
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price, 0);
-  };
-
-  return (
-    <div className="container mx-auto p-6 bg-gray-50">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Filters */}
-        <div className="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Filters</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2">Category</label>
-              <select 
-                className="w-full p-2 border rounded"
-                value={filters.category}
-                onChange={(e) => setFilters({...filters, category: e.target.value})}
-              >
-                <option value="All">All Categories</option>
-                <option value="Dress">Dress</option>
-                <option value="Sports">Sports</option>
-                <option value="Chronograph">Chronograph</option>
-              </select>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTime Luxury Watch Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">YTime Luxury Watches</h1>
+        
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Filters -->
+            <div class="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4">Filters</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Category</label>
+                        <select id="category-filter" class="w-full p-2 border rounded">
+                            <option value="All">All Categories</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Chronograph">Chronograph</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Price Range</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="min-price" placeholder="Min" class="w-1/2 p-2 border rounded">
+                            <input type="number" id="max-price" placeholder="Max" class="w-1/2 p-2 border rounded">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-              <label className="block mb-2">Price Range</label>
-              <div className="flex space-x-2">
-                <input 
-                  type="number" 
-                  placeholder="Min" 
-                  className="w-1/2 p-2 border rounded"
-                  value={filters.minPrice}
-                  onChange={(e) => setFilters({...filters, minPrice: Number(e.target.value)})}
-                />
-                <input 
-                  type="number" 
-                  placeholder="Max" 
-                  className="w-1/2 p-2 border rounded"
-                  value={filters.maxPrice}
-                  onChange={(e) => setFilters({...filters, maxPrice: Number(e.target.value)})}
-                />
-              </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Products will be dynamically populated here -->
             </div>
-          </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filteredWatches.map(watch => (
-            <div key={watch.id} className="bg-white rounded-lg shadow-md p-4 relative">
-              <img 
-                src={watch.image} 
-                alt={watch.name} 
-                className="w-full h-48 object-cover rounded-t-lg mb-4"
-              />
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-xl font-bold">{watch.name}</h3>
-                <div className="flex items-center text-yellow-500">
-                  <Star size={16} fill="currentColor" />
-                  <span className="ml-1">{watch.rating}</span>
+        <!-- Cart Modal -->
+        <div id="cart-modal" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-xl p-4 w-72 hidden">
+            <h2 class="text-xl font-bold mb-4">Your Cart</h2>
+            <div id="cart-items"></div>
+            <div class="mt-4 border-t pt-2">
+                <div class="flex justify-between mb-2">
+                    <span>Total:</span>
+                    <span id="cart-total" class="font-bold">KSh 0</span>
                 </div>
-              </div>
-              <p className="text-gray-600 mb-2">{watch.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold text-blue-600">
-                  KSh {watch.price.toLocaleString()}
-                </span>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => addToCart(watch)}
-                    className={`p-2 rounded-full ${watch.stock > 0 ? 'bg-blue-500 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
-                    disabled={watch.stock === 0}
-                  >
-                    <ShoppingCart size={20} />
-                  </button>
-                  <button 
-                    onClick={() => setSelectedWatch(watch)}
-                    className="p-2 rounded-full bg-gray-100 text-gray-600"
-                  >
-                    <Heart size={20} />
-                  </button>
-                </div>
-              </div>
-              <div className="mt-2 flex items-center">
-                {watch.stock > 0 ? (
-                  <div className="flex items-center text-green-500">
-                    <CheckCircle size={16} className="mr-1" />
-                    <span>In Stock ({watch.stock} available)</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center text-red-500">
-                    <XCircle size={16} className="mr-1" />
-                    <span>Out of Stock</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cart Modal */}
-      {cart.length > 0 && (
-        <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-xl p-4 w-72">
-          <h2 className="text-xl font-bold mb-4">Your Cart</h2>
-          {cart.map(item => (
-            <div key={item.id} className="flex justify-between items-center mb-2">
-              <span>{item.name}</span>
-              <div className="flex items-center">
-                <span className="mr-2">KSh {item.price.toLocaleString()}</span>
-                <button 
-                  onClick={() => removeFromCart(item.id)}
-                  className="text-red-500"
-                >
-                  <XCircle size={16} />
+                <input type="tel" id="mpesa-number" placeholder="M-Pesa Number" class="w-full p-2 border rounded mb-2">
+                <button id="pay-btn" class="w-full bg-green-500 text-white p-2 rounded">
+                    Pay with M-Pesa
                 </button>
-              </div>
             </div>
-          ))}
-          <div className="mt-4 border-t pt-2">
-            <div className="flex justify-between mb-2">
-              <span>Total:</span>
-              <span className="font-bold">KSh {calculateTotal().toLocaleString()}</span>
-            </div>
-            <input 
-              type="tel" 
-              placeholder="M-Pesa Number" 
-              className="w-full p-2 border rounded mb-2"
-              value={mpesaNumber}
-              onChange={(e) => setMpesaNumber(e.target.value)}
-            />
-            <button 
-              onClick={initiatePayment}
-              className="w-full bg-green-500 text-white p-2 rounded"
-              disabled={!mpesaNumber || cart.length === 0}
-            >
-              Pay with M-Pesa
-            </button>
-          </div>
         </div>
-      )}
 
-      {/* Product Detail & Comments Modal */}
-      {selectedWatch && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">{selectedWatch.name}</h2>
-              <button 
-                onClick={() => setSelectedWatch(null)}
-                className="text-gray-500"
-              >
-                <XCircle size={24} />
-              </button>
+        <!-- Product Detail Modal -->
+        <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-lg p-6 max-w-lg w-full">
+                <div id="product-detail-content"></div>
             </div>
-            <img 
-              src={selectedWatch.image} 
-              alt={selectedWatch.name} 
-              className="w-full h-64 object-cover rounded-lg mb-4"
-            />
-            <p className="mb-4">{selectedWatch.description}</p>
-            
-            {/* Comments Section */}
-            <div className="mt-4">
-              <h3 className="text-xl font-bold mb-2">Comments</h3>
-              {comments[selectedWatch.id] && comments[selectedWatch.id].map((comm, index) => (
-                <div key={index} className="bg-gray-100 p-2 rounded mb-2">
-                  {comm}
-                </div>
-              ))}
-              <div className="flex mt-2">
-                <input 
-                  type="text"
-                  placeholder="Add a comment"
-                  className="w-full p-2 border rounded-l"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-                <button 
-                  onClick={submitComment}
-                  className="bg-blue-500 text-white p-2 rounded-r"
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
-      )}
     </div>
-  );
-};
 
-export default WatchShop;
+    <script>
+        const watches = [
+            {
+                id: 1,
+                name: 'Rolex Presidential',
+                brand: 'Rolex',
+                price: 4000,
+                description: 'Elegant presidential timepiece with Swiss precision engineering.',
+                image: 'rolex-presidential.jpg',
+                stock: 5,
+                category: 'Dress',
+                rating: 4.5
+            },
+            {
+                id: 2,
+                name: 'Casio G-Shock',
+                brand: 'Casio',
+                price: 3500,
+                description: 'Rugged, shock-resistant watch perfect for adventurers.',
+                image: 'casio-gshock.jpg',
+                stock: 10,
+                category: 'Sports',
+                rating: 4.7
+            },
+            {
+                id: 3,
+                name: 'Hublot Classic Fusion',
+                brand: 'Hublot',
+                price: 7000,
+                description: 'Luxury chronograph with sophisticated design and Swiss craftsmanship.',
+                image: 'hublot-fusion.jpg',
+                stock: 3,
+                category: 'Chronograph',
+                rating: 4.9
+            }
+        ];
+
+        let cart = [];
+        let comments = {};
+
+        function renderProducts() {
+            const productGrid = document.getElementById('product-grid');
+            const categoryFilter = document.getElementById('category-filter').value;
+            const minPrice = document.getElementById('min-price').value || 0;
+            const maxPrice = document.getElementById('max-price').value || Infinity;
+
+            productGrid.innerHTML = '';
+
+            const filteredWatches = watches.filter(watch => 
+                (categoryFilter === 'All' || watch.category === categoryFilter) &&
+                watch.price >= minPrice &&
+                watch.price <= maxPrice
+            );
+
+            filteredWatches.forEach(watch => {
+                const productCard = document.createElement('div');
+                productCard.className = 'bg-white rounded-lg shadow-md p-4 relative';
+                productCard.innerHTML = `
+                    <img src="${watch.image}" alt="${watch.name}" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-bold">${watch.name}</h3>
+                        <div class="flex items-center text-yellow-500">
+                            <i class="fas fa-star"></i>
+                            <span class="ml-1">${watch.rating}</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-2">${watch.description}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-blue-600">
+                            KSh ${watch.price.toLocaleString()}
+                        </span>
+                        <div class="flex space-x-2">
+                            <button onclick="addToCart(${watch.id})" class="${watch.stock > 0 ? 'bg-blue-500 text-white' : 'bg-gray-300 cursor-not-allowed'}" ${watch.stock === 0 ? 'disabled' : ''}>
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button onclick="showProductDetail(${watch.id})" class="p-2 rounded-full bg-gray-100 text-gray-600">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-center">
+                        ${watch.stock > 0 ? 
+                            `<div class="flex items-center text-green-500">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                <span>In Stock (${watch.stock} available)</span>
+                            </div>` : 
+                            `<div class="flex items-center text-red-500">
+                                <i class="fas fa-times-circle mr-1"></i>
+                                <span>Out of Stock</span>
+                            </div>`
+                        }
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
+            });
+        }
+
+        function addToCart(watchId) {
+            const watch = watches.find(w => w.id === watchId);
+            if (watch && watch.stock > 0) {
+                cart.push(watch);
+                updateCart();
+            }
+        }
+
+        function updateCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            const cartModal = document.getElementById('cart-modal');
+            
+            cartItemsContainer.innerHTML = '';
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'flex justify-between items-center mb-2';
+                cartItem.innerHTML = `
+                    <span>${item.name}</span>
+                    <div class="flex items-center">
+                        <span class="mr-2">KSh ${item.price.toLocaleString()}</span>
+                        <button onclick="removeFromCart(${index})" class="text-red-500">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+
+            cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
+            cartModal.classList.remove('hidden');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+            if (cart.length === 0) {
+                document.getElementById('cart-modal').classList.add('hidden');
+            }
+        }
+
+        function showProductDetail(watchId) {
+            const watch = watches.find(w => w.id === watchId);
+            const productModal = document.getElementById('product-modal');
+            const productDetailContent = document.getElementById('product-detail-content');
+
+            productDetailContent.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">${watch.name}</h2>
+                    <button onclick="closeProductModal()" class="text-gray-500">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+                <img src="${watch.image}" alt="${watch.name}" class="w-full h-64 object-cover rounded-lg mb-4">
+                <p class="mb-4">${watch.description}</p>
+                
+                <div class="mt-4">
+                    <h3 class="text-xl font-bold mb-2">Comments</h3>
+                    <div id="product-comments">
+                        ${(comments[watchId] || []).map(comment => `
+                            <div class="bg-gray-100 p-2 rounded mb-2">${comment}</div>
+                        `).join('')}
+                    </div>
+                    <div class="flex mt-2">
+                        <input type="text" id="comment-input" placeholder="Add a comment" class="w-full p-2 border rounded-l">
+                        <button onclick="addComment(${watchId})" class="bg-blue-500 text-white p-2 rounded-r">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            productModal.classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function addComment(watchId) {
+            const commentInput = document.getElementById('comment-input');
+            const comment = commentInput.value.trim();
+            
+            if (comment) {
+                if (!comments[watchId]) {
+                    comments[watchId] = [];
+                }
+                comments[watchId].push(comment);
+                
+                const commentsContainer = document.getElementById('product-comments');
+                commentsContainer.innerHTML += `
+                    <div class="bg-gray-100 p-2 rounded mb-2">${comment}</div>
+                `;
+                
+                commentInput.value = '';
+            }
+        }
+
+        function initPayment() {
+            const mpesaNumber = document.getElementById('mpesa-number').value;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+            if (mpesaNumber && cart.length > 0) {
+                alert(`Processing M-Pesa payment for KSh ${total.toLocaleString()} to ${mpesaNumber}`);
+                // Implement actual M-Pesa payment logic here
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('category-filter').addEventListener('change', renderProducts);
+        document.getElementById('min-price').addEventListener('input', renderProducts);
+        document.getElementById('max-price').addEventListener('input', renderProducts);
+        document.getElementById('pay-btn').addEventListener('click', initPayment);
+
+        // Initial render
+        renderProducts();
+    </script>
+</body>
+</html>
