@@ -83,7 +83,7 @@
       message.textContent = 'Processing payment...';
 
       try {
-        const response = await fetch('https://ytime.co.ke/wp-json/mpesa/v1/stkpush', {
+        const response = await fetch('https://ytime.co.ke/wp-admin/admin.php?page=wpcode-snippet-manager&snippet_id=43', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, amount }),
