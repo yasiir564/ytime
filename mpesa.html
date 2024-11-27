@@ -58,7 +58,7 @@
             responseElement.textContent = 'Processing...';
 
             try {
-                const response = await fetch('https://ytime.co.ke', {
+                const response = await fetch('https://ytime.co.ke/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phoneNumber: phone, amount: amount })
