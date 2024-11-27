@@ -2,100 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MPesa Payment</title>
+    <title>M-Pesa STK Push Payment</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
             max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
             text-align: center;
         }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        input {
-            width: calc(100% - 20px);
+        input, button {
+            width: 100%;
+            margin: 10px 0;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            box-sizing: border-box;
         }
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #response {
-            margin-top: 15px;
-            font-size: 14px;
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Make an MPesa Payment</h1>
-        <form id="paymentForm">
-            <input type="text" id="phoneNumber" placeholder="Enter Phone Number" required>
-            <input type="number" id="amount" placeholder="Enter Amount (KES)" required>
-            <button type="submit">Pay Now</button>
-        </form>
-        <div id="response"></div>
-    </div>
+    <h1>M-Pesa Payment</h1>
+    <form id="paymentForm">
+        <input type="tel" id="phoneNumber" placeholder="Phone Number (254XXXXXXXXX)" required>
+        <input type="number" id="amount" placeholder="Amount" min="1" required>
+        <button type="submit">Pay Now</button>
+    </form>
+    <div id="result"></div>
 
     <script>
-        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const phoneNumber = document.getElementById('phoneNumber').value;
             const amount = document.getElementById('amount').value;
+            const resultDiv = document.getElementById('result');
 
-            fetch('https://ytime.co.ke/wp-admin/admin.php?page=wpcode-snippet-manager&custom=1', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phoneNumber: phoneNumber,
-                    amount: amount
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                const responseDiv = document.getElementById('response');
-                if (data.success) {
-                    responseDiv.innerHTML = `<p style="color: green;">Payment successful: ${data.message}</p>`;
+            // Basic client-side validation
+            if (!/^254\d{9}$/.test(phoneNumber)) {
+                resultDiv.textContent = 'Invalid phone number. Use format 254XXXXXXXXX';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://ytime.co.ke/wp-admin/admin.php?page=wpcode-snippet-manager&snippet_id=43', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: phoneNumber,
+                        amount: parseFloat(amount),
+                        accountReference: 'Web Payment'
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.response && result.response.ResponseCode === '0') {
+                    resultDiv.textContent = 'Payment initiated successfully. Check your phone.';
+                    resultDiv.style.color = 'green';
                 } else {
-                    responseDiv.innerHTML = `<p style="color: red;">Payment failed: ${data.message}</p>`;
+                    resultDiv.textContent = 'Payment failed: ' + (result.error || 'Unknown error');
+                    resultDiv.style.color = 'red';
                 }
-            })
-            .catch(error => {
-                document.getElementById('response').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-            });
+            } catch (error) {
+                resultDiv.textContent = 'Network error: ' + error.message;
+                resultDiv.style.color = 'red';
+            }
         });
     </script>
 </body>
 </html>
-
