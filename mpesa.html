@@ -160,26 +160,21 @@
                     })
                 });
 
-                // Custom handling for non-JSON responses typical of STK push
-                const responseText = await response.text();
-                
-                // Check if response indicates STK push
-                if (responseText.toLowerCase().includes('enter your mpesa pin')) {
-                    responseElement.textContent = 'Please enter your M-Pesa PIN to continue';
-                    responseElement.classList.remove('hidden');
-                    responseElement.classList.add('bg-green-100', 'text-green-800');
-                } else {
-                    // Fallback for other responses
-                    responseElement.textContent = responseText || 'Payment initiated successfully';
-                    responseElement.classList.remove('hidden');
-                    responseElement.classList.add('bg-green-100', 'text-green-800');
-                }
+                const result = await response.json();
+
+                // Show response
+                responseElement.textContent = response.ok 
+                    ? 'Payment request sent successfully!' 
+                    : `Error: ${result.error || 'Something went wrong'}`;
+                responseElement.classList.remove('hidden');
+                responseElement.classList.add(
+                    response.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                );
             } catch (error) {
                 // Network or other errors
-                responseElement.textContent = `Error: ${error.message}. Please try again.`;
+                responseElement.textContent = `Error: ${error.message}`;
                 responseElement.classList.remove('hidden');
-                responseElement.classList.add('bg-red-100', 'text-red-800');
-                console.error('Full error:', error);
+                responseElement.classList.add('bg-red-100 text-red-800');
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;
