@@ -156,25 +156,32 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         phoneNumber: phoneInput.value, 
-                        amount: amountInput.value 
+                        amount: parseInt(amountInput.value, 10) 
                     })
                 });
 
                 const result = await response.json();
 
-                // Show response
-                responseElement.textContent = response.ok 
-                    ? 'Payment request sent successfully!' 
-                    : `Error: ${result.error || 'Something went wrong'}`;
-                responseElement.classList.remove('hidden');
-                responseElement.classList.add(
-                    response.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                );
+                // Detailed response handling
+                if (result.status === 'success') {
+                    // Successful STK push
+                    responseElement.textContent = 'STK push initiated! Check your phone to complete payment.';
+                    responseElement.classList.remove('hidden', 'bg-red-100', 'text-red-800');
+                    responseElement.classList.add('bg-green-100', 'text-green-800');
+
+                    // Optional: You might want to show more details from result.mpesa_response
+                    console.log('Mpesa Response:', result.mpesa_response);
+                } else {
+                    // Error from backend
+                    responseElement.textContent = `Error: ${result.message}`;
+                    responseElement.classList.remove('hidden', 'bg-green-100', 'text-green-800');
+                    responseElement.classList.add('bg-red-100', 'text-red-800');
+                }
             } catch (error) {
-                // Network or other errors
-                responseElement.textContent = `Error: ${error.message}`;
+                // Network or parsing errors
+                responseElement.textContent = `Network Error: ${error.message}`;
                 responseElement.classList.remove('hidden');
-                responseElement.classList.add('bg-red-100 text-red-800');
+                responseElement.classList.add('bg-red-100', 'text-red-800');
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;
