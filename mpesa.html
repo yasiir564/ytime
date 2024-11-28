@@ -160,32 +160,25 @@
                     })
                 });
 
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Received non-JSON response');
+                // Custom handling for non-JSON responses typical of STK push
+                const responseText = await response.text();
+                
+                // Check if response indicates STK push
+                if (responseText.toLowerCase().includes('enter your mpesa pin')) {
+                    responseElement.textContent = 'Please enter your M-Pesa PIN to continue';
+                    responseElement.classList.remove('hidden');
+                    responseElement.classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    // Fallback for other responses
+                    responseElement.textContent = responseText || 'Payment initiated successfully';
+                    responseElement.classList.remove('hidden');
+                    responseElement.classList.add('bg-green-100', 'text-green-800');
                 }
-
-                let result;
-                try {
-                    result = await response.json();
-                } catch (parseError) {
-                    throw new Error('Failed to parse JSON response');
-                }
-
-                // Show response
-                responseElement.textContent = response.ok 
-                    ? 'Payment request sent successfully!' 
-                    : `Error: ${result.error || 'Something went wrong'}`;
-                responseElement.classList.remove('hidden');
-                responseElement.classList.add(
-                    response.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                );
             } catch (error) {
-                // Network or parsing errors
-                responseElement.textContent = `Error: ${error.message}. Please try again or contact support.`;
+                // Network or other errors
+                responseElement.textContent = `Error: ${error.message}. Please try again.`;
                 responseElement.classList.remove('hidden');
-                responseElement.classList.add('bg-red-100 text-red-800');
+                responseElement.classList.add('bg-red-100', 'text-red-800');
                 console.error('Full error:', error);
             } finally {
                 // Reset button state
