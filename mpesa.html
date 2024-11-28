@@ -160,7 +160,18 @@
                     })
                 });
 
-                const result = await response.json();
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Received non-JSON response');
+                }
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch (parseError) {
+                    throw new Error('Failed to parse JSON response');
+                }
 
                 // Show response
                 responseElement.textContent = response.ok 
@@ -171,10 +182,11 @@
                     response.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 );
             } catch (error) {
-                // Network or other errors
-                responseElement.textContent = `Error: ${error.message}`;
+                // Network or parsing errors
+                responseElement.textContent = `Error: ${error.message}. Please try again or contact support.`;
                 responseElement.classList.remove('hidden');
                 responseElement.classList.add('bg-red-100 text-red-800');
+                console.error('Full error:', error);
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;
