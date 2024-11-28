@@ -24,7 +24,7 @@
             <h2 class="text-2xl font-bold">M-Pesa Payment</h2>
             <p class="text-sm opacity-80">Secure Mobile Money Transaction</p>
         </div>
-        <form id="mpesa-form" class="p-6 space-y-4">
+        <form id="mpesa-form" class="p-6 space-y-4" novalidate>
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
@@ -38,6 +38,8 @@
                     required 
                     placeholder="2547XXXXXXXX" 
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mpesa-green focus:border-transparent transition duration-300"
+                    aria-invalid="false"
+                    aria-describedby="phone-error"
                 >
                 <p id="phone-error" class="text-red-500 text-xs mt-1 hidden"></p>
             </div>
@@ -55,6 +57,8 @@
                     required 
                     placeholder="Enter amount" 
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mpesa-green focus:border-transparent transition duration-300"
+                    aria-invalid="false"
+                    aria-describedby="amount-error"
                 >
                 <p id="amount-error" class="text-red-500 text-xs mt-1 hidden"></p>
             </div>
@@ -71,6 +75,7 @@
             <div 
                 id="response" 
                 class="text-center text-sm font-medium mt-4 p-3 rounded-lg hidden"
+                aria-live="polite"
             ></div>
         </form>
     </div>
@@ -96,15 +101,14 @@
             return amount >= 1 && amount <= 70000;
         }
 
-        // Input validation event listeners
         phoneInput.addEventListener('input', () => {
             if (!validatePhone(phoneInput.value)) {
                 phoneError.textContent = 'Invalid phone number. Use format 2547XXXXXXXX';
                 phoneError.classList.remove('hidden');
-                phoneInput.classList.add('border-red-500');
+                phoneInput.setAttribute('aria-invalid', 'true');
             } else {
                 phoneError.classList.add('hidden');
-                phoneInput.classList.remove('border-red-500');
+                phoneInput.setAttribute('aria-invalid', 'false');
             }
         });
 
@@ -112,40 +116,21 @@
             if (!validateAmount(amountInput.value)) {
                 amountError.textContent = 'Amount must be between 1 and 70,000 KES';
                 amountError.classList.remove('hidden');
-                amountInput.classList.add('border-red-500');
+                amountInput.setAttribute('aria-invalid', 'true');
             } else {
                 amountError.classList.add('hidden');
-                amountInput.classList.remove('border-red-500');
+                amountInput.setAttribute('aria-invalid', 'false');
             }
         });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Reset previous states
-            responseElement.classList.add('hidden');
-            phoneError.classList.add('hidden');
-            amountError.classList.add('hidden');
-
-            // Validate inputs
             const isPhoneValid = validatePhone(phoneInput.value);
             const isAmountValid = validateAmount(amountInput.value);
 
-            if (!isPhoneValid || !isAmountValid) {
-                if (!isPhoneValid) {
-                    phoneError.textContent = 'Invalid phone number. Use format 2547XXXXXXXX';
-                    phoneError.classList.remove('hidden');
-                    phoneInput.classList.add('border-red-500');
-                }
-                if (!isAmountValid) {
-                    amountError.textContent = 'Amount must be between 1 and 70,000 KES';
-                    amountError.classList.remove('hidden');
-                    amountInput.classList.add('border-red-500');
-                }
-                return;
-            }
+            if (!isPhoneValid || !isAmountValid) return;
 
-            // Disable submit button and show spinner
             submitBtn.disabled = true;
             btnText.classList.add('hidden');
             spinner.classList.remove('hidden');
@@ -162,28 +147,17 @@
 
                 const result = await response.json();
 
-                // Detailed response handling
                 if (result.status === 'success') {
-                    // Successful STK push
-                    responseElement.textContent = 'STK push initiated! Check your phone to complete payment.';
-                    responseElement.classList.remove('hidden', 'bg-red-100', 'text-red-800');
-                    responseElement.classList.add('bg-green-100', 'text-green-800');
-
-                    // Optional: You might want to show more details from result.mpesa_response
-                    console.log('Mpesa Response:', result.mpesa_response);
+                    responseElement.textContent = 'STK push initiated! Check your phone.';
+                    responseElement.classList.replace('hidden', 'bg-green-100', 'text-green-800');
                 } else {
-                    // Error from backend
                     responseElement.textContent = `Error: ${result.message}`;
-                    responseElement.classList.remove('hidden', 'bg-green-100', 'text-green-800');
-                    responseElement.classList.add('bg-red-100', 'text-red-800');
+                    responseElement.classList.replace('hidden', 'bg-red-100', 'text-red-800');
                 }
             } catch (error) {
-                // Network or parsing errors
                 responseElement.textContent = `Network Error: ${error.message}`;
-                responseElement.classList.remove('hidden');
-                responseElement.classList.add('bg-red-100', 'text-red-800');
+                responseElement.classList.replace('hidden', 'bg-red-100', 'text-red-800');
             } finally {
-                // Reset button state
                 submitBtn.disabled = false;
                 btnText.classList.remove('hidden');
                 spinner.classList.add('hidden');
