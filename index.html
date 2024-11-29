@@ -268,61 +268,85 @@
     feather.replace();
 
     // Cart Management
-    let cart = [];
+    function getCart() {
+        return JSON.parse(localStorage.getItem('cart')) || [];
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function updateCart() {
+        let cart = getCart();
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalElement = document.getElementById('cart-total');
+        
+        if (cartItemsContainer) {
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const cartItemElement = document.createElement('div');
+                cartItemElement.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'rounded-lg');
+                cartItemElement.innerHTML = `
+                    <div>
+                        <h3 class="font-bold">${item.name}</h3>
+                        <p class="text-gray-600">KSh ${item.price.toLocaleString()}</p>
+                    </div>
+                    <button class="remove-cart-item text-red-500" data-index="${index}">
+                        <i data-feather="trash-2"></i>
+                    </button>
+                `;
+                cartItemsContainer.appendChild(cartItemElement);
+                total += item.price;
+            });
+
+            cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
+            document.getElementById('cart-count').textContent = cart.length;
+            feather.replace();
+        }
+    }
+
+    // Cart Button and Modal Functionality
     const cartButton = document.getElementById('cart-button');
     const cartModal = document.getElementById('cart-modal');
     const closeCartButton = document.getElementById('close-cart');
-    const cartItemsContainer = document.getElementById('cart-items');
-    const cartTotalElement = document.getElementById('cart-total');
-    const checkoutButton = document.getElementById('checkout-btn');
 
-    function updateCart() {
-        cartItemsContainer.innerHTML = '';
-        let total = 0;
-
-        cart.forEach((item, index) => {
-            const cartItemElement = document.createElement('div');
-            cartItemElement.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'rounded-lg');
-            cartItemElement.innerHTML = `
-                <div>
-                    <h3 class="font-bold">${item.name}</h3>
-                    <p class="text-gray-600">KSh ${item.price.toLocaleString()}</p>
-                </div>
-                <button class="remove-cart-item text-red-500" data-index="${index}">
-                    <i data-feather="trash-2"></i>
-                </button>
-            `;
-            cartItemsContainer.appendChild(cartItemElement);
-            total += item.price;
+    if (cartButton && cartModal && closeCartButton) {
+        cartButton.addEventListener('click', () => {
+            cartModal.classList.remove('hidden');
+            cartModal.classList.add('flex');
+            updateCart();
         });
 
-        cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
-        document.getElementById('cart-count').textContent = cart.length;
-        feather.replace();
+        closeCartButton.addEventListener('click', () => {
+            cartModal.classList.remove('flex');
+            cartModal.classList.add('hidden');
+        });
     }
 
-    cartButton.addEventListener('click', () => {
-        cartModal.classList.remove('hidden');
-        cartModal.classList.add('flex');
-    });
+    // Remove Cart Item
+    const cartItemsContainer = document.getElementById('cart-items');
+    if (cartItemsContainer) {
+        cartItemsContainer.addEventListener('click', (e) => {
+            const removeButton = e.target.closest('.remove-cart-item');
+            if (removeButton) {
+                const index = removeButton.dataset.index;
+                let cart = getCart();
+                cart.splice(index, 1);
+                saveCart(cart);
+                updateCart();
+            }
+        });
+    }
 
-    closeCartButton.addEventListener('click', () => {
-        cartModal.classList.remove('flex');
-        cartModal.classList.add('hidden');
-    });
-
-    cartItemsContainer.addEventListener('click', (e) => {
-        const removeButton = e.target.closest('.remove-cart-item');
-        if (removeButton) {
-            const index = removeButton.dataset.index;
-            cart.splice(index, 1);
-            updateCart();
-        }
-    });
-
-    checkoutButton.addEventListener('click', () => {
-        alert('Checkout functionality coming soon!');
-    });
+    // Checkout Button
+    const checkoutButton = document.getElementById('checkout-btn');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', () => {
+            window.location.href = 'checkout.html';
+        });
+    }
 
     // Watch Collections
     const luxuryWatchCollection = [
@@ -341,6 +365,8 @@
 
     function renderWatches(watches, containerId, isSlider = false) {
         const container = document.getElementById(containerId);
+        if (!container) return;
+
         container.innerHTML = '';
 
         watches.forEach(watch => {
@@ -372,9 +398,20 @@
                 const watchCard = addToCartButton.closest('.watch-card, .popular-watch-card');
                 const watchName = watchCard.querySelector('h3').textContent;
                 const watchPrice = parseInt(watchCard.querySelector('.text-2xl').textContent.replace('KSh ', '').replace(',', ''));
+                const watchImage = watchCard.querySelector('img').src;
 
-                cart.push({ name: watchName, price: watchPrice });
+                let cart = getCart();
+                cart.push({ name: watchName, price: watchPrice, image: watchImage });
+                saveCart(cart);
                 updateCart();
+
+                // Show a brief confirmation
+                addToCartButton.textContent = 'Added!';
+                addToCartButton.classList.replace('bg-blue-500', 'bg-green-500');
+                setTimeout(() => {
+                    addToCartButton.textContent = 'Add to Cart';
+                    addToCartButton.classList.replace('bg-green-500', 'bg-blue-500');
+                }, 1000);
             }
         });
 
@@ -431,21 +468,29 @@
         }
     }
 
-    budgetInput.addEventListener('input', filterByBudgetAndCategory);
+    if (budgetInput) {
+        budgetInput.addEventListener('input', filterByBudgetAndCategory);
+    }
 
-    budgetFilterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            budgetFilterButtons.forEach(btn => {
-                btn.classList.remove('bg-blue-500', 'text-white');
-                btn.classList.add('bg-gray-200', 'text-gray-700');
+    if (budgetFilterButtons.length > 0) {
+        budgetFilterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                budgetFilterButtons.forEach(btn => {
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+
+                button.classList.remove('bg-gray-200', 'text-gray-700');
+                button.classList.add('bg-blue-500', 'text-white');
+
+                filterByBudgetAndCategory();
             });
-
-            button.classList.remove('bg-gray-200', 'text-gray-700');
-            button.classList.add('bg-blue-500', 'text-white');
-
-            filterByBudgetAndCategory();
         });
-    });
+    }
+
+    // Initialize cart count on page load
+    const initialCart = getCart();
+    document.getElementById('cart-count').textContent = initialCart.length;
 });
   </script>
 </body>
