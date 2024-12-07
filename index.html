@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YTime Luxury - Timeless Elegance</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Lordicons -->
+    <script src="https://cdn.lordicon.com/lordicon-1.1.0.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- GSAP and ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    
+    <!-- Swiper -->
     <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
 
@@ -42,45 +54,53 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             perspective: 1000px;
             transform-style: preserve-3d;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.8);
         }
 
         .watch-card:hover {
-            transform: rotateY(10deg) translateZ(50px);
+            transform: scale(1.05) rotateY(10deg);
             box-shadow: 0 25px 50px rgba(0,0,0,0.2);
         }
 
-        .popular-watch-card {
-            transition: all 0.4s ease;
-            backdrop-filter: blur(15px);
-            background-color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.125);
-        }
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255,255,255,0.95);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.3s ease;
+                z-index: 1000;
+            }
 
-        .popular-watch-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
+            .nav-menu.active {
+                left: 0;
+            }
 
-        .budget-section {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
-            backdrop-filter: blur(10px);
-        }
+            .hamburger {
+                display: block;
+                cursor: pointer;
+                z-index: 1100;
+            }
 
-        .budget-result-card {
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-        }
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
 
-        .budget-result-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50">
     <!-- Navigation -->
     <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-md p-4">
         <div class="container mx-auto flex justify-between items-center">
@@ -88,52 +108,45 @@
                 <img src="Y-Time Luxury.png" alt="YTime Logo" class="h-10 mr-4">
                 <span class="text-xl font-bold text-gray-800">YTime Luxury</span>
             </div>
-            <div class="flex items-center space-x-6">
-                <a href="#watches" class="nav-link text-gray-800">Watches</a>
-                <a href="#brands" class="nav-link text-gray-800">Shop</a>
-                <a href="#services" class="nav-link text-gray-800">Services</a>
-                <a href="#budget" class="nav-link text-gray-800">Budget Tool</a>
-                <button id="cart-button" class="relative bg-blue-500 text-white p-2 rounded-full">
-                    <i data-feather="shopping-cart"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
-                </button>
+            
+            <div class="hamburger hidden md:hidden">
+                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
+                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
+                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
+            </div>
+
+            <div class="nav-menu hidden md:flex items-center space-x-6">
+                <a href="#watches" class="nav-link text-gray-800 hover:text-blue-500 transition">Watches</a>
+                <a href="#brands" class="nav-link text-gray-800 hover:text-blue-500 transition">Shop</a>
+                <a href="#services" class="nav-link text-gray-800 hover:text-blue-500 transition">Services</a>
+                <a href="#budget" class="nav-link text-gray-800 hover:text-blue-500 transition">Budget Tool</a>
+                
+                <div class="relative">
+                    <a href="cart.html" class="relative bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/hjeefglm.json"
+                            trigger="hover"
+                            colors="primary:#ffffff"
+                            style="width:24px;height:24px">
+                        </lord-icon>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Your Cart</h2>
-                    <button id="close-cart" class="text-gray-600 hover:text-gray-900">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>
-                <div id="cart-items" class="space-y-4">
-                    <!-- Cart items will be dynamically added here -->
-                </div>
-                <div id="cart-summary" class="mt-6 pt-4 border-t">
-                    <div class="flex justify-between">
-                        <span class="font-bold">Total:</span>
-                        <span id="cart-total">KSh 0</span>
-                    </div>
-                    <button id="checkout-btn" class="w-full bg-blue-500 text-white py-3 rounded-full mt-4 hover:bg-blue-600">
-                        Proceed to Checkout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Hero Section -->
-    <header class="relative text-white text-center pt-40 pb-20 bg-gradient-to-r from-black via-gray-800 to-gray-900">
-        <div class="container mx-auto">
-            <h1 class="text-6xl luxury-heading mb-4">Precision Timepieces, Unmatched Elegance</h1>
-            <p class="text-xl mb-8 text-gray-300">Discover Luxury Watches Tailored to Your Style</p>
+    <header class="relative text-white text-center pt-40 pb-20 bg-gradient-to-r from-black via-gray-800 to-gray-900 overflow-hidden">
+        <div class="container mx-auto relative z-10">
+            <h1 class="text-4xl md:text-6xl luxury-heading mb-4" id="hero-title">
+                Precision Timepieces, Unmatched Elegance
+            </h1>
+            <p class="text-lg md:text-xl mb-8 text-gray-300" id="hero-subtitle">
+                Discover Luxury Watches Tailored to Your Style
+            </p>
             <div class="space-x-4">
-                <a href="#watches" class="bg-luxury-gold text-black px-6 py-3 rounded-full hover:bg-opacity-90 transition">
+                <a href="#watches" class="bg-luxury-gold text-black px-6 py-3 rounded-full hover:bg-opacity-90 transition inline-block">
                     Shop Luxury Collection
                 </a>
             </div>
@@ -144,13 +157,13 @@
     <section id="brands" class="container mx-auto py-16">
         <h2 class="text-4xl text-center mb-12 luxury-heading">Prestigious Brands</h2>
         <div class="flex flex-wrap justify-center items-center space-x-8">
-            <img src="Casio-Logo.png" alt="Casio" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="hublot3517.logowik.com.webp" alt="Hublot" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="seiko-watch2671.jpg" alt="Seiko" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="post_7_6485.jpg" alt="Rolex" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="IMG_6149.webp" alt="Poedegar" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="images (2).png" alt="Curren" class="brand-logo h-16 grayscale hover:grayscale-0">
-            <img src="images (3).png" alt="Naviforce" class="brand-logo h-16 grayscale hover:grayscale-0">
+            <img src="Casio-Logo.png" alt="Casio" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="hublot3517.logowik.com.webp" alt="Hublot" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="seiko-watch2671.jpg" alt="Seiko" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="post_7_6485.jpg" alt="Rolex" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="IMG_6149.webp" alt="Poedegar" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="images (2).png" alt="Curren" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
+            <img src="images (3).png" alt="Naviforce" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
         </div>
     </section>
 
@@ -159,7 +172,7 @@
         <h2 class="text-4xl text-center mb-12 luxury-heading">Exquisite Luxury Timepieces</h2>
         <div class="swiper luxury-watch-swiper">
             <div class="swiper-wrapper" id="luxury-watch-collection">
-                <!-- Luxury watches will be dynamically populated -->
+                <!-- Watches will be dynamically populated -->
             </div>
             <div class="swiper-pagination"></div>
             <div class="swiper-button-next"></div>
@@ -210,19 +223,34 @@
         <div class="container mx-auto">
             <h2 class="text-4xl text-center mb-12 luxury-heading">Exclusive Services</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="service-card p-8 rounded-lg text-center">
-                    <i data-feather="tool" class="mx-auto text-5xl mb-4 text-blue-500"></i>
-                    <h3 class="text-2xl mb-4">Watch Repair</h3>
+                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/kbtmbyzy.json"
+                        trigger="hover"
+                        colors="primary:#3B82F6"
+                        style="width:80px;height:80px;margin:0 auto;">
+                    </lord-icon>
+                    <h3 class="text-2xl mb-4 mt-4">Watch Repair</h3>
                     <p>Expert repair and maintenance for your luxury timepieces</p>
                 </div>
-                <div class="service-card p-8 rounded-lg text-center">
-                    <i data-feather="dollar-sign" class="mx-auto text-5xl mb-4 text-green-500"></i>
-                    <h3 class="text-2xl mb-4">Sell Your Watch</h3>
+                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/nocovwne.json"
+                        trigger="hover"
+                        colors="primary:#16A34A"
+                        style="width:80px;height:80px;margin:0 auto;">
+                    </lord-icon>
+                    <h3 class="text-2xl mb-4 mt-4">Sell Your Watch</h3>
                     <p>Get a fair valuation and instant cash for your luxury watches</p>
                 </div>
-                <div class="service-card p-8 rounded-lg text-center">
-                    <i data-feather="calendar" class="mx-auto text-5xl mb-4 text-purple-500"></i>
-                    <h3 class="text-2xl mb-4">Expert Consultation</h3>
+                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/xhebrhvk.json"
+                        trigger="hover"
+                        colors="primary:#8B5CF6"
+                        style="width:80px;height:80px;margin:0 auto;">
+                    </lord-icon>
+                    <h3 class="text-2xl mb-4 mt-4">Expert Consultation</h3>
                     <p>Personalized advice to find your perfect timepiece</p>
                 </div>
             </div>
@@ -239,186 +267,71 @@
             <div>
                 <h4 class="font-bold mb-4">Quick Links</h4>
                 <ul>
-                    <li><a href="#watches" class="hover:text-blue-500">Watches</a></li>
-                    <li><a href="#brands" class="hover:text-blue-500">Brands</a></li>
-                    <li><a href="#services" class="hover:text-blue-500">Services</a></li>
+                    <li><a href="#watches" class="hover:text-blue-500 transition">Watches</a></li>
+                    <li><a href="#brands" class="hover:text-blue-500 transition">Brands</a></li>
+                    <li><a href="#services" class="hover:text-blue-500 transition">Services</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-4">Contact Us</h4>
                 <p>Email: support@ytimeluxury.com</p>
-                <p>Phone: +254 123 456 789</p>
+               <p>Phone: +254 712 345 678</p>
             </div>
             <div>
                 <h4 class="font-bold mb-4">Follow Us</h4>
                 <div class="flex space-x-4">
-                    <a href="#" class="hover:text-blue-500"><i data-feather="instagram"></i></a>
-                    <a href="#" class="hover:text-blue-500"><i data-feather="facebook"></i></a>
-                    <a href="#" class="hover:text-blue-500"><i data-feather="twitter"></i></a>
+                    <a href="#" class="hover:text-blue-500 transition">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/ymjkcjmr.json"
+                            trigger="hover"
+                            colors="primary:#3B82F6"
+                            style="width:32px;height:32px">
+                        </lord-icon>
+                    </a>
+                    <a href="#" class="hover:text-blue-500 transition">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/gqzfzaaq.json"
+                            trigger="hover"
+                            colors="primary:#3B82F6"
+                            style="width:32px;height:32px">
+                        </lord-icon>
+                    </a>
+                    <a href="#" class="hover:text-blue-500 transition">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/vduvxizq.json"
+                            trigger="hover"
+                            colors="primary:#3B82F6"
+                            style="width:32px;height:32px">
+                        </lord-icon>
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="text-center mt-8">
+        <div class="container mx-auto text-center mt-8 border-t border-gray-700 pt-4">
             <p>&copy; 2024 YTime Luxury. All Rights Reserved.</p>
         </div>
     </footer>
+
+    <!-- JavaScript -->
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Feather Icons
-    feather.replace();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Navigation Toggle
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
 
-    // Cart Management
-    function getCart() {
-        return JSON.parse(localStorage.getItem('cart')) || [];
-    }
-
-    function saveCart(cart) {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }
-
-    function updateCart() {
-        let cart = getCart();
-        const cartItemsContainer = document.getElementById('cart-items');
-        const cartTotalElement = document.getElementById('cart-total');
-        
-        if (cartItemsContainer) {
-            cartItemsContainer.innerHTML = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                const cartItemElement = document.createElement('div');
-                cartItemElement.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'rounded-lg');
-                cartItemElement.innerHTML = `
-                    <div>
-                        <h3 class="font-bold">${item.name}</h3>
-                        <p class="text-gray-600">KSh ${item.price.toLocaleString()}</p>
-                    </div>
-                    <button class="remove-cart-item text-red-500" data-index="${index}">
-                        <i data-feather="trash-2"></i>
-                    </button>
-                `;
-                cartItemsContainer.appendChild(cartItemElement);
-                total += item.price;
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('hidden');
             });
 
-            cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
-            document.getElementById('cart-count').textContent = cart.length;
-            feather.replace();
-        }
-    }
-
-    // Cart Button and Modal Functionality
-    const cartButton = document.getElementById('cart-button');
-    const cartModal = document.getElementById('cart-modal');
-    const closeCartButton = document.getElementById('close-cart');
-
-    if (cartButton && cartModal && closeCartButton) {
-        cartButton.addEventListener('click', () => {
-            cartModal.classList.remove('hidden');
-            cartModal.classList.add('flex');
-            updateCart();
-        });
-
-        closeCartButton.addEventListener('click', () => {
-            cartModal.classList.remove('flex');
-            cartModal.classList.add('hidden');
-        });
-    }
-
-    // Remove Cart Item
-    const cartItemsContainer = document.getElementById('cart-items');
-    if (cartItemsContainer) {
-        cartItemsContainer.addEventListener('click', (e) => {
-            const removeButton = e.target.closest('.remove-cart-item');
-            if (removeButton) {
-                const index = removeButton.dataset.index;
-                let cart = getCart();
-                cart.splice(index, 1);
-                saveCart(cart);
-                updateCart();
-            }
-        });
-    }
-
-    // Checkout Button
-    const checkoutButton = document.getElementById('checkout-btn');
-    if (checkoutButton) {
-        checkoutButton.addEventListener('click', () => {
-            window.location.href = 'checkout.html';
-        });
-    }
-
-    // Watch Collections
-    const luxuryWatchCollection = [
-        { name: 'Rolex precidential', price: 4000, brand: 'Rolex', category: 'Diver', image: 'WhatsApp Image 2024-10-28 at 04.14.49_9afd1b67.jpg' },
-        { name: 'Casio Vintage', price: 3500, brand: 'Casio', category: 'Chronograph', image: 'BLK2.webp' },
-        { name: 'Hublot ', price: 7000, brand: 'Hublot', category: 'Dress', image: 'WhatsApp Image 2024-10-28 at 04.14.49_bc9419c3.jpg' },
-        { name: 'Poedegar', price: 6000, brand: 'Poedegar', category: 'Dress', image: 'WhatsApp Image 2024-10-28 at 04.14.49_aa4e22b1.jpg' }
-    ];
-
-    const popularWatches = [
-        { name: 'Casio G-Shock', price: 3500, brand: 'Casio', category: 'Diver', image: '2B0778BF-6E8F-43DD-A4EE-F99361FEE3C2.webp' },
-        { name: 'Seiko Presage', price: 3000, brand: 'Seiko', category: 'Dress', image: 'images (1).jpg' },
-        { name: 'Curren', price: 4500, brand: 'Curren', category: 'Chronograph', image: 'photo1708701713.webp' },
-        { name: 'Citizen ', price: 3500, brand: 'Citizen', category: 'Diver', image: 'download (5).jpg' }
-    ];
-
-    function renderWatches(watches, containerId, isSlider = false) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        watches.forEach(watch => {
-            const watchCard = document.createElement('div');
-            
-            if (isSlider) {
-                watchCard.classList.add('swiper-slide', 'watch-card', 'p-6', 'rounded-lg', 'text-center');
-            } else {
-                watchCard.classList.add('popular-watch-card', 'p-6', 'rounded-lg', 'text-center');
-            }
-
-            watchCard.innerHTML = `
-                <img src="${watch.image}" alt="${watch.name}" class="mx-auto mb-4 h-64 object-cover">
-                <h3 class="text-xl font-bold mb-2">${watch.name}</h3>
-                <p class="text-gray-600 mb-4">${watch.brand} | ${watch.category}</p>
-                <p class="text-2xl font-bold text-blue-600 mb-4">KSh ${watch.price.toLocaleString()}</p>
-                <button class="add-to-cart w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600">
-                    Add to Cart
-                </button>
-            `;
-
-            container.appendChild(watchCard);
-        });
-
-        // Add to Cart functionality
-        container.addEventListener('click', (e) => {
-            const addToCartButton = e.target.closest('.add-to-cart');
-            if (addToCartButton) {
-                const watchCard = addToCartButton.closest('.watch-card, .popular-watch-card');
-                const watchName = watchCard.querySelector('h3').textContent;
-                const watchPrice = parseInt(watchCard.querySelector('.text-2xl').textContent.replace('KSh ', '').replace(',', ''));
-                const watchImage = watchCard.querySelector('img').src;
-
-                let cart = getCart();
-                cart.push({ name: watchName, price: watchPrice, image: watchImage });
-                saveCart(cart);
-                updateCart();
-
-                // Show a brief confirmation
-                addToCartButton.textContent = 'Added!';
-                addToCartButton.classList.replace('bg-blue-500', 'bg-green-500');
-                setTimeout(() => {
-                    addToCartButton.textContent = 'Add to Cart';
-                    addToCartButton.classList.replace('bg-green-500', 'bg-blue-500');
-                }, 1000);
-            }
-        });
-
-        if (isSlider) {
-            new Swiper('.luxury-watch-swiper', {
-                slidesPerView: 3,
-                spaceBetween: 30,
+            // Luxury Watch Swiper
+            const luxurySwiper = new Swiper('.luxury-watch-swiper', {
+                slidesPerView: 1,
+                spaceBetween: 10,
+                breakpoints: {
+                    640: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 }
+                },
                 navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
@@ -428,70 +341,175 @@
                     clickable: true
                 }
             });
-        }
-    }
 
-    renderWatches(luxuryWatchCollection, 'luxury-watch-collection', true);
-    renderWatches(popularWatches, 'popular-watch-collection');
+            // Sample Watch Data
+            const watches = [
+                {
+                    name: "Classic Gold Chronograph",
+                    brand: "Rolex",
+                    price: 45000,
+                    image: "rolex-gold.jpg",
+                    category: "Chronograph"
+                },
+                {
+                    name: "Deep Sea Diver",
+                    brand: "Hublot",
+                    price: 38000,
+                    image: "hublot-diver.jpg",
+                    category: "Diver"
+                },
+                // Add more watches
+            ];
 
-    // Budget Filter
-    const budgetInput = document.getElementById('budget-input');
-    const budgetFilterButtons = document.querySelectorAll('.budget-category-btn');
-    const budgetWatchList = document.getElementById('budget-watch-list');
-
-    function filterByBudgetAndCategory() {
-        const budget = parseInt(budgetInput.value) || 0;
-        const activeCategory = document.querySelector('.budget-category-btn.bg-blue-500').dataset.category;
-
-        budgetWatchList.innerHTML = '';
-        const filteredWatches = luxuryWatchCollection.filter(watch => 
-            watch.price <= budget && (activeCategory === 'All' || watch.category === activeCategory)
-        );
-
-        if (filteredWatches.length === 0) {
-            budgetWatchList.innerHTML = '<p class="text-center text-gray-500">No watches match your budget and category.</p>';
-        } else {
-            filteredWatches.forEach(watch => {
-                const watchCard = document.createElement('div');
-                watchCard.classList.add('budget-result-card', 'p-4', 'rounded-lg', 'text-center');
-                watchCard.innerHTML = `
-                    <img src="${watch.image}" alt="${watch.name}" class="mx-auto mb-4 h-48 object-cover">
-                    <h3 class="text-lg font-bold mb-2">${watch.name}</h3>
-                    <p class="text-gray-600 mb-2">${watch.category}</p>
-                    <p class="text-xl font-bold text-blue-600 mb-4">KSh ${watch.price.toLocaleString()}</p>
-                    <button class="add-to-cart w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600">
+            // Populate Luxury Watch Collection
+            const luxuryCollection = document.getElementById('luxury-watch-collection');
+            watches.forEach(watch => {
+                const slide = document.createElement('div');
+                slide.classList.add('swiper-slide', 'watch-card', 'bg-white', 'p-6', 'rounded-lg', 'shadow-lg');
+                slide.innerHTML = `
+                    <img src="${watch.image}" alt="${watch.name}" class="w-full h-64 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-bold mb-2">${watch.name}</h3>
+                    <p class="text-gray-600 mb-2">${watch.brand}</p>
+                    <p class="text-luxury-gold font-bold text-lg">KSh ${watch.price.toLocaleString()}</p>
+                    <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition">
                         Add to Cart
                     </button>
                 `;
-                budgetWatchList.appendChild(watchCard);
+                luxuryCollection.appendChild(slide);
             });
-        }
-    }
 
-    if (budgetInput) {
-        budgetInput.addEventListener('input', filterByBudgetAndCategory);
-    }
+            // Budget Filter Functionality
+            const budgetInput = document.getElementById('budget-input');
+            const budgetCategories = document.querySelectorAll('.budget-category-btn');
+            const budgetWatchList = document.getElementById('budget-watch-list');
 
-    if (budgetFilterButtons.length > 0) {
-        budgetFilterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                budgetFilterButtons.forEach(btn => {
-                    btn.classList.remove('bg-blue-500', 'text-white');
-                    btn.classList.add('bg-gray-200', 'text-gray-700');
+            let selectedCategory = 'All';
+
+            budgetCategories.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    budgetCategories.forEach(b => {
+                        b.classList.remove('bg-blue-500', 'text-white');
+                        b.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    btn.classList.remove('bg-gray-200', 'text-gray-700');
+                    btn.classList.add('bg-blue-500', 'text-white');
+                    selectedCategory = btn.dataset.category;
+                    filterWatches();
                 });
+            });
 
-                button.classList.remove('bg-gray-200', 'text-gray-700');
-                button.classList.add('bg-blue-500', 'text-white');
+            budgetInput.addEventListener('input', filterWatches);
 
-                filterByBudgetAndCategory();
+            function filterWatches() {
+                const budget = parseFloat(budgetInput.value) || Infinity;
+                budgetWatchList.innerHTML = '';
+
+                const filteredWatches = watches.filter(watch => 
+                    watch.price <= budget && 
+                    (selectedCategory === 'All' || watch.category === selectedCategory)
+                );
+
+                filteredWatches.forEach(watch => {
+                    const watchEl = document.createElement('div');
+                    watchEl.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md');
+                    watchEl.innerHTML = `
+                        <img src="${watch.image}" alt="${watch.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                        <h3 class="text-lg font-bold">${watch.name}</h3>
+                        <p class="text-gray-600">${watch.brand}</p>
+                        <p class="text-luxury-gold font-bold">KSh ${watch.price.toLocaleString()}</p>
+                        <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition">
+                            Add to Cart
+                        </button>
+                    `;
+                    budgetWatchList.appendChild(watchEl);
+                });
+            }
+
+         // Newsletter Subscription
+        const newsletterEmail = document.getElementById('newsletter-email');
+        const newsletterSubscribe = document.getElementById('newsletter-subscribe');
+
+        newsletterSubscribe.addEventListener('click', function() {
+            const email = newsletterEmail.value.trim();
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter your email address'
+                });
+                return;
+            }
+
+            if (!emailRegex.test(email)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address'
+                });
+                return;
+            }
+
+            // Simulated newsletter subscription 
+            Swal.fire({
+                icon: 'success',
+                title: 'Thank You!',
+                text: 'You have successfully subscribed to our newsletter',
+                confirmButtonText: 'Cool'
+            });
+
+            // Clear the email input
+            newsletterEmail.value = '';
+        });
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
-    }
 
-    // Initialize cart count on page load
-    const initialCart = getCart();
-    document.getElementById('cart-count').textContent = initialCart.length;
-});
-  </script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Title Animation
+        gsap.from("#hero-title", {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            ease: "power3.out"
+        });
+
+        // Brands Logo Animation
+        gsap.from(".brand-logo", {
+            opacity: 0,
+            y: 50,
+            stagger: 0.2,
+            duration: 1,
+            scrollTrigger: {
+                trigger: "#brands",
+                start: "top 80%"
+            }
+        });
+
+        // Services Card Animation
+        gsap.from(".service-card", {
+            opacity: 0,
+            y: 50,
+            stagger: 0.3,
+            duration: 1,
+            scrollTrigger: {
+                trigger: "#services",
+                start: "top 80%"
+            }
+        });
+    </script>
 </body>
 </html>
