@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #121212;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        .container {
+            background: #1e1e1e;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #fe2c55;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #2a2a2a;
+            color: white;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fe2c55;
+        }
+
+        button {
+            background: #fe2c55;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #e62548;
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .loader {
+            display: none;
+            width: 48px;
+            height: 48px;
+            border: 5px solid #333;
+            border-bottom-color: #fe2c55;
+            border-radius: 50%;
+            margin: 1rem auto;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .video-container {
+            margin-top: 1rem;
+            width: 100%;
+            background: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-info {
+            padding: 1rem;
+            background: #2a2a2a;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+
+        .video-info h3 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-info p {
+            color: #aaa;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            background: #ff4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TikTok Video Viewer</h1>
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Enter TikTok video URL..." />
+        </div>
+        <button id="fetchBtn">Fetch Video</button>
+        <div class="loader" id="loader"></div>
+        <div class="error" id="error"></div>
+        <div class="video-container" id="videoContainer"></div>
+        <div class="video-info" id="videoInfo"></div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const loader = document.getElementById('loader');
+        const error = document.getElementById('error');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoInfo = document.getElementById('videoInfo');
+
+        // Using the provided API credentials
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': '75ac2f6c18mshf299964d7121e29p187a85jsna4faa779db01',
+                'x-rapidapi-host': 'tiktok-api23.p.rapidapi.com'
+            }
+        };
+
+        fetchBtn.addEventListener('click', async () => {
+            const videoUrl = urlInput.value.trim();
+            if (!videoUrl) {
+                showError('Please enter a valid TikTok URL');
+                return;
+            }
+
+            showLoading(true);
+            clearResults();
+
+            try {
+                const url = `https://tiktok-api23.p.rapidapi.com/api/video/info?url=${encodeURIComponent(videoUrl)}`;
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                displayVideo(data);
+            } catch (err) {
+                showError(err.message || 'Failed to fetch video. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        function showLoading(show) {
+            loader.style.display = show ? 'block' : 'none';
+            fetchBtn.disabled = show;
+        }
+
+        function showError(message) {
+            error.style.display = 'block';
+            error.textContent = message;
+        }
+
+        function clearResults() {
+            error.style.display = 'none';
+            videoContainer.innerHTML = '';
+            videoInfo.innerHTML = '';
+        }
+
+        function displayVideo(data) {
+            // Display video player
+            const video = document.createElement('video');
+            video.controls = true;
+            video.src = data.video_url;
+            videoContainer.appendChild(video);
+
+            // Display video information
+            videoInfo.innerHTML = `
+                <h3>${data.title || 'TikTok Video'}</h3>
+                <p>Author: ${data.author || 'Unknown'}</p>
+                <p>Likes: ${data.likes || '0'}</p>
+                <p>Comments: ${data.comments || '0'}</p>
+                <p>Shares: ${data.shares || '0'}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
