@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y TIME - Modern Animated Watch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0f0f1a;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .watch {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: #1f1f2e;
+            box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+                box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
+            }
+            50% {
+                transform: translateY(-15px) rotate(1deg);
+                box-shadow: 0 0 70px rgba(0, 140, 255, 0.5);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
+            }
+        }
+
+        .bezel {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #131322, #2a2a40);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: glow 8s linear infinite;
+        }
+
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 15px rgba(0, 140, 255, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 140, 255, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 15px rgba(0, 140, 255, 0.2);
+            }
+        }
+
+        .face {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(#2a2a40, #1a1a2a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .face::after {
+            content: '';
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, transparent 40%, rgba(0, 195, 255, 0.1) 50%, transparent 60%);
+            animation: sweep 10s linear infinite;
+        }
+
+        @keyframes sweep {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .markings {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hour-mark {
+            position: absolute;
+            width: 4px;
+            height: 15px;
+            background-color: #4da6ff;
+            top: 10px;
+            left: 50%;
+            transform-origin: 50% 120px;
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.8);
+        }
+
+        .minute-mark {
+            position: absolute;
+            width: 2px;
+            height: 8px;
+            background-color: #2a80cc;
+            top: 10px;
+            left: 50%;
+            transform-origin: 50% 120px;
+        }
+
+        .center {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(#4da6ff, #0066cc);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
+        }
+
+        .brand {
+            position: absolute;
+            top: 70px;
+            text-align: center;
+            color: #4da6ff;
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
+        }
+
+        .sub-brand {
+            position: absolute;
+            top: 90px;
+            text-align: center;
+            color: #2a80cc;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .date {
+            position: absolute;
+            bottom: 70px;
+            width: 36px;
+            height: 36px;
+            background-color: #1a1a2a;
+            border: 1px solid #4da6ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: #ffffff;
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .digital-time {
+            position: absolute;
+            bottom: 110px;
+            color: #4da6ff;
+            font-size: 14px;
+            font-family: monospace;
+            background-color: rgba(26, 26, 42, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid #2a80cc;
+        }
+
+        .hour-hand, .minute-hand, .second-hand {
+            position: absolute;
+            transform-origin: bottom center;
+            bottom: 50%;
+            left: 50%;
+            z-index: 5;
+            transition: transform 0.2s cubic-bezier(0.4, 2.08, 0.55, 0.44);
+        }
+
+        .hour-hand {
+            width: 6px;
+            height: 60px;
+            background: linear-gradient(to top, #4da6ff, #0066cc);
+            border-radius: 6px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
+        }
+
+        .minute-hand {
+            width: 4px;
+            height: 90px;
+            background: linear-gradient(to top, #66b3ff, #0080ff);
+            border-radius: 4px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 110px;
+            background-color: #ff3366;
+            border-radius: 1px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px rgba(255, 51, 102, 0.8);
+        }
+
+        .second-hand::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff3366;
+            border-radius: 50%;
+            bottom: -4px;
+            left: -3px;
+            box-shadow: 0 0 5px rgba(255, 51, 102, 0.8);
+        }
+
+        .background-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            background: radial-gradient(circle at center, rgba(77, 166, 255, 0.8), transparent);
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watch">
+        <div class="bezel">
+            <div class="face">
+                <div class="background-circle" style="width: 220px; height: 220px;"></div>
+                <div class="background-circle" style="width: 180px; height: 180px; animation-delay: -2s;"></div>
+                <div class="background-circle" style="width: 140px; height: 140px; animation-delay: -4s;"></div>
+                <div class="markings" id="markings"></div>
+                <div class="brand">Y TIME</div>
+                <div class="sub-brand">PRECISION SERIES</div>
+                <div class="date" id="date">1</div>
+                <div class="digital-time" id="digital-time">00:00:00</div>
+                <div class="hour-hand" id="hour-hand"></div>
+                <div class="minute-hand" id="minute-hand"></div>
+                <div class="second-hand" id="second-hand"></div>
+                <div class="center"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create hour and minute markings
+        const markings = document.getElementById('markings');
+        
+        // Create hour markings
+        for (let i = 0; i < 12; i++) {
+            const hourMark = document.createElement('div');
+            hourMark.className = 'hour-mark';
+            hourMark.style.transform = `rotate(${i * 30}deg)`;
+            markings.appendChild(hourMark);
+        }
+        
+        // Create minute markings
+        for (let i = 0; i < 60; i++) {
+            // Skip positions where hour marks are
+            if (i % 5 !== 0) {
+                const minuteMark = document.createElement('div');
+                minuteMark.className = 'minute-mark';
+                minuteMark.style.transform = `rotate(${i * 6}deg)`;
+                markings.appendChild(minuteMark);
+            }
+        }
+        
+        // Get hands elements
+        const hourHand = document.getElementById('hour-hand');
+        const minuteHand = document.getElementById('minute-hand');
+        const secondHand = document.getElementById('second-hand');
+        const dateDisplay = document.getElementById('date');
+        const digitalTime = document.getElementById('digital-time');
+        
+        // Function to update clock
+        function updateClock() {
+            const now = new Date();
+            
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours() % 12; // Convert to 12-hour format
+            
+            // Calculate rotation angles
+            const secondDegrees = (seconds / 60) * 360;
+            const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
+            const hourDegrees = ((hours + minutes / 60) / 12) * 360;
+            
+            // Apply rotations
+            secondHand.style.transform = `translateX(-50%) rotate(${secondDegrees}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minuteDegrees}deg)`;
+            hourHand.style.transform = `translateX(-50%) rotate(${hourDegrees}deg)`;
+            
+            // Update date
+            dateDisplay.textContent = now.getDate();
+            
+            // Update digital time
+            const formattedHours = now.getHours().toString().padStart(2, '0');
+            const formattedMinutes = minutes.toString().padStart(2, '0');
+            const formattedSeconds = seconds.toString().padStart(2, '0');
+            digitalTime.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+        }
+        
+        // Initial call to set hands
+        updateClock();
+        
+        // Update clock every second
+        setInterval(updateClock, 1000);
+        
+        // Add interactive hover effect
+        const watch = document.querySelector('.watch');
+        watch.addEventListener('mousemove', (e) => {
+            const rect = watch.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Subtle tilt effect
+            watch.style.transform = `translateY(-15px) rotateX(${y * 0.01}deg) rotateY(${-x * 0.01}deg)`;
+        });
+        
+        watch.addEventListener('mouseleave', () => {
+            watch.style.transform = '';
+            // Let the float animation take over again
+        });
+    </script>
+</body>
+</html>
