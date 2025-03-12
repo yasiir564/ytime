@@ -23,81 +23,435 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+:root {
+  /* Modern color scheme with gradients */
+  --primary-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --accent-gradient: linear-gradient(135deg, #3B82F6, #2563EB, #1D4ED8);
+  --luxury-gradient: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+  --text-color: #333;
+  --text-light: #6B7280;
+  --background: #f8f9fa;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --transition-smooth: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
-        :root {
-            --primary-color: #1a1a1a;
-            --accent-color: #3B82F6;
-            --luxury-gold: #D4AF37;
-            --text-color: #333;
-        }
+/* Modern Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-        * {
-            box-sizing: border-box;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-color) #f1f1f1;
-        }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            color: var(--text-color);
-            overflow-x: hidden;
-        }
+::-webkit-scrollbar-track {
+  background: rgba(241, 241, 241, 0.8);
+  border-radius: 10px;
+}
 
-        .luxury-heading {
-            font-family: 'Playfair Display', serif;
-            color: var(--luxury-gold);
-        }
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
 
-        .watch-card {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            perspective: 1000px;
-            transform-style: preserve-3d;
-        }
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
-        .watch-card:hover {
-            transform: scale(1.05) rotateY(10deg);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-        }
+/* Modern smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #888 rgba(241, 241, 241, 0.8);
+}
 
-        @media (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: rgba(255,255,255,0.95);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transition: 0.3s ease;
-                z-index: 1000;
-            }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--text-color);
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-weight: 400;
+}
 
-            .nav-menu.active {
-                left: 0;
-            }
+/* Luxury heading with gradient text */
+.luxury-heading {
+  font-family: 'Playfair Display', serif;
+  background: var(--luxury-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  animation: fadeInUp 1s ease-out;
+}
 
-            .hamburger {
-                display: block;
-                cursor: pointer;
-                z-index: 1100;
-            }
+.luxury-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: var(--luxury-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: slideIn 1.2s forwards ease-out 0.3s;
+}
 
-            .hamburger.active .bar:nth-child(2) {
-                opacity: 0;
-            }
+/* Watch card with 3D effects and animations */
+.watch-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: var(--transition-smooth);
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-            .hamburger.active .bar:nth-child(1) {
-                transform: translateY(8px) rotate(45deg);
-            }
+.watch-card::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  transform: rotate(45deg);
+  transition: all 0.8s;
+}
 
-            .hamburger.active .bar:nth-child(3) {
-                transform: translateY(-8px) rotate(-45deg);
-            }
-        }
+.watch-card:hover {
+  transform: scale(1.05) rotateY(10deg) translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.watch-card:hover::before {
+  top: 100%;
+  left: 100%;
+}
+
+.watch-card img {
+  transform: translateZ(20px);
+  transition: var(--transition-smooth);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+.watch-card:hover img {
+  transform: translateZ(40px) scale(1.05);
+}
+
+/* Button styles */
+.btn {
+  padding: 12px 24px;
+  border-radius: 50px;
+  border: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+  transform: translateY(-3px);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+  z-index: -1;
+}
+
+.btn-primary:hover::after {
+  left: 100%;
+}
+
+/* Responsive Navigation */
+.nav-container {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+}
+
+.nav-container.scrolled {
+  padding: 0.75rem 0;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  transition: all 0.4s ease;
+}
+
+.nav-menu a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  transition: width 0.3s ease;
+}
+
+.nav-menu a:hover {
+  color: #3B82F6;
+}
+
+.nav-menu a:hover::after {
+  width: 100%;
+}
+
+/* Hamburger menu */
+.hamburger {
+  display: none;
+  cursor: pointer;
+}
+
+.bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  transition: all 0.3s ease-in-out;
+  background-color: var(--text-color);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Section animations */
+.section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Grid layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    position: relative;
+    z-index: 1100;
+  }
+  
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s ease;
+    gap: 2.5rem;
+  }
+  
+  .nav-menu.active {
+    left: 0;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  .nav-menu a {
+    font-size: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  .nav-menu.active a {
+    animation: fadeInUp 0.5s forwards;
+    animation-delay: calc(0.1s * var(--i));
+  }
+  
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+  
+  .grid-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .luxury-heading {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .watch-card {
+    padding: 1.5rem;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .luxury-heading {
+    font-size: 1.75rem;
+  }
+}
+
+/* Advanced animation for watch images */
+.watch-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.watch-image {
+  transition: all 0.8s ease;
+}
+
+.watch-card:hover .watch-image {
+  transform: scale(1.1);
+}
+
+/* Animation for adding products to cart */
+.add-to-cart {
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart.clicked::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 0.8s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
     </style>
 </head>
 <body class="bg-gray-50">
@@ -314,6 +668,58 @@
 
     <!-- JavaScript -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+  // Navigation scroll effect
+  const navContainer = document.querySelector('.nav-container');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navContainer.classList.add('scrolled');
+    } else {
+      navContainer.classList.remove('scrolled');
+    }
+  });
+
+  // Mobile menu toggle
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('.nav-menu');
+  
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+  });
+
+  // Section reveal animation
+  const sections = document.querySelectorAll('.section');
+  const revealSection = function(entries, observer) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  };
+
+  const sectionObserver = new IntersectionObserver(revealSection, {
+    root: null,
+    threshold: 0.15,
+  });
+
+  sections.forEach(section => {
+    sectionObserver.observe(section);
+    section.classList.add('section');
+  });
+
+  // Add to cart animation
+  const addToCartButtons = document.querySelectorAll('.add-to-cart');
+  addToCartButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      this.classList.add('clicked');
+      setTimeout(() => {
+        this.classList.remove('clicked');
+      }, 800);
+    });
+  });
+});
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile Navigation Toggle
             const hamburger = document.querySelector('.hamburger');
