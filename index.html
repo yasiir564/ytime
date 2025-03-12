@@ -5,916 +5,1607 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YTime Luxury - Timeless Elegance</title>
     
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Lordicons -->
-    <script src="https://cdn.lordicon.com/lordicon-1.1.0.js"></script>
-    
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lordicon/1.2.0/lordicon.min.js"></script>
     
     <!-- GSAP and ScrollTrigger -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
     <!-- Swiper -->
-    <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.4.1/swiper-bundle.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.4.1/swiper-bundle.min.js"></script>
     
     <style>
-:root {
-  /* Modern color scheme with gradients */
-  --primary-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  --accent-gradient: linear-gradient(135deg, #3B82F6, #2563EB, #1D4ED8);
-  --luxury-gradient: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-  --text-color: #333;
-  --text-light: #6B7280;
-  --background: #f8f9fa;
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  --transition-smooth: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        :root {
+            /* Modern color scheme */
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-dark: #4f46e5;
+            --gold: linear-gradient(to right, #b7922a, #ecd67f, #b7922a);
+            --text: #f8fafc;
+            --text-dark: #94a3b8;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --surface-dark: #0f172a;
+            --card: #1e293b;
+            --card-hover: #334155;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-/* Modern Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--primary);
+        }
 
-::-webkit-scrollbar-track {
-  background: rgba(241, 241, 241, 0.8);
-  border-radius: 10px;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
 
-/* Modern smooth scrolling */
-html {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #888 rgba(241, 241, 241, 0.8);
-}
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 8px;
+        }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--background);
-  color: var(--text-color);
-  overflow-x: hidden;
-  line-height: 1.6;
-  font-weight: 400;
-}
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
 
-/* Luxury heading with gradient text */
-.luxury-heading {
-  font-family: 'Playfair Display', serif;
-  background: var(--luxury-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-bottom: 1.5rem;
-  position: relative;
-  animation: fadeInUp 1s ease-out;
-}
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 1rem;
+        }
 
-.luxury-heading::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 80px;
-  height: 3px;
-  background: var(--luxury-gradient);
-  transform: scaleX(0);
-  transform-origin: left;
-  animation: slideIn 1.2s forwards ease-out 0.3s;
-}
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
 
-/* Watch card with 3D effects and animations */
-.watch-card {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 2rem;
-  transition: var(--transition-smooth);
-  perspective: 1000px;
-  transform-style: preserve-3d;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.5rem 0;
+            transition: var(--transition);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
 
-.watch-card::before {
-  content: '';
-  position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-  transform: rotate(45deg);
-  transition: all 0.8s;
-}
+        .navbar.scrolled {
+            padding: 1rem 0;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
 
-.watch-card:hover {
-  transform: scale(1.05) rotateY(10deg) translateY(-10px);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-}
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.watch-card:hover::before {
-  top: 100%;
-  left: 100%;
-}
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-.watch-card img {
-  transform: translateZ(20px);
-  transition: var(--transition-smooth);
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
-}
+        .logo img {
+            height: 40px;
+        }
 
-.watch-card:hover img {
-  transform: translateZ(40px) scale(1.05);
-}
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
 
-/* Button styles */
-.btn {
-  padding: 12px 24px;
-  border-radius: 50px;
-  border: none;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  cursor: pointer;
-}
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
 
-.btn-primary {
-  background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-}
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
 
-.btn-primary:hover {
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
-  transform: translateY(-3px);
-}
+        .nav-link:hover {
+            opacity: 1;
+        }
 
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-  z-index: -1;
-}
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
 
-.btn-primary:hover::after {
-  left: 100%;
-}
+        .nav-link:hover::after {
+            width: 100%;
+        }
 
-/* Responsive Navigation */
-.nav-container {
-  position: sticky;
-  top: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.4s ease;
-}
+        .cart-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
 
-.nav-container.scrolled {
-  padding: 0.75rem 0;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
 
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  transition: all 0.4s ease;
-}
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
 
-.nav-menu a {
-  color: var(--text-color);
-  text-decoration: none;
-  font-weight: 500;
-  position: relative;
-  padding: 0.5rem 0;
-  transition: all 0.3s ease;
-}
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            z-index: 1100;
+        }
 
-.nav-menu a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent-gradient);
-  transition: width 0.3s ease;
-}
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text);
+            margin: 5px 0;
+            transition: all 0.3s ease-in-out;
+            border-radius: 3px;
+        }
 
-.nav-menu a:hover {
-  color: #3B82F6;
-}
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
 
-.nav-menu a:hover::after {
-  width: 100%;
-}
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+        }
 
-/* Hamburger menu */
-.hamburger {
-  display: none;
-  cursor: pointer;
-}
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
 
-.bar {
-  display: block;
-  width: 25px;
-  height: 3px;
-  margin: 5px auto;
-  transition: all 0.3s ease-in-out;
-  background-color: var(--text-color);
-}
+        .hero-luxury {
+            position: relative;
+            display: inline-block;
+        }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+        .hero-luxury::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 4px;
+        }
 
-@keyframes slideIn {
-  to {
-    transform: scaleX(1);
-  }
-}
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-  }
-}
+        .hero-image {
+            position: absolute;
+            top: 50%;
+            right: 5%;
+            transform: translateY(-50%);
+            width: 40%;
+            z-index: 0;
+        }
 
-/* Section animations */
-.section {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s ease-out;
-}
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0px 20px 50px rgba(0, 0, 0, 0.5));
+            animation: float 8s ease-in-out infinite;
+        }
 
-.section.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+        .hero-bg-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
 
-/* Grid layout */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
-}
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            border: none;
+            outline: none;
+            text-align: center;
+        }
 
-/* Media Queries for Responsiveness */
-@media (max-width: 1200px) {
-  .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-}
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
 
-@media (max-width: 992px) {
-  .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-}
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+        }
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-    position: relative;
-    z-index: 1100;
-  }
-  
-  .nav-menu {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: 0.5s ease;
-    gap: 2.5rem;
-  }
-  
-  .nav-menu.active {
-    left: 0;
-    animation: fadeIn 0.5s ease;
-  }
-  
-  .nav-menu a {
-    font-size: 1.5rem;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  
-  .nav-menu.active a {
-    animation: fadeInUp 0.5s forwards;
-    animation-delay: calc(0.1s * var(--i));
-  }
-  
-  .hamburger.active .bar:nth-child(2) {
-    opacity: 0;
-  }
-  
-  .hamburger.active .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-  
-  .hamburger.active .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-  
-  .grid-container {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .luxury-heading {
-    font-size: 2rem;
-  }
-}
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--accent);
+        }
 
-@media (max-width: 480px) {
-  .watch-card {
-    padding: 1.5rem;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
-  
-  .luxury-heading {
-    font-size: 1.75rem;
-  }
-}
+        .btn-outline:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+        }
 
-/* Advanced animation for watch images */
-.watch-image-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-}
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            font-weight: 600;
+        }
 
-.watch-image {
-  transition: all 0.8s ease;
-}
+        .btn-gold:hover {
+            opacity: 0.9;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(183, 146, 42, 0.4);
+        }
 
-.watch-card:hover .watch-image {
-  transform: scale(1.1);
-}
+        .btn-effect {
+            position: relative;
+            overflow: hidden;
+        }
 
-/* Animation for adding products to cart */
-.add-to-cart {
-  position: relative;
-  overflow: hidden;
-}
+        .btn-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
 
-.add-to-cart.clicked::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 150px;
-  height: 150px;
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  animation: ripple 0.8s ease-out;
-}
+        .btn-effect:hover::after {
+            left: 100%;
+        }
 
-@keyframes ripple {
-  to {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
-}
+        /* Section Styles */
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+        }
 
+        .section-title-container {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gold-underline {
+            position: relative;
+        }
+
+        .gold-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 2px;
+        }
+
+        /* Brands Section */
+        .brands {
+            background-color: var(--surface);
+        }
+
+        .brands-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .brand-logo {
+            height: 60px;
+            filter: grayscale(100%) brightness(150%);
+            opacity: 0.7;
+            transition: all 0.5s ease;
+            transform: scale(0.9);
+        }
+
+        .brand-logo:hover {
+            filter: grayscale(0%) brightness(100%);
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Watch Collection */
+        .collection {
+            background-color: var(--background);
+            overflow: hidden;
+        }
+
+        .collection-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .collection-tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: var(--text-dark);
+            border: 2px solid var(--surface-light);
+        }
+
+        .collection-tab.active {
+            background: var(--accent);
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        /* Watches Grid */
+        .watches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Watch Card */
+        .watch-card {
+            background: var(--card);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.5s, box-shadow 0.5s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .watch-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .watch-image-container {
+            position: relative;
+            padding-top: 100%;
+            overflow: hidden;
+            background: var(--surface-dark);
+        }
+
+        .watch-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .watch-card:hover .watch-image {
+            transform: scale(1.1);
+        }
+
+        .watch-tag {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent);
+            color: var(--text);
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .watch-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .watch-brand {
+            font-size: 0.875rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .watch-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .watch-description {
+            color: var(--text-dark);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .watch-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .watch-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .add-to-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: var(--accent-dark);
+            transform: scale(1.1);
+        }
+
+        /* Luxury Collection Slider */
+        .luxury-slider {
+            position: relative;
+            margin-top: 3rem;
+            padding-bottom: 4rem;
+        }
+
+        .swiper-pagination-bullet {
+            background: var(--text);
+            opacity: 0.5;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--accent);
+            opacity: 1;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            color: var(--accent);
+        }
+
+        /* Budget Tool Section */
+        .budget-section {
+            background: linear-gradient(to bottom, var(--surface), var(--background));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-tool {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .budget-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--surface-light);
+            background: var(--surface-dark);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .budget-categories {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .budget-category {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--surface-light);
+            color: var(--text);
+            border: none;
+        }
+
+        .budget-category.active {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        .budget-results {
+            margin-top: 2rem;
+        }
+
+        /* Services Section */
+        .services {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            background: var(--card-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-light);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-description {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        /* Newsletter Section */
+        .newsletter {
+            background: var(--surface);
+            padding: 4rem 0;
+        }
+
+        .newsletter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .newsletter-form {
+            display: flex;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .newsletter-input {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid var(--surface-light);
+            background: var(--surface-dark);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .newsletter-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            padding: 0 1.5rem;
+            border-radius: 50px;
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .newsletter-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary);
+            padding: 5rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo img {
+            height: 40px;
+        }
+
+        .footer-about {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-heading {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-contact-item {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .social-icon:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-image {
+                width: 45%;
+                right: 2%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+            
+            .hero {
+                height: auto;
+                padding: 8rem 0 4rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-image {
+                position: relative;
+                top: auto;
+                right: auto;
+                transform: none;
+                width: 100%;
+                max-width: 400px;
+                margin: 3rem auto 0;
+            }
+            
+            .navbar-container {
+                padding: 0 1.5rem;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--primary);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: all 0.5s ease;
+                z-index: 999;
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -8px);
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .watches-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+            }
+            
+            .newsletter-btn {
+                position: static;
+                width: 100%;
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .collection-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .budget-categories {
+                justify-content: center;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-md p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="Y-Time Luxury.png" alt="YTime Logo" class="h-10 mr-4">
-                <span class="text-xl font-bold text-gray-800">YTime Luxury</span>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <div class="logo">
+                <img src="/api/placeholder/100/40" alt="YTime Logo">
+                <span class="logo-text">YTime</span>
             </div>
             
-            <div class="hamburger hidden md:hidden">
-                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
-                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
-                <div class="bar w-6 h-1 bg-gray-800 my-1"></div>
+            <div class="hamburger">
+<span></span>
+                <span></span>
             </div>
-
-            <div class="nav-menu hidden md:flex items-center space-x-6">
-                <a href="#watches" class="nav-link text-gray-800 hover:text-blue-500 transition">Watches</a>
-                <a href="#brands" class="nav-link text-gray-800 hover:text-blue-500 transition">Shop</a>
-                <a href="#services" class="nav-link text-gray-800 hover:text-blue-500 transition">Services</a>
-                <a href="#budget" class="nav-link text-gray-800 hover:text-blue-500 transition">Budget Tool</a>
-                
-                <div class="relative">
-                    <a href="cart.html" class="relative bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/hjeefglm.json"
-                            trigger="hover"
-                            colors="primary:#ffffff"
-                            style="width:24px;height:24px">
-                        </lord-icon>
-                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
-                    </a>
-                </div>
+            
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#collection" class="nav-link">Collection</a></li>
+                <li><a href="#budget" class="nav-link">Budget Tool</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative text-white text-center pt-40 pb-20 bg-gradient-to-r from-black via-gray-800 to-gray-900 overflow-hidden">
-        <div class="container mx-auto relative z-10">
-            <h1 class="text-4xl md:text-6xl luxury-heading mb-4" id="hero-title">
-                Precision Timepieces, Unmatched Elegance
-            </h1>
-            <p class="text-lg md:text-xl mb-8 text-gray-300" id="hero-subtitle">
-                Discover Luxury Watches Tailored to Your Style
-            </p>
-            <div class="space-x-4">
-                <a href="#watches" class="bg-luxury-gold text-black px-6 py-3 rounded-full hover:bg-opacity-90 transition inline-block">
-                    Shop Luxury Collection
-                </a>
+    <section class="hero" id="home">
+        <div class="hero-bg-elements"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1>Discover <span class="hero-luxury">Luxury</span> Timepieces</h1>
+                <p>Explore our handpicked collection of premium watches from the world's most prestigious brands.</p>
+                <a href="#collection" class="btn btn-primary btn-effect">Explore Collection</a>
+            </div>
+            <div class="hero-image">
+                <img src="/api/placeholder/600/400" alt="Luxury Watch">
             </div>
         </div>
-    </header>
+    </section>
 
     <!-- Brands Section -->
-    <section id="brands" class="container mx-auto py-16">
-        <h2 class="text-4xl text-center mb-12 luxury-heading">Prestigious Brands</h2>
-        <div class="flex flex-wrap justify-center items-center space-x-8">
-            <img src="Casio-Logo.png" alt="Casio" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="hublot3517.logowik.com.webp" alt="Hublot" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="seiko-watch2671.jpg" alt="Seiko" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="post_7_6485.jpg" alt="Rolex" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="IMG_6149.webp" alt="Poedegar" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="images (2).png" alt="Curren" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-            <img src="images (3).png" alt="Naviforce" class="brand-logo h-16 grayscale hover:grayscale-0 transition">
-        </div>
-    </section>
-
-    <!-- Luxury Timepieces Section -->
-    <section id="luxury-watches" class="container mx-auto py-16">
-        <h2 class="text-4xl text-center mb-12 luxury-heading">Exquisite Luxury Timepieces</h2>
-        <div class="swiper luxury-watch-swiper">
-            <div class="swiper-wrapper" id="luxury-watch-collection">
-                <!-- Watches will be dynamically populated -->
+    <section class="brands">
+        <div class="container">
+            <div class="brands-container">
+                <img src="/api/placeholder/160/60" alt="Rolex" class="brand-logo">
+                <img src="/api/placeholder/160/60" alt="Omega" class="brand-logo">
+                <img src="/api/placeholder/160/60" alt="Tag Heuer" class="brand-logo">
+                <img src="/api/placeholder/160/60" alt="Patek Philippe" class="brand-logo">
+                <img src="/api/placeholder/160/60" alt="Audemars Piguet" class="brand-logo">
             </div>
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
         </div>
     </section>
 
-    <!-- Popular This Week Section -->
-    <section id="popular-watches" class="container mx-auto py-16 bg-gray-50">
-        <h2 class="text-4xl text-center mb-12 luxury-heading">Popular This Week</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8" id="popular-watch-collection">
-            <!-- Popular watches will be dynamically populated -->
-        </div>
-    </section>
-
-    <!-- Budget Section -->
-    <section id="budget" class="container mx-auto py-16 budget-section">
-        <h2 class="text-4xl text-center mb-12 luxury-heading">Smart Budget Planning</h2>
-        <div class="max-w-xl mx-auto bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl">
-            <div class="mb-6">
-                <label for="budget-input" class="block text-gray-700 mb-3 text-lg">Enter Your Watch Budget (KSh)</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">KSh</span>
-                    <input 
-                        type="number" 
-                        id="budget-input" 
-                        class="w-full p-3 pl-12 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition" 
-                        placeholder="Enter your maximum budget"
-                    >
+    <!-- Collection Section -->
+    <section class="collection" id="collection">
+        <div class="container">
+            <div class="section-title-container">
+                <h2 class="section-title gold-underline">Our Collection</h2>
+                <p class="section-subtitle">Discover timepieces that combine heritage craftsmanship with innovative design.</p>
+            </div>
+            
+            <div class="collection-tabs">
+                <button class="collection-tab active">All</button>
+                <button class="collection-tab">Luxury</button>
+                <button class="collection-tab">Sport</button>
+                <button class="collection-tab">Dress</button>
+                <button class="collection-tab">Smart</button>
+            </div>
+            
+            <div class="watches-grid">
+                <!-- Watch Card 1 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <span class="watch-tag">New</span>
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">Rolex</span>
+                        <h3 class="watch-name">Submariner</h3>
+                        <p class="watch-description">The iconic diving watch that set the standard for all dive watches to follow.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$8,999</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Card 2 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">Omega</span>
+                        <h3 class="watch-name">Speedmaster</h3>
+                        <p class="watch-description">The first watch on the moon, featuring precise chronograph movement.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$6,250</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Card 3 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <span class="watch-tag">Limited</span>
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">Patek Philippe</span>
+                        <h3 class="watch-name">Nautilus</h3>
+                        <p class="watch-description">An elegant sports watch with distinctive porthole-shaped case design.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$35,000</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Card 4 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">Audemars Piguet</span>
+                        <h3 class="watch-name">Royal Oak</h3>
+                        <p class="watch-description">Revolutionary luxury sports watch with its iconic octagonal bezel.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$25,500</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Card 5 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <span class="watch-tag">Sale</span>
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">Tag Heuer</span>
+                        <h3 class="watch-name">Carrera</h3>
+                        <p class="watch-description">Racing-inspired chronograph with clean dial design and precision timing.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$4,750</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Card 6 -->
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        <img src="/api/placeholder/400/400" alt="Luxury Watch" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">IWC</span>
+                        <h3 class="watch-name">Portugieser</h3>
+                        <p class="watch-description">Classic styling with large case size and clean dial arrangement.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">$7,850</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="budget-filter-options" class="mb-6 flex space-x-4">
-                <button data-category="All" class="budget-category-btn bg-blue-500 text-white px-4 py-2 rounded-full">All</button>
-                <button data-category="Diver" class="budget-category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full">Diver</button>
-                <button data-category="Chronograph" class="budget-category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full">Chronograph</button>
-                <button data-category="Dress" class="budget-category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full">Dress</button>
+            
+            <div class="luxury-slider">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <!-- Swiper Slides will be added dynamically -->
+                    </div>
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
             </div>
-            <div id="budget-results" class="mt-6">
-                <div id="budget-watch-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Budget watches will be dynamically populated -->
+        </div>
+    </section>
+
+    <!-- Budget Tool Section -->
+    <section class="budget-section" id="budget">
+        <div class="container">
+            <div class="section-title-container">
+                <h2 class="section-title gold-underline">Watch Budget Tool</h2>
+                <p class="section-subtitle">Find the perfect timepiece that matches your style and budget.</p>
+            </div>
+            
+            <div class="budget-tool">
+                <form class="budget-form">
+                    <div class="form-group">
+                        <label for="budget-amount" class="form-label">Your Budget (USD)</label>
+                        <input type="range" min="1000" max="50000" value="10000" class="form-control" id="budget-amount">
+                        <output for="budget-amount" id="budget-value">$10,000</output>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Watch Style</label>
+                        <div class="budget-categories">
+                            <button type="button" class="budget-category active">Any Style</button>
+                            <button type="button" class="budget-category">Dress</button>
+                            <button type="button" class="budget-category">Sport</button>
+                            <button type="button" class="budget-category">Dive</button>
+                            <button type="button" class="budget-category">Chronograph</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brand-preference" class="form-label">Brand Preference</label>
+                        <select id="brand-preference" class="form-control">
+                            <option value="">Any Brand</option>
+                            <option value="rolex">Rolex</option>
+                            <option value="omega">Omega</option>
+                            <option value="tag-heuer">Tag Heuer</option>
+                            <option value="patek-philippe">Patek Philippe</option>
+                            <option value="audemars-piguet">Audemars Piguet</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-effect">Find Watches</button>
+                </form>
+                
+                <div class="budget-results">
+                    <!-- Results will be populated dynamically -->
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="bg-gray-100 py-16">
-        <div class="container mx-auto">
-            <h2 class="text-4xl text-center mb-12 luxury-heading">Exclusive Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/kbtmbyzy.json"
-                        trigger="hover"
-                        colors="primary:#3B82F6"
-                        style="width:80px;height:80px;margin:0 auto;">
-                    </lord-icon>
-                    <h3 class="text-2xl mb-4 mt-4">Watch Repair</h3>
-                    <p>Expert repair and maintenance for your luxury timepieces</p>
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title-container">
+                <h2 class="section-title gold-underline">Our Services</h2>
+                <p class="section-subtitle">We provide comprehensive services to ensure your timepiece remains in perfect condition.</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Service Card 1 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/60/60" alt="Authentication Icon">
+                    </div>
+                    <h3 class="service-title">Authentication</h3>
+                    <p class="service-description">Our team of experts authenticates every timepiece to ensure its originality and quality.</p>
+                    <a href="#" class="btn btn-outline">Learn More</a>
                 </div>
-                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nocovwne.json"
-                        trigger="hover"
-                        colors="primary:#16A34A"
-                        style="width:80px;height:80px;margin:0 auto;">
-                    </lord-icon>
-                    <h3 class="text-2xl mb-4 mt-4">Sell Your Watch</h3>
-                    <p>Get a fair valuation and instant cash for your luxury watches</p>
+                
+                <!-- Service Card 2 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/60/60" alt="Maintenance Icon">
+                    </div>
+                    <h3 class="service-title">Maintenance</h3>
+                    <p class="service-description">Regular servicing and maintenance to keep your watch running perfectly for years to come.</p>
+                    <a href="#" class="btn btn-outline">Learn More</a>
                 </div>
-                <div class="service-card p-8 rounded-lg text-center bg-white shadow-lg hover:shadow-xl transition">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/xhebrhvk.json"
-                        trigger="hover"
-                        colors="primary:#8B5CF6"
-                        style="width:80px;height:80px;margin:0 auto;">
-                    </lord-icon>
-                    <h3 class="text-2xl mb-4 mt-4">Expert Consultation</h3>
-                    <p>Personalized advice to find your perfect timepiece</p>
+                
+                <!-- Service Card 3 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/60/60" alt="Custom Icon">
+                    </div>
+                    <h3 class="service-title">Customization</h3>
+                    <p class="service-description">Personalize your timepiece with custom straps, dials, and engravings for a unique look.</p>
+                    <a href="#" class="btn btn-outline">Learn More</a>
+                </div>
+                
+                <!-- Service Card 4 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/60/60" alt="Valuation Icon">
+                    </div>
+                    <h3 class="service-title">Valuation</h3>
+                    <p class="service-description">Professional watch appraisal and valuation services for insurance or resale purposes.</p>
+                    <a href="#" class="btn btn-outline">Learn More</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-                <h3 class="text-xl font-bold mb-4">YTime Luxury</h3>
-                <p>Bringing timeless elegance to your wrist</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Quick Links</h4>
-                <ul>
-                    <li><a href="#watches" class="hover:text-blue-500 transition">Watches</a></li>
-                    <li><a href="#brands" class="hover:text-blue-500 transition">Brands</a></li>
-                    <li><a href="#services" class="hover:text-blue-500 transition">Services</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Contact Us</h4>
-                <p>Email: support@ytimeluxury.com</p>
-               <p>Phone: +254 712 345 678</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Follow Us</h4>
-                <div class="flex space-x-4">
-                    <a href="#" class="hover:text-blue-500 transition">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/ymjkcjmr.json"
-                            trigger="hover"
-                            colors="primary:#3B82F6"
-                            style="width:32px;height:32px">
-                        </lord-icon>
-                    </a>
-                    <a href="#" class="hover:text-blue-500 transition">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/gqzfzaaq.json"
-                            trigger="hover"
-                            colors="primary:#3B82F6"
-                            style="width:32px;height:32px">
-                        </lord-icon>
-                    </a>
-                    <a href="#" class="hover:text-blue-500 transition">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/vduvxizq.json"
-                            trigger="hover"
-                            colors="primary:#3B82F6"
-                            style="width:32px;height:32px">
-                        </lord-icon>
-                    </a>
-                </div>
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-container">
+                <h2 class="section-title">Stay Updated</h2>
+                <p class="section-subtitle">Subscribe to our newsletter for exclusive offers and news about new timepieces.</p>
+                
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your email address" class="newsletter-input" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
             </div>
         </div>
-        <div class="container mx-auto text-center mt-8 border-t border-gray-700 pt-4">
-            <p>&copy; 2024 YTime Luxury. All Rights Reserved.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">
+                        <img src="/api/placeholder/100/40" alt="YTime Logo">
+                        <span class="logo-text">YTime</span>
+                    </div>
+                    <p class="footer-about">
+                        YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#collection">Collection</a></li>
+                        <li><a href="#budget">Budget Tool</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="footer-heading">Help & Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                        <li><a href="#">Warranty</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="footer-heading">Contact Us</h3>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Luxury Ave, New York, NY 10001</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+1 (800) 123-4567</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@ytime.com</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 YTime Luxury. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <!-- Custom JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-  // Navigation scroll effect
-  const navContainer = document.querySelector('.nav-container');
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-      navContainer.classList.add('scrolled');
-    } else {
-      navContainer.classList.remove('scrolled');
-    }
-  });
-
-  // Mobile menu toggle
-  const hamburger = document.querySelector('.hamburger');
-  const navMenu = document.querySelector('.nav-menu');
-  
-  hamburger.addEventListener('click', function() {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-  });
-
-  // Section reveal animation
-  const sections = document.querySelectorAll('.section');
-  const revealSection = function(entries, observer) {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  };
-
-  const sectionObserver = new IntersectionObserver(revealSection, {
-    root: null,
-    threshold: 0.15,
-  });
-
-  sections.forEach(section => {
-    sectionObserver.observe(section);
-    section.classList.add('section');
-  });
-
-  // Add to cart animation
-  const addToCartButtons = document.querySelectorAll('.add-to-cart');
-  addToCartButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      this.classList.add('clicked');
-      setTimeout(() => {
-        this.classList.remove('clicked');
-      }, 800);
-    });
-  });
-});
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Navigation Toggle
-            const hamburger = document.querySelector('.hamburger');
-            const navMenu = document.querySelector('.nav-menu');
-
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('hidden');
-            });
-
-            // Luxury Watch Swiper
-            const luxurySwiper = new Swiper('.luxury-watch-swiper', {
-                slidesPerView: 1,
-                spaceBetween: 10,
-                breakpoints: {
-                    640: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 }
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true
-                }
-            });
-
-            // Sample Watch Data
-            const watches = [
-                {
-                    name: "Classic Gold Chronograph",
-                    brand: "Rolex",
-                    price: 45000,
-                    image: "rolex-gold.jpg",
-                    category: "Chronograph"
-                },
-                {
-                    name: "Deep Sea Diver",
-                    brand: "Hublot",
-                    price: 38000,
-                    image: "hublot-diver.jpg",
-                    category: "Diver"
-                },
-                // Add more watches
-            ];
-
-            // Populate Luxury Watch Collection
-            const luxuryCollection = document.getElementById('luxury-watch-collection');
-            watches.forEach(watch => {
-                const slide = document.createElement('div');
-                slide.classList.add('swiper-slide', 'watch-card', 'bg-white', 'p-6', 'rounded-lg', 'shadow-lg');
-                slide.innerHTML = `
-                    <img src="${watch.image}" alt="${watch.name}" class="w-full h-64 object-cover rounded-lg mb-4">
-                    <h3 class="text-xl font-bold mb-2">${watch.name}</h3>
-                    <p class="text-gray-600 mb-2">${watch.brand}</p>
-                    <p class="text-luxury-gold font-bold text-lg">KSh ${watch.price.toLocaleString()}</p>
-                    <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition">
-                        Add to Cart
-                    </button>
-                `;
-                luxuryCollection.appendChild(slide);
-            });
-
-            // Budget Filter Functionality
-            const budgetInput = document.getElementById('budget-input');
-            const budgetCategories = document.querySelectorAll('.budget-category-btn');
-            const budgetWatchList = document.getElementById('budget-watch-list');
-
-            let selectedCategory = 'All';
-
-            budgetCategories.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    budgetCategories.forEach(b => {
-                        b.classList.remove('bg-blue-500', 'text-white');
-                        b.classList.add('bg-gray-200', 'text-gray-700');
-                    });
-                    btn.classList.remove('bg-gray-200', 'text-gray-700');
-                    btn.classList.add('bg-blue-500', 'text-white');
-                    selectedCategory = btn.dataset.category;
-                    filterWatches();
-                });
-            });
-
-            budgetInput.addEventListener('input', filterWatches);
-
-            function filterWatches() {
-                const budget = parseFloat(budgetInput.value) || Infinity;
-                budgetWatchList.innerHTML = '';
-
-                const filteredWatches = watches.filter(watch => 
-                    watch.price <= budget && 
-                    (selectedCategory === 'All' || watch.category === selectedCategory)
-                );
-
-                filteredWatches.forEach(watch => {
-                    const watchEl = document.createElement('div');
-                    watchEl.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md');
-                    watchEl.innerHTML = `
-                        <img src="${watch.image}" alt="${watch.name}" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-lg font-bold">${watch.name}</h3>
-                        <p class="text-gray-600">${watch.brand}</p>
-                        <p class="text-luxury-gold font-bold">KSh ${watch.price.toLocaleString()}</p>
-                        <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition">
-                            Add to Cart
-                        </button>
-                    `;
-                    budgetWatchList.appendChild(watchEl);
-                });
-            }
-
-         // Newsletter Subscription
-        const newsletterEmail = document.getElementById('newsletter-email');
-        const newsletterSubscribe = document.getElementById('newsletter-subscribe');
-
-        newsletterSubscribe.addEventListener('click', function() {
-            const email = newsletterEmail.value.trim();
-            
-            // Basic email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            
-            if (!email) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please enter your email address'
-                });
-                return;
-            }
-
-            if (!emailRegex.test(email)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Email',
-                    text: 'Please enter a valid email address'
-                });
-                return;
-            }
-
-            // Simulated newsletter subscription 
-            Swal.fire({
-                icon: 'success',
-                title: 'Thank You!',
-                text: 'You have successfully subscribed to our newsletter',
-                confirmButtonText: 'Cool'
-            });
-
-            // Clear the email input
-            newsletterEmail.value = '';
+        // Mobile Navigation
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
         });
-
-        // Smooth Scrolling for Navigation Links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Budget Slider Value
+        const budgetSlider = document.getElementById('budget-amount');
+        const budgetValue = document.getElementById('budget-value');
+        
+        budgetSlider.addEventListener('input', () => {
+            budgetValue.textContent = `$${parseInt(budgetSlider.value).toLocaleString()}`;
+        });
+        
+        // Category Selection
+        const categories = document.querySelectorAll('.budget-category');
+        categories.forEach(category => {
+            category.addEventListener('click', () => {
+                categories.forEach(c => c.classList.remove('active'));
+                category.classList.add('active');
             });
         });
-
+        
+        // Collection Tabs
+        const tabs = document.querySelectorAll('.collection-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Add filtering logic here
+            });
+        });
+        
+        // Swiper Initialization
+        const swiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                },
+                992: {
+                    slidesPerView: 3,
+                },
+            }
+        });
+        
+        // Dynamically add swiper slides
+        const watches = [
+            { brand: 'Rolex', name: 'Daytona', price: '$32,000', image: '/api/placeholder/400/400', tag: 'Limited' },
+            { brand: 'Omega', name: 'Seamaster', price: '$5,700', image: '/api/placeholder/400/400', tag: 'Featured' },
+            { brand: 'Patek Philippe', name: 'Calatrava', price: '$23,900', image: '/api/placeholder/400/400', tag: 'New' },
+            { brand: 'Audemars Piguet', name: 'Code 11.59', price: '$42,500', image: '/api/placeholder/400/400', tag: 'Limited' },
+            { brand: 'Cartier', name: 'Santos', price: '$7,450', image: '/api/placeholder/400/400', tag: 'Featured' }
+        ];
+        
+        const swiperWrapper = document.querySelector('.swiper-wrapper');
+        watches.forEach(watch => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            
+            slide.innerHTML = `
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
+                        <img src="${watch.image}" alt="${watch.brand} ${watch.name}" class="watch-image">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">${watch.brand}</span>
+                        <h3 class="watch-name">${watch.name}</h3>
+                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">${watch.price}</span>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            swiperWrapper.appendChild(slide);
+        });
+        
         // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Hero Title Animation
-        gsap.from("#hero-title", {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.out"
-        });
-
-        // Brands Logo Animation
-        gsap.from(".brand-logo", {
-            opacity: 0,
-            y: 50,
-            stagger: 0.2,
-            duration: 1,
-            scrollTrigger: {
-                trigger: "#brands",
-                start: "top 80%"
-            }
-        });
-
-        // Services Card Animation
-        gsap.from(".service-card", {
-            opacity: 0,
-            y: 50,
-            stagger: 0.3,
-            duration: 1,
-            scrollTrigger: {
-                trigger: "#services",
-                start: "top 80%"
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hero animations
+            gsap.from('.hero-content h1', { opacity: 0, y: 50, duration: 1, delay: 0.2 });
+            gsap.from('.hero-content p', { opacity: 0, y: 30, duration: 1, delay: 0.5 });
+            gsap.from('.hero-content .btn', { opacity: 0, y: 30, duration: 1, delay: 0.8 });
+            
+            // Scroll animations
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Section titles
+            gsap.utils.toArray('.section-title').forEach(title => {
+                gsap.from(title, {
+                    scrollTrigger: {
+                        trigger: title,
+                        start: 'top 80%',
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 1
+                });
+            });
+            
+            // Watch cards
+            gsap.utils.toArray('.watch-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+            
+            // Service cards
+            gsap.utils.toArray('.service-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
         });
     </script>
 </body>
