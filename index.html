@@ -1304,12 +1304,91 @@ section {
                 grid-template-columns: 1fr;
             }
         }
-        /* Responsive iframe container */
+      /* Hero Section Styling */
+.hero {
+    position: relative;
+    padding: 80px 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.hero-bg-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+    z-index: 0;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 550px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #222;
+    line-height: 1.2;
+}
+
+.hero-luxury {
+    color: #9d7a50; /* Gold color for luxury feel */
+    position: relative;
+    display: inline-block;
+}
+
+.hero-luxury::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #9d7a50, transparent);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.hero-image {
+    flex: 1;
+    max-width: 600px;
+}
+
+/* Responsive iframe container */
 .iframe-container {
     position: relative;
     width: 100%;
     padding-top: 56.25%; /* Aspect ratio 16:9 */
     overflow: hidden;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.iframe-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .iframe-container iframe {
@@ -1319,21 +1398,153 @@ section {
     width: 100%;
     height: 100%;
     border: none;
+    border-radius: 12px;
+    transition: opacity 0.3s ease;
+}
+
+/* Add loading state styling */
+.iframe-container.loading {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%239d7a50' d='M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50'%3E%3CanimateTransform attributeName='transform' attributeType='XML' type='rotate' dur='1s' from='0 50 50' to='360 50 50' repeatCount='indefinite' /%3E%3C/path%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 48px;
+}
+
+.iframe-container iframe.loading {
+    opacity: 0;
+}
+
+/* Button styling */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #9d7a50;
+    color: white;
+    border: 2px solid #9d7a50;
+}
+
+.btn-primary:hover {
+    background-color: #8a6b45;
+    border-color: #8a6b45;
+    transform: translateY(-2px);
+}
+
+.btn-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-effect:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 0;
+    padding-bottom: 120%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 0.3s;
+}
+
+.btn-effect:active:after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    transition: 0s;
+}
+
+/* Adjustments for tablets */
+@media (max-width: 992px) {
+    .hero .container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .hero-content, .hero-image {
+        max-width: 100%;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .iframe-container {
+        max-width: 80%;
+        margin: 0 auto;
+    }
 }
 
 /* Adjustments for mobile */
 @media (max-width: 768px) {
     .hero {
-        text-align: center;
+        padding: 60px 0;
     }
-
+    
     .hero-content h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+    
+    .iframe-container {
+        max-width: 100%;
+        padding-top: 75%; /* Slightly taller aspect ratio for mobile */
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 14px 20px;
+    }
+}
 
-    .hero-image {
-        margin-top: 20px;
-    }
+/* For watch-specific iframe (square ratio might be better for watches) */
+.hero-image .iframe-container {
+    padding-top: 100%; /* Square aspect ratio for watches */
+    border-radius: 50%; /* Circular display for watch face */
+    background-color: #f8f8f8;
+    border: 8px solid #9d7a50;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.hero-image .iframe-container iframe {
+    border-radius: 50%;
+}
+
+/* Optional: Add a watch strap effect */
+.hero-image .iframe-container::before,
+.hero-image .iframe-container::after {
+    content: '';
+    position: absolute;
+    background-color: #746456;
+    width: 40%;
+    height: 20px;
+    z-index: -1;
+    left: 30%;
+}
+
+.hero-image .iframe-container::before {
+    top: -15px;
+    border-radius: 10px 10px 0 0;
+}
+
+.hero-image .iframe-container::after {
+    bottom: -15px;
+    border-radius: 0 0 10px 10px;
 }
     </style>
 </head>
