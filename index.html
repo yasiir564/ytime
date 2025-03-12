@@ -1304,6 +1304,37 @@ section {
                 grid-template-columns: 1fr;
             }
         }
+        /* Responsive iframe container */
+.iframe-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* Aspect ratio 16:9 */
+    overflow: hidden;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Adjustments for mobile */
+@media (max-width: 768px) {
+    .hero {
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-image {
+        margin-top: 20px;
+    }
+}
     </style>
 </head>
 <body>
@@ -1336,7 +1367,7 @@ section {
     </nav>
 
     <!-- Hero Section -->
-   <section class="hero" id="home">
+<section class="hero" id="home">
     <div class="hero-bg-elements"></div>
     <div class="container">
         <div class="hero-content">
@@ -1345,11 +1376,12 @@ section {
             <a href="#collection" class="btn btn-primary btn-effect">Explore Collection</a>
         </div>
         <div class="hero-image">
-            <iframe src="watch.html" width="600" height="400" style="border:none;"></iframe>
+            <div class="iframe-container">
+                <iframe src="watch.html" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 </section>
-
 
     <!-- Brands Section -->
     <section class="brands">
