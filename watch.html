@@ -3,711 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Y TIME - Modern Animated Watch</title>
+    <title>Realistic Clock</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #0f0f1a;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            perspective: 1000px;
-        }
-
-        .scene {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-
-        .watch {
+        /* From Uiverse.io by Danishrehman786 */ 
+        .realistic-clock {
             position: relative;
             width: 300px;
             height: 300px;
+            margin: 50px auto;
+        }
+
+        .clock-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #333, #111);
             border-radius: 50%;
-            background-color: #1f1f2e;
-            box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: float 6s ease-in-out infinite;
-            transform-style: preserve-3d;
+            border: 10px solid #cec5c5;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
-        .watch.expanded {
-            transform: rotateY(180deg) scale(1.2);
-            border-radius: 10px;
-            background-color: #131628;
-            box-shadow: 0 0 80px rgba(0, 140, 255, 0.6);
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-                box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
-            }
-            50% {
-                transform: translateY(-15px) rotate(1deg);
-                box-shadow: 0 0 70px rgba(0, 140, 255, 0.5);
-            }
-            100% {
-                transform: translateY(0px) rotate(0deg);
-                box-shadow: 0 0 50px rgba(0, 140, 255, 0.3);
-            }
-        }
-
-        .bezel {
-            position: absolute;
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #131322, #2a2a40);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: glow 8s linear infinite;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backface-visibility: hidden;
-        }
-
-        .watch.expanded .bezel {
-            width: 320px;
-            height: 320px;
-            border-radius: 8px;
-            background: linear-gradient(145deg, #0c101e, #232845);
-        }
-
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 15px rgba(0, 140, 255, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 25px rgba(0, 140, 255, 0.6);
-            }
-            100% {
-                box-shadow: 0 0 15px rgba(0, 140, 255, 0.2);
-            }
-        }
-
-        .face {
-            position: absolute;
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            background: radial-gradient(#2a2a40, #1a1a2a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backface-visibility: hidden;
-        }
-
-        .watch.expanded .face {
-            width: 300px;
-            height: 300px;
-            border-radius: 6px;
-            background: radial-gradient(#3a3a60, #0d1020);
-        }
-
-        .face::after {
-            content: '';
-            position: absolute;
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, transparent 40%, rgba(0, 195, 255, 0.1) 50%, transparent 60%);
-            animation: sweep 10s linear infinite;
-            transition: all 0.8s ease;
-        }
-
-        .watch.expanded .face::after {
-            width: 300px;
-            height: 300px;
-            border-radius: 6px;
-            background: linear-gradient(45deg, transparent 40%, rgba(0, 195, 255, 0.2) 50%, transparent 60%);
-        }
-
-        @keyframes sweep {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .markings {
+        .glass-cover {
             position: absolute;
             width: 100%;
             height: 100%;
-            transition: opacity 0.5s ease;
-        }
-
-        .watch.expanded .markings {
-            opacity: 0;
-        }
-
-        .hour-mark {
-            position: absolute;
-            width: 4px;
-            height: 15px;
-            background-color: #4da6ff;
-            top: 10px;
-            left: 50%;
-            transform-origin: 50% 120px;
-            box-shadow: 0 0 5px rgba(77, 166, 255, 0.8);
-        }
-
-        .minute-mark {
-            position: absolute;
-            width: 2px;
-            height: 8px;
-            background-color: #2a80cc;
-            top: 10px;
-            left: 50%;
-            transform-origin: 50% 120px;
-        }
-
-        .center {
-            position: absolute;
-            width: 16px;
-            height: 16px;
+            top: 0;
+            left: 0;
             border-radius: 50%;
-            background: radial-gradient(#4da6ff, #0066cc);
-            z-index: 10;
-            box-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
-            transition: all 0.8s ease;
-        }
-
-        .watch.expanded .center {
-            opacity: 0;
-        }
-
-        .brand {
-            position: absolute;
-            top: 70px;
-            text-align: center;
-            color: #4da6ff;
-            font-weight: bold;
-            font-size: 16px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
-            transition: all 0.5s ease;
-            z-index: 5;
-        }
-
-        .watch.expanded .brand {
-            top: 20px;
-            font-size: 24px;
-            letter-spacing: 4px;
-        }
-
-        .sub-brand {
-            position: absolute;
-            top: 90px;
-            text-align: center;
-            color: #2a80cc;
-            font-size: 12px;
-            letter-spacing: 1px;
-            transition: all 0.5s ease;
-            z-index: 5;
-        }
-
-        .watch.expanded .sub-brand {
-            top: 50px;
-            font-size: 14px;
-        }
-
-        .date {
-            position: absolute;
-            bottom: 70px;
-            width: 36px;
-            height: 36px;
-            background-color: #1a1a2a;
-            border: 1px solid #4da6ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            color: #ffffff;
-            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
-            border-radius: 4px;
-            transition: all 0.5s ease;
-        }
-
-        .watch.expanded .date {
-            right: 20px;
-            bottom: 20px;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-        }
-
-        .digital-time {
-            position: absolute;
-            bottom: 110px;
-            color: #4da6ff;
-            font-size: 14px;
-            font-family: monospace;
-            background-color: rgba(26, 26, 42, 0.7);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid #2a80cc;
-            transition: all 0.5s ease;
-            z-index: 5;
-        }
-
-        .watch.expanded .digital-time {
-            bottom: 20px;
-            left: 20px;
-            font-size: 20px;
-            padding: 4px 12px;
-        }
-
-        .hour-hand, .minute-hand, .second-hand {
-            position: absolute;
-            transform-origin: bottom center;
-            bottom: 50%;
-            left: 50%;
-            z-index: 5;
-            transition: all 0.5s cubic-bezier(0.4, 2.08, 0.55, 0.44);
-        }
-
-        .watch.expanded .hour-hand,
-        .watch.expanded .minute-hand,
-        .watch.expanded .second-hand {
-            opacity: 0;
-        }
-
-        .hour-hand {
-            width: 6px;
-            height: 60px;
-            background: linear-gradient(to top, #4da6ff, #0066cc);
-            border-radius: 6px;
-            transform: translateX(-50%);
-            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
-        }
-
-        .minute-hand {
-            width: 4px;
-            height: 90px;
-            background: linear-gradient(to top, #66b3ff, #0080ff);
-            border-radius: 4px;
-            transform: translateX(-50%);
-            box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
-        }
-
-        .second-hand {
-            width: 2px;
-            height: 110px;
-            background-color: #ff3366;
-            border-radius: 1px;
-            transform: translateX(-50%);
-            box-shadow: 0 0 5px rgba(255, 51, 102, 0.8);
-        }
-
-        .second-hand::after {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #ff3366;
-            border-radius: 50%;
-            bottom: -4px;
-            left: -3px;
-            box-shadow: 0 0 5px rgba(255, 51, 102, 0.8);
-        }
-
-        .background-circle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            background: radial-gradient(circle at center, rgba(77, 166, 255, 0.8), transparent);
-            animation: pulse 8s ease-in-out infinite alternate;
-            transition: all 0.8s ease;
-        }
-
-        .watch.expanded .background-circle {
-            border-radius: 5px;
-            opacity: 0.2;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.1;
-            }
-            100% {
-                transform: scale(1.2);
-                opacity: 0.3;
-            }
-        }
-
-        /* Digital Dashboard Elements */
-        .dashboard {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            z-index: 4;
-            transform: rotateY(180deg);
-            backface-visibility: hidden;
-        }
-
-        .watch.expanded .dashboard {
-            opacity: 1;
-        }
-
-        .stats-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 60px;
-            width: 80%;
-        }
-
-        .stat-box {
-            background-color: rgba(26, 26, 42, 0.7);
-            border: 1px solid #4da6ff;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(77, 166, 255, 0.3);
-            animation: fadeIn 0.5s ease forwards;
-            opacity: 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .stat-title {
-            color: #66b3ff;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .weather-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .progress-bar {
-            width: 80%;
-            height: 6px;
-            background-color: #1a1a2a;
-            border-radius: 3px;
-            margin: 5px auto;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, #0066cc, #4da6ff);
-            border-radius: 3px;
-            animation: progressPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes progressPulse {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3);
             pointer-events: none;
         }
 
-        .particle {
+        .center-circle {
             position: absolute;
-            width: 3px;
-            height: 3px;
-            background-color: #4da6ff;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #666, #333);
             border-radius: 50%;
-            opacity: 0;
-            animation: particleFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                opacity: 0;
-                transform: translateY(0);
-            }
-            20% {
-                opacity: 0.8;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) rotate(360deg);
-            }
-        }
-
-        /* Toggle Button */
-        .toggle-btn {
-            position: absolute;
+            top: 50%;
             left: 50%;
-            bottom: 30px;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .hand {
+            position: absolute;
+            background: #222;
+            border-radius: 2px;
+            left: 50%;
+            transform-origin: bottom;
             transform: translateX(-50%);
-            background: linear-gradient(to right, #0066cc, #4da6ff);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(77, 166, 255, 0.5);
-            transition: all 0.3s ease;
-            z-index: 20;
-            opacity: 0;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
         }
 
-        .scene:hover .toggle-btn {
-            opacity: 1;
-            bottom: 40px;
+        .hour {
+            width: 10px;
+            height: 100px;
+            top: 70px;
+            background: linear-gradient(to bottom, #1d6981, #444);
+            animation: rotate-hour 43200s linear infinite;
         }
 
-        .toggle-btn:hover {
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 0 30px rgba(77, 166, 255, 0.8);
+        .minute {
+            width: 6px;
+            height: 100px;
+            top: 60px;
+            background: linear-gradient(to bottom, #bbb, #666);
+            animation: rotate-minute 3600s linear infinite;
+        }
+
+        .second {
+            width: 3px;
+            height: 100px;
+            top: 45px;
+            background: red;
+            animation: rotate-second 60s linear infinite;
+        }
+
+        .number {
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        @keyframes rotate-hour {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+
+        @keyframes rotate-minute {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+
+        @keyframes rotate-second {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="scene">
-        <div class="watch" id="watch">
-            <!-- Watch Face -->
-            <div class="bezel">
-                <div class="face">
-                    <div class="background-circle" style="width: 220px; height: 220px;"></div>
-                    <div class="background-circle" style="width: 180px; height: 180px; animation-delay: -2s;"></div>
-                    <div class="background-circle" style="width: 140px; height: 140px; animation-delay: -4s;"></div>
-                    <div class="markings" id="markings"></div>
-                    <div class="brand">Y TIME</div>
-                    <div class="sub-brand">PRECISION SERIES</div>
-                    <div class="date" id="date">1</div>
-                    <div class="digital-time" id="digital-time">00:00:00</div>
-                    <div class="hour-hand" id="hour-hand"></div>
-                    <div class="minute-hand" id="minute-hand"></div>
-                    <div class="second-hand" id="second-hand"></div>
-                    <div class="center"></div>
-                </div>
+    <div class="realistic-clock">
+        <div class="clock-face">
+            <div class="glass-cover"></div>
+            <div class="hour hand"></div>
+            <div class="minute hand"></div>
+            <div class="second hand"></div>
+            <div class="center-circle"></div>
+            <div class="clock-numbers">
+                <p style="top: 0.5px; left: 135px;" class="number">12</p>
+                <p style="top: 100px; right: 10px;" class="number">3</p>
+                <p style="bottom: 0.5px; left: 135px;" class="number">6</p>
+                <p style="top: 100px; left: 10px;" class="number">9</p>
             </div>
-
-            <!-- Digital Dashboard (shown when expanded) -->
-            <div class="dashboard">
-                <div class="brand">Y TIME</div>
-                <div class="sub-brand">SMART DASHBOARD</div>
-                
-                <div class="stats-container">
-                    <div class="stat-box" style="animation-delay: 0.1s;">
-                        <div class="stat-title">STEPS</div>
-                        <div class="stat-value" id="steps-value">8,457</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 70%;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-box" style="animation-delay: 0.2s;">
-                        <div class="stat-title">WEATHER</div>
-                        <div class="weather-icon">☀️</div>
-                        <div class="stat-value">24°C</div>
-                    </div>
-                    
-                    <div class="stat-box" style="animation-delay: 0.3s;">
-                        <div class="stat-title">HEART RATE</div>
-                        <div class="stat-value" id="heart-rate">72 BPM</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-box" style="animation-delay: 0.4s;">
-                        <div class="stat-title">BATTERY</div>
-                        <div class="stat-value">85%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 85%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="digital-time" id="digital-time-expanded">00:00:00</div>
-                <div class="date" id="date-expanded">1</div>
-            </div>
-
-            <!-- Particles container -->
-            <div class="particles" id="particles"></div>
         </div>
-
-        <button class="toggle-btn" id="toggle-btn">TRANSFORM</button>
     </div>
-
-    <script>
-        // Create hour and minute markings
-        const markings = document.getElementById('markings');
-        
-        // Create hour markings
-        for (let i = 0; i < 12; i++) {
-            const hourMark = document.createElement('div');
-            hourMark.className = 'hour-mark';
-            hourMark.style.transform = `rotate(${i * 30}deg)`;
-            markings.appendChild(hourMark);
-        }
-        
-        // Create minute markings
-        for (let i = 0; i < 60; i++) {
-            // Skip positions where hour marks are
-            if (i % 5 !== 0) {
-                const minuteMark = document.createElement('div');
-                minuteMark.className = 'minute-mark';
-                minuteMark.style.transform = `rotate(${i * 6}deg)`;
-                markings.appendChild(minuteMark);
-            }
-        }
-        
-        // Get elements
-        const watch = document.getElementById('watch');
-        const hourHand = document.getElementById('hour-hand');
-        const minuteHand = document.getElementById('minute-hand');
-        const secondHand = document.getElementById('second-hand');
-        const dateDisplay = document.getElementById('date');
-        const dateExpanded = document.getElementById('date-expanded');
-        const digitalTime = document.getElementById('digital-time');
-        const digitalTimeExpanded = document.getElementById('digital-time-expanded');
-        const toggleBtn = document.getElementById('toggle-btn');
-        const stepsValue = document.getElementById('steps-value');
-        const heartRate = document.getElementById('heart-rate');
-        const particles = document.getElementById('particles');
-        
-        // Function to update clock
-        function updateClock() {
-            const now = new Date();
-            
-            const seconds = now.getSeconds();
-            const minutes = now.getMinutes();
-            const hours = now.getHours() % 12; // Convert to 12-hour format
-            
-            // Calculate rotation angles
-            const secondDegrees = (seconds / 60) * 360;
-            const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
-            const hourDegrees = ((hours + minutes / 60) / 12) * 360;
-            
-            // Apply rotations
-            secondHand.style.transform = `translateX(-50%) rotate(${secondDegrees}deg)`;
-            minuteHand.style.transform = `translateX(-50%) rotate(${minuteDegrees}deg)`;
-            hourHand.style.transform = `translateX(-50%) rotate(${hourDegrees}deg)`;
-            
-            // Update date
-            const currentDate = now.getDate();
-            dateDisplay.textContent = currentDate;
-            dateExpanded.textContent = currentDate;
-            
-            // Update digital time
-            const formattedHours = now.getHours().toString().padStart(2, '0');
-            const formattedMinutes = minutes.toString().padStart(2, '0');
-            const formattedSeconds = seconds.toString().padStart(2, '0');
-            const timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-            digitalTime.textContent = timeString;
-            digitalTimeExpanded.textContent = timeString;
-
-            // Update stats with random values to simulate live data
-            if (watch.classList.contains('expanded') && seconds % 5 === 0) {
-                // Update steps (random increment)
-                let steps = parseInt(stepsValue.textContent.replace(',', ''));
-                steps += Math.floor(Math.random() * 10);
-                stepsValue.textContent = steps.toLocaleString();
-                
-                // Update heart rate (slight variations)
-                let rate = parseInt(heartRate.textContent);
-                rate = 70 + Math.floor(Math.random() * 5);
-                heartRate.textContent = `${rate} BPM`;
-            }
-        }
-        
-        // Initial call to set hands
-        updateClock();
-        
-        // Update clock every second
-        setInterval(updateClock, 1000);
-        
-        // Toggle between watch and dashboard
-        toggleBtn.addEventListener('click', () => {
-            watch.classList.toggle('expanded');
-            
-            // Create particles effect when transitioning
-            if (watch.classList.contains('expanded')) {
-                createParticles();
-            }
-        });
-        
-        // Create particles for transition effect
-        function createParticles() {
-            // Clear existing particles
-            particles.innerHTML = '';
-            
-            // Create new particles
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random position
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                particle.style.left = `${x}%`;
-                particle.style.top = `${y}%`;
-                
-                // Random delay
-                particle.style.animationDelay = `${Math.random() * 2}s`;
-                
-                particles.appendChild(particle);
-            }
-        }
-        
-        // Add interactive hover effect
-        const scene = document.querySelector('.scene');
-        scene.addEventListener('mousemove', (e) => {
-            const rect = scene.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            // Apply tilt only when not expanded
-            if (!watch.classList.contains('expanded')) {
-                // Subtle tilt effect
-                watch.style.transform = `translateY(-15px) rotateX(${y * 0.02}deg) rotateY(${-x * 0.02}deg)`;
-            }
-        });
-        
-        scene.addEventListener('mouseleave', () => {
-            // Reset transform only when not expanded
-            if (!watch.classList.contains('expanded')) {
-                watch.style.transform = '';
-            }
-        });
-    </script>
 </body>
 </html>
