@@ -3,370 +3,1533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YTime Luxury - Advanced Shop</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <title>YTime - Premium Watch Store</title>
     <style>
         :root {
-            --primary-color: #1a1a1a;
-            --accent-color: #3B82F6;
-            --luxury-gold: #D4AF37;
+            --gold: #d4af37;
+            --light-gold: #f1dfa5;
+            --dark-gold: #9e7c27;
+            --blue: #3b5998;
+            --dark-blue: #2c4373;
+            --black: #121212;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --gray: #888888;
         }
-        .product-gallery img {
-            transition: transform 0.3s ease;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .product-gallery img:hover {
-            transform: scale(1.1);
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--black);
         }
-        .rating-star {
+
+        header {
+            background-color: var(--black);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--gold);
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .icons a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .icons a:hover {
+            color: var(--gold);
+        }
+
+        .cart-count {
+            background-color: var(--gold);
+            color: var(--black);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: 4px;
+            position: relative;
+            top: -8px;
+        }
+
+        .menu-btn {
+            display: none;
+            color: var(--white);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.2s ease;
         }
-        .rating-star.active {
-            color: #FFD700;
+
+        .search-container {
+            background-color: var(--white);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            margin: 1rem auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 0.5rem;
+        }
+
+        .search-container button {
+            background-color: var(--blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .main-container {
+            display: flex;
+            margin: 1rem;
+            gap: 1rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar h3 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--light-gold);
+            padding-bottom: 0.5rem;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-list li {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-list a {
+            color: var(--black);
+            text-decoration: none;
+            transition: color 0.3s;
+            flex: 1;
+        }
+
+        .category-list a:hover {
+            color: var(--gold);
+        }
+
+        .category-count {
+            background-color: var(--light-gold);
+            border-radius: 10px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.8rem;
+            color: var(--black);
+        }
+
+        .price-range {
+            margin: 1rem 0;
+        }
+
+        .price-slider {
+            width: 100%;
+            height: 5px;
+            background: var(--light-gold);
+            outline: none;
+            -webkit-appearance: none;
+            border-radius: 5px;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .price-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        .filter-btn {
+            width: 100%;
+            background-color: var(--blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .products-container {
+            flex: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sort-by select {
+            padding: 0.5rem;
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-options button {
+            background-color: var(--light-gray);
+            border: 1px solid var(--gray);
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-options button.active {
+            background-color: var(--blue);
+            color: var(--white);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .product-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-img {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background-color: var(--light-gray);
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.05);
+        }
+
+        .product-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--gold);
+            color: var(--black);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background-color: var(--white);
+            color: var(--black);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--gold);
+            color: var(--white);
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .product-brand {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .product-name {
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        .product-rating {
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-price {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--blue);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .discount {
+            background-color: var(--blue);
+            color: var(--white);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        .add-to-cart {
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 0.5rem;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .add-to-cart:hover {
+            background-color: var(--dark-gold);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            border: 1px solid var(--gray);
+            background-color: var(--white);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .pagination button.active {
+            background-color: var(--gold);
+            color: var(--black);
+            border-color: var(--gold);
+        }
+
+        .pagination button:hover:not(.active) {
+            background-color: var(--light-gold);
+        }
+
+        footer {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section h3 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--dark-gold);
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin: 0.5rem 0;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .contact-info p {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .newsletter input {
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .newsletter button {
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 0.5rem;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .newsletter button:hover {
+            background-color: var(--dark-gold);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            color: var(--white);
+            background-color: var(--blue);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--gold);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray);
+            margin-top: 2rem;
+            color: var(--gray);
+        }
+
+        /* Sidebar toggle for mobile */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--gold);
+            color: var(--black);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100%;
+                z-index: 200;
+                overflow-y: auto;
+                padding-top: 60px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-size: 1.5rem;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background-color: var(--black);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .search-container {
+                margin: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation for new arrivals */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .new-arrival .product-label {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Quick view modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 900px;
+            animation: modal-open 0.3s;
+        }
+
+        @keyframes modal-open {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            color: var(--gray);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: var(--black);
+        }
+
+        .quick-view-container {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .quick-view-images {
+            flex: 1;
+        }
+
+        .main-image {
+            height: 300px;
+            background-color: var(--light-gray);
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail.active {
+            border-color: var(--gold);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .quick-view-details {
+            flex: 1;
+        }
+
+        .quick-view-brand {
+            font-size: 1rem;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .quick-view-name {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .quick-view-rating {
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .quick-view-price {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-view-current-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--blue);
+        }
+
+        .quick-view-original-price {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+
+        .quick-view-discount {
+            background-color: var(--blue);
+            color: var(--white);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        .quick-view-description {
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        .quick-view-specs {
+            margin: 1rem 0;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table tr {
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .specs-table td {
+            padding: 0.5rem 0;
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .quick-view-actions {
+            margin-top: 2rem;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .quantity-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .quantity-input button {
+            background-color: var(--light-gray);
+            border: none;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .quantity-input input {
+            width: 60px;
+            height: 40px;
+            border: none;
+            text-align: center;
+            outline: none;
+        }
+
+        .quick-view-btns {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .quick-add-to-cart {
+            flex: 2;
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .quick-add-to-cart:hover {
+            background-color: var(--dark-gold);
+        }
+
+        .wishlist-btn {
+            flex: 1;
+            background-color: var(--light-gray);
+            border: 1px solid var(--gray);
+            padding: 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .wishlist-btn:hover {
+            background-color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .quick-view-container {
+                flex-direction: column;
+            }
+
+            .quick-view-btns {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-<body id="app" class="bg-gray-100">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="Y-Time Luxury.png" alt="YTime Logo" class="h-10 mr-4">
-                <span class="text-xl font-bold">YTime Luxury</span>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="menu-btn" id="menu-btn">☰</div>
+            <a href="#" class="logo">YTime</a>
+            <div class="nav-links" id="nav-links">
+                <a href="#">Home</a>
+                <a href="#">Watches</a>
+                <a href="#">Brands</a>
+                <a href="#">New Arrivals</a>
+                <a href="#">Sale</a>
+                <a href="#">Contact</a>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-800">Home</a>
-                <a href="#" class="text-gray-800">Shop</a>
-                <a href="#" class="text-gray-800">Wishlist</a>
-                <button @click="toggleCart" class="relative">
-                    <i data-feather="shopping-cart"></i>
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                        {{ cart.length }}
-                    </span>
-                </button>
+            <div class="icons">
+                <a href="#" title="Search">🔍</a>
+                <a href="#" title="Account">👤</a>
+                <a href="#" title="Wishlist">❤️</a>
+                <a href="#" title="Cart">🛒 <span class="cart-count">3</span></a>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <!-- Product Catalog -->
-    <div class="container mx-auto p-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div v-for="product in products" :key="product.id" class="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <div class="relative">
-                    <img :src="product.images[0]" :alt="product.name" class="w-full h-64 object-cover">
-                    <div class="absolute top-4 right-4 bg-white rounded-full px-3 py-1 shadow-md">
-                        {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
-                    </div>
-                </div>
-                <div class="p-4">
-                    <h3 class="text-xl font-bold mb-2">{{ product.name }}</h3>
-                    <div class="flex items-center mb-2">
-                        <div class="flex text-yellow-400">
-                            <i v-for="n in 5" :key="n" 
-                               :class="n <= product.rating ? 'text-yellow-500' : 'text-gray-300'"
-                               data-feather="star" class="w-4 h-4"></i>
-                        </div>
-                        <span class="ml-2 text-gray-600">({{ product.reviewCount }} reviews)</span>
-                    </div>
-                    <p class="text-gray-600 mb-4 h-16 overflow-hidden">{{ product.shortDescription }}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-blue-600">
-                            KSh {{ product.price.toLocaleString() }}
-                        </span>
-                        <div class="flex space-x-2">
-                            <button 
-                                @click="openProductModal(product)"
-                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300">
-                                Quick View
-                            </button>
-                            <button 
-                                @click="addToCart(product)" 
-                                :disabled="!product.inStock"
-                                class="px-4 py-2 rounded-full transition"
-                                :class="product.inStock ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'">
-                                {{ product.inStock ? 'Add to Cart' : 'Sold Out' }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" placeholder="Search for watches, brands...">
+        <button>Search</button>
     </div>
 
-    <!-- Product Quick View Modal -->
-    <div v-if="selectedProduct" class="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-4xl rounded-lg grid grid-cols-1 md:grid-cols-2 gap-8 p-8 relative">
-            <button 
-                @click="selectedProduct = null" 
-                class="absolute top-4 right-4 text-gray-600 hover:text-gray-900">
-                <i data-feather="x" class="w-8 h-8"></i>
-            </button>
-            
-            <!-- Product Gallery -->
-            <div>
-                <div class="product-gallery mb-4">
-                    <img :src="selectedProduct.images[currentImageIndex]" :alt="selectedProduct.name" class="w-full h-96 object-cover rounded-lg">
-                </div>
-                <div class="flex space-x-2 overflow-x-auto">
-                    <img 
-                        v-for="(image, index) in selectedProduct.images" 
-                        :key="index"
-                        :src="image" 
-                        :alt="`${selectedProduct.name} - View ${index + 1}`"
-                        @click="currentImageIndex = index"
-                        class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-75"
-                        :class="{'border-2 border-blue-500': currentImageIndex === index}"
-                    >
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <span class="sidebar-close" id="sidebar-close">✕</span>
+            <h3>Categories</h3>
+            <ul class="category-list">
+                <li><a href="#">Casio</a> <span class="category-count">42</span></li>
+                <li><a href="#">Hublot</a> <span class="category-count">28</span></li>
+                <li><a href="#">Rolex</a> <span class="category-count">36</span></li>
+                <li><a href="#">Curren</a> <span class="category-count">15</span></li>
+                <li><a href="#">Naviforce</a> <span class="category-count">21</span></li>
+                <li><a href="#">Patek Philippe</a> <span class="category-count">19</span></li>
+                <li><a href="#">Omega</a> <span class="category-count">24</span></li>
+                <li><a href="#">Seiko</a> <span class="category-count">30</span></li>
+                <li><a href="#">Citizen</a> <span class="category-count">27</span></li>
+                <li><a href="#">TAG Heuer</a> <span class="category-count">18</span></li>
+            </ul>
+
+            <h3>Filter by Price</h3>
+            <div class="price-range">
+                <input type="range" min="0" max="10000" value="5000" class="price-slider" id="price-range">
+                <div class="price-values">
+                    <span>$0</span>
+                    <span id="price-value">$5000</span>
+                    <span>$10000+</span>
                 </div>
             </div>
 
-            <!-- Product Details -->
-            <div>
-                <h2 class="text-3xl font-bold mb-4">{{ selectedProduct.name }}</h2>
-                <div class="flex items-center mb-4">
-                    <div class="flex text-yellow-400 mr-4">
-                        <i v-for="n in 5" :key="n" 
-                           :class="n <= selectedProduct.rating ? 'text-yellow-500' : 'text-gray-300'"
-                           data-feather="star" class="w-5 h-5"></i>
-                    </div>
-                    <span class="text-gray-600">({{ selectedProduct.reviewCount }} reviews)</span>
+            <h3>Style</h3>
+            <ul class="category-list">
+                <li><a href="#">Analog</a> <span class="category-count">125</span></li>
+                <li><a href="#">Digital</a> <span class="category-count">84</span></li>
+                <li><a href="#">Chronograph</a> <span class="category-count">56</span></li>
+                <li><a href="#">Smart Watch</a> <span class="category-count">32</span></li>
+                <li><a href="#">Diving</a> <span class="category-count">28</span></li>
+            </ul>
+
+            <h3>Material</h3>
+            <ul class="category-list">
+                <li><a href="#">Stainless Steel</a> <span class="category-count">98</span></li>
+                <li><a href="#">Leather</a> <span class="category-count">76</span></li>
+                <li><a href="#">Gold</a> <span class="category-count">43</span></li>
+                <li><a href="#">Titanium</a> <span class="category-count">29</span></li>
+                <li><a href="#">Rubber</a> <span class="category-count">35</span></li>
+            </ul>
+
+            <button class="filter-btn">Apply Filters</button>
+        </aside>
+
+        <div class="sidebar-toggle" id="sidebar-toggle">
+            <span>🔍</span>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-container">
+            <div class="top-bar">
+                <div class="results-count">
+                    Showing <strong>1-12</strong> of <strong>260</strong> watches
                 </div>
-                <p class="text-2xl font-bold text-blue-600 mb-4">
-                    KSh {{ selectedProduct.price.toLocaleString() }}
-                </p>
-                <p class="text-gray-700 mb-6">{{ selectedProduct.description }}</p>
+                <div class="sort-by">
+                    <select>
+                        <option>Featured</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>New Arrivals</option>
+                        <option>Best Sellers</option>
+                        <option>Discount</option>
+                    </select>
+                </div>
+                <div class="view-options">
+                    <button class="active">Grid</button>
+                    <button>List</button>
+                </div>
+            </div>
+
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card new-arrival">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Rolex Submariner">
+                        <div class="product-label">New</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Rolex', 'Submariner')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Rolex</div>
+                        <h3 class="product-name">Submariner Date</h3>
+                        <div class="product-rating">★★★★★ (24)</div>
+                        <div class="product-price">
+                            <span class="current-price">$8,995</span>
+                            <span class="original-price">$9,500</span>
+                            <span class="discount">-5%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Omega Seamaster">
+                        <div class="product-label">Bestseller</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Omega', 'Seamaster')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Omega</div>
+                        <h3 class="product-name">Seamaster Professional</h3>
+                        <div class="product-rating">★★★★☆ (18)</div>
+                        <div class="product-price">
+                            <span class="current-price">$4,250</span>
+                            <span class="original-price">$4,800</span>
+                            <span class="discount">-12%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="TAG Heuer Carrera">
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('TAG Heuer', 'Carrera')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">TAG Heuer</div>
+                        <h3 class="product-name">Carrera Chronograph</h3>
+                        <div class="product-rating">★★★★☆ (15)</div>
+                        <div class="product-price">
+                            <span class="current-price">$3,750</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Patek Philippe">
+                        <div class="product-label">Limited</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Patek Philippe', 'Nautilus')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Patek Philippe</div>
+                        <h3 class="product-name">Nautilus</h3>
+                        <div class="product-rating">★★★★★ (32)</div>
+                        <div class="product-price">
+                            <span class="current-price">$34,995</span>
+                            <span class="original-price">$37,500</span>
+                            <span class="discount">-7%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card new-arrival">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Seiko Prospex">
+                        <div class="product-label">New</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Seiko', 'Prospex')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Seiko</div>
+                        <h3 class="product-name">Prospex Diver</h3>
+                        <div class="product-rating">★★★★☆ (21)</div>
+                        <div class="product-price">
+                            <span class="current-price">$495</span>
+                            <span class="original-price">$595</span>
+                            <span class="discount">-17%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Casio G-Shock">
+                        <div class="product-label">Bestseller</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Casio', 'G-Shock')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Casio</div>
+                        <h3 class="product-name">G-Shock Digital</h3>
+                        <div class="product-rating">★★★★★ (47)</div>
+                        <div class="product-price">
+                            <span class="current-price">$125</span>
+                            <span class="original-price">$150</span>
+                            <span class="discount">-17%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 7 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Citizen Eco-Drive">
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Citizen', 'Eco-Drive')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Citizen</div>
+                        <h3 class="product-name">Eco-Drive Titanium</h3>
+                        <div class="product-rating">★★★★☆ (19)</div>
+                        <div class="product-price">
+                            <span class="current-price">$295</span>
+                            <span class="original-price">$350</span>
+                            <span class="discount">-16%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+
+                <!-- Product 8 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Hublot Big Bang">
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Hublot', 'Big Bang')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Hublot</div>
+                        <h3 class="product-name">Big Bang Fusion</h3>
+                        <div class="product-rating">★★★★☆ (14)</div>
+                        <div class="product-price">
+                            <span class="current-price">$12,995</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
                 
-                <div class="mb-6">
-                    <h3 class="font-bold mb-2">Key Features:</h3>
-                    <ul class="list-disc list-inside">
-                        <li v-for="feature in selectedProduct.features" :key="feature">
-                            {{ feature }}
-                        </li>
-                    </ul>
+                <!-- Product 9 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Naviforce Military">
+                        <div class="product-label">Sale</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Naviforce', 'Military')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Naviforce</div>
+                        <h3 class="product-name">Military Chronograph</h3>
+                        <div class="product-rating">★★★★☆ (38)</div>
+                        <div class="product-price">
+                            <span class="current-price">$45</span>
+                            <span class="original-price">$75</span>
+                            <span class="discount">-40%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
                 </div>
+                
+                <!-- Product 10 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Curren Classic">
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Curren', 'Classic')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Curren</div>
+                        <h3 class="product-name">Classic Leather</h3>
+                        <div class="product-rating">★★★★☆ (26)</div>
+                        <div class="product-price">
+                            <span class="current-price">$39</span>
+                            <span class="original-price">$55</span>
+                            <span class="discount">-29%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+                
+                <!-- Product 11 -->
+                <div class="product-card new-arrival">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Rolex Datejust">
+                        <div class="product-label">New</div>
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Rolex', 'Datejust')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Rolex</div>
+                        <h3 class="product-name">Datejust 41</h3>
+                        <div class="product-rating">★★★★★ (29)</div>
+                        <div class="product-price">
+                            <span class="current-price">$9,750</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+                
+                <!-- Product 12 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/300/300" alt="Omega Speedmaster">
+                        <div class="product-actions">
+                            <div class="action-btn" title="Quick View" onclick="openQuickView('Omega', 'Speedmaster')">👁️</div>
+                            <div class="action-btn" title="Add to Wishlist">❤️</div>
+                            <div class="action-btn" title="Compare">⚖️</div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Omega</div>
+                        <h3 class="product-name">Speedmaster Moonwatch</h3>
+                        <div class="product-rating">★★★★★ (31)</div>
+                        <div class="product-price">
+                            <span class="current-price">$5,250</span>
+                            <span class="original-price">$5,950</span>
+                            <span class="discount">-12%</span>
+                        </div>
+                        <button class="add-to-cart">Add to Cart 🛒</button>
+                    </div>
+                </div>
+            </div>
 
-                <div class="flex space-x-4">
-                    <button 
-                        @click="addToCart(selectedProduct)"
-                        :disabled="!selectedProduct.inStock"
-                        class="flex-1 py-3 rounded-full transition"
-                        :class="selectedProduct.inStock ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'">
-                        {{ selectedProduct.inStock ? 'Add to Cart' : 'Out of Stock' }}
-                    </button>
-                    <button 
-                        @click="addToWishlist(selectedProduct)"
-                        class="bg-gray-200 text-gray-800 px-6 py-3 rounded-full hover:bg-gray-300">
-                        <i data-feather="heart" class="w-6 h-6"></i>
-                    </button>
+            <!-- Pagination -->
+            <div class="pagination">
+                <button>«</button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>»</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div class="modal" id="quick-view-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">×</span>
+            <div class="quick-view-container">
+                <div class="quick-view-images">
+                    <div class="main-image">
+                        <img src="/api/placeholder/500/500" alt="Watch" id="main-product-image">
+                    </div>
+                    <div class="thumbnail-images">
+                        <div class="thumbnail active">
+                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 1">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 2">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 3">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 4">
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-view-details">
+                    <div class="quick-view-brand" id="quick-view-brand">Rolex</div>
+                    <h2 class="quick-view-name" id="quick-view-name">Submariner Date</h2>
+                    <div class="quick-view-rating">★★★★★ <span>(24 reviews)</span></div>
+                    <div class="quick-view-price">
+                        <span class="quick-view-current-price" id="quick-view-price">$8,995</span>
+                        <span class="quick-view-original-price" id="quick-view-original-price">$9,500</span>
+                        <span class="quick-view-discount">-5%</span>
+                    </div>
+                    <div class="quick-view-description">
+                        <p>The Rolex Submariner Date is a classic diving watch with water resistance up to 300 meters. Features include a unidirectional rotatable bezel with Cerachrom insert, Chromalight display with long-lasting blue luminescence, and a robust Oyster bracelet.</p>
+                    </div>
+                    <div class="quick-view-specs">
+                        <table class="specs-table">
+                            <tr>
+                                <td>Case Material</td>
+                                <td>Oystersteel</td>
+                            </tr>
+                            <tr>
+                                <td>Movement</td>
+                                <td>Automatic</td>
+                            </tr>
+                            <tr>
+                                <td>Water Resistance</td>
+                                <td>300m / 1000ft</td>
+                            </tr>
+                            <tr>
+                                <td>Diameter</td>
+                                <td>41mm</td>
+                            </tr>
+                            <tr>
+                                <td>Crystal</td>
+                                <td>Scratch-resistant sapphire</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="quick-view-actions">
+                        <div class="quantity-selector">
+                            <span>Quantity:</span>
+                            <div class="quantity-input">
+                                <button>-</button>
+                                <input type="number" value="1" min="1">
+                                <button>+</button>
+                            </div>
+                        </div>
+                        <div class="quick-view-btns">
+                            <button class="quick-add-to-cart">Add to Cart 🛒</button>
+                            <button class="wishlist-btn">Add to Wishlist ❤️</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Reviews Section -->
-    <div v-if="selectedProduct" class="container mx-auto mt-8 bg-white p-8 rounded-lg">
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Add Review Form -->
-            <div>
-                <h3 class="text-2xl font-bold mb-6">Write a Review</h3>
-                <form @submit.prevent="submitReview">
-                    <div class="mb-4">
-                        <label class="block mb-2">Your Rating</label>
-                        <div class="flex">
-                            <i 
-                                v-for="n in 5" 
-                                :key="n"
-                                @click="newReview.rating = n"
-                                :class="n <= newReview.rating ? 'text-yellow-500' : 'text-gray-300'"
-                                data-feather="star" 
-                                class="w-8 h-8 rating-star cursor-pointer"
-                            ></i>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">Your Name</label>
-                        <input 
-                            v-model="newReview.name" 
-                            type="text" 
-                            class="w-full p-2 border rounded"
-                            required
-                        >
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">Your Review</label>
-                        <textarea 
-                            v-model="newReview.comment" 
-                            class="w-full p-2 border rounded h-32"
-                            required
-                        ></textarea>
-                    </div>
-                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
-                        Submit Review
-                    </button>
-                </form>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About YTime</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Store Locations</a></li>
+                    <li><a href="#">Corporate Responsibility</a></li>
+                </ul>
             </div>
-
-            <!-- Existing Reviews -->
-            <div>
-                <h3 class="text-2xl font-bold mb-6">Customer Reviews</h3>
-                <div v-if="selectedProduct.reviews.length === 0" class="text-center text-gray-500">
-                    No reviews yet
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping & Delivery</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">Watch Care & Maintenance</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">Special Offers</a></li>
+                    <li><a href="#">Gift Cards</a></li>
+                    <li><a href="#">Watch Accessories</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <div class="contact-info">
+                    <p>📍 123 Watch Ave, New York, NY 10001</p>
+                    <p>📞 +1 (800) 555-YTIME</p>
+                    <p>✉️ support@ytime.com</p>
+                    <p>⏰ Mon-Fri: 9AM-6PM, Sat: 10AM-4PM</p>
                 </div>
-                <div v-for="review in selectedProduct.reviews" :key="review.id" class="mb-6 pb-6 border-b">
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="font-bold">{{ review.name }}</h4>
-                        <div class="flex text-yellow-400">
-                            <i v-for="n in 5" :key="n" 
-                               :class="n <= review.rating ? 'text-yellow-500' : 'text-gray-300'"
-                               data-feather="star" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-600">{{ review.comment }}</p>
+                <div class="social-icons">
+                    <a href="#">F</a>
+                    <a href="#">T</a>
+                    <a href="#">I</a>
+                    <a href="#">P</a>
+                    <a href="#">Y</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="Enter your email address">
+                    <button>Subscribe</button>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="copyright">
+            <p>© 2025 YTime Watch Store. All Rights Reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
 
     <script>
-   const { createApp } = Vue;
+        // Toggle mobile menu
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('open');
+        });
 
-createApp({
-    data() {
-        return {
-            cart: [],
-            wishlist: [],
-            selectedProduct: null,
-            currentImageIndex: 0,
-            newReview: {
-                name: '',
-                rating: 0,
-                comment: ''
-            },
-            products: [
-                {
-                    id: 1,
-                    name: 'Rolex Presidential',
-                    shortDescription: 'Elegant luxury timepiece with gold accents',
-                    description: 'The Rolex Presidential is a pinnacle of luxury watchmaking, featuring a sophisticated design and impeccable craftsmanship. Perfect for those who appreciate timeless elegance.',
-                    price: 4000,
-                    images: [
-                        'WhatsApp Image 2024-10-28 at 04.14.49_9afd1b67.jpg',
-                        'rolex-alt1.jpg',
-                        'rolex-alt2.jpg'
-                    ],
-                    inStock: true,
-                    rating: 4,
-                    reviewCount: 23,
-                    features: [
-                        'Precision Swiss movement',
-                        '18K gold plating',
-                        'Water-resistant up to 100m',
-                        'Sapphire crystal glass'
-                    ],
-                    reviews: []
-                },
-                {
-                    id: 2,
-                    name: 'Casio Vintage',
-                    shortDescription: 'Retro-styled chronograph with modern features',
-                    description: 'The Casio Vintage combines nostalgic design with contemporary technology. A perfect blend of classic aesthetics and modern functionality.',
-                    price: 3500,
-                    images: [
-                        'BLK2.webp',
-                        'casio-alt1.jpg',
-                        'casio-alt2.jpg'
-                    ],
-                    inStock: true,
-                    rating: 5,
-                    reviewCount: 45,
-                    features: [
-                        'Digital and analog display',
-                        'Multiple time zones',
-                        'Backlight functionality',
-                        'Durable stainless steel band'
-                    ],
-                    reviews: []
-                }
-            ]
-        }
-    },
-    methods: {
-        openProductModal(product) {
-            this.selectedProduct = product;
-            this.currentImageIndex = 0;
-        },
-        addToCart(product) {
-            if (product.inStock) {
-                // Check if product is already in cart
-                const existingProduct = this.cart.find(item => item.id === product.id);
-                if (existingProduct) {
-                    // If product exists, increase quantity (you'd need to add a quantity property)
-                    existingProduct.quantity = (existingProduct.quantity || 1) + 1;
-                } else {
-                    // Add new product to cart with quantity
-                    this.cart.push({ ...product, quantity: 1 });
-                }
-            }
-        },
-        removeFromCart(productId) {
-            const index = this.cart.findIndex(item => item.id === productId);
-            if (index !== -1) {
-                this.cart.splice(index, 1);
-            }
-        },
-        addToWishlist(product) {
-            if (!this.wishlist.find(item => item.id === product.id)) {
-                this.wishlist.push(product);
-            }
-        },
-        removeFromWishlist(productId) {
-            const index = this.wishlist.findIndex(item => item.id === productId);
-            if (index !== -1) {
-                this.wishlist.splice(index, 1);
-            }
-        },
-        submitReview() {
-            if (this.selectedProduct && this.newReview.rating > 0) {
-                const review = {
-                    id: this.selectedProduct.reviews.length + 1,
-                    name: this.newReview.name,
-                    rating: this.newReview.rating,
-                    comment: this.newReview.comment
-                };
-                
-                this.selectedProduct.reviews.push(review);
-                this.selectedProduct.reviewCount++;
-                
-                // Recalculate average rating
-                this.selectedProduct.rating = Math.round(
-                    this.selectedProduct.reviews.reduce((sum, r) => sum + r.rating, 0) / 
-                    this.selectedProduct.reviews.length
-                );
+        // Toggle sidebar on mobile
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('open');
+        });
 
-                // Reset review form
-                this.newReview = {
-                    name: '',
-                    rating: 0,
-                    comment: ''
-                };
+        document.getElementById('sidebar-close').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+        });
+
+        // Price range slider
+        const priceRange = document.getElementById('price-range');
+        const priceValue = document.getElementById('price-value');
+
+        priceRange.addEventListener('input', function() {
+            priceValue.textContent = '$' + this.value;
+        });
+
+        // Quick view modal
+        const modal = document.getElementById('quick-view-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        function openQuickView(brand, model) {
+            document.getElementById('quick-view-brand').textContent = brand;
+            document.getElementById('quick-view-name').textContent = model;
+            
+            // Set dynamic content based on product
+            if (brand === 'Rolex' && model === 'Submariner') {
+                document.getElementById('quick-view-price').textContent = '$8,995';
+                document.getElementById('quick-view-original-price').textContent = '$9,500';
+            } else if (brand === 'Omega' && model === 'Seamaster') {
+                document.getElementById('quick-view-price').textContent = '$4,250';
+                document.getElementById('quick-view-original-price').textContent = '$4,800';
+            } else if (brand === 'TAG Heuer' && model === 'Carrera') {
+                document.getElementById('quick-view-price').textContent = '$3,750';
+                document.getElementById('quick-view-original-price').textContent = '';
             }
-        },
-        toggleCart() {
-            // This could be expanded to show/hide a cart sidebar or modal
-            console.log('Cart Items:', this.cart);
-        },
-        calculateTotal() {
-            return this.cart.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
+            
+            modal.style.display = 'block';
         }
-    },
-    mounted() {
-        // Initialize Feather icons after the component is mounted
-        feather.replace();
-    }
-}).mount('#app');
-</script>
+
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Thumbnail images
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                thumbnails.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // In a real implementation, would change the main image source here
+            });
+        });
+
+        // Quantity selector
+        const quantityBtns = document.querySelectorAll('.quantity-input button');
+        const quantityInput = document.querySelector('.quantity-input input');
+
+        quantityBtns[0].addEventListener('click', function() {
+            if (quantityInput.value > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+            }
+        });
+
+        quantityBtns[1].addEventListener('click', function() {
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+        });
+    </script>
 </body>
 </html>
