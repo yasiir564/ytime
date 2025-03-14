@@ -3,1532 +3,1413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YTime - Premium Watch Store</title>
+    <title>YTime Luxury - Watch Collection</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
     <style>
         :root {
-            --gold: #d4af37;
-            --light-gold: #f1dfa5;
-            --dark-gold: #9e7c27;
-            --blue: #3b5998;
-            --dark-blue: #2c4373;
-            --black: #121212;
-            --white: #ffffff;
-            --light-gray: #f5f5f5;
-            --gray: #888888;
+            /* Keeping the same color scheme */
+            --primary: #0a0f1c;
+            --secondary: #141e33;
+            --accent: #4f46e5;
+            --accent-light: #6366f1;
+            --accent-hover: #7e7df9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gold: linear-gradient(45deg, #d4af37, #f9f295, #d4af37);
+            --silver: linear-gradient(45deg, #c0c0c0, #e8e8e8, #c0c0c0);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-darker: #64748b;
+            --background: #080b14;
+            --surface: #111827;
+            --surface-light: #1e293b;
+            --card: #0f172a;
+            --card-hover: #1e293b;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.5);
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* Reset & Basic Styles */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--primary);
+            font-size: 16px;
         }
 
         body {
-            background-color: var(--light-gray);
-            color: var(--black);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        header {
-            background-color: var(--black);
-            padding: 1rem;
-            position: sticky;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.25rem 0;
+            background: rgba(8, 11, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
         }
 
-        nav {
+        .navbar-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            color: var(--gold);
-            font-size: 2rem;
-            font-weight: bold;
-            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo img {
+            height: 38px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
-        }
-
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--gold);
-        }
-
-        .icons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .icons a {
-            color: var(--white);
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-
-        .icons a:hover {
-            color: var(--gold);
-        }
-
-        .cart-count {
-            background-color: var(--gold);
-            color: var(--black);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            margin-left: 4px;
-            position: relative;
-            top: -8px;
-        }
-
-        .menu-btn {
-            display: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .search-container {
-            background-color: var(--white);
-            border-radius: 30px;
-            padding: 0.5rem 1rem;
-            display: flex;
-            align-items: center;
-            max-width: 600px;
-            margin: 1rem auto;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-container input {
-            border: none;
-            outline: none;
-            flex: 1;
-            padding: 0.5rem;
-        }
-
-        .search-container button {
-            background-color: var(--blue);
-            color: var(--white);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .search-container button:hover {
-            background-color: var(--dark-blue);
-        }
-
-        .main-container {
-            display: flex;
-            margin: 1rem;
-            gap: 1rem;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: var(--white);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .sidebar h3 {
-            color: var(--gold);
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--light-gold);
-            padding-bottom: 0.5rem;
-        }
-
-        .category-list {
+            gap: 2.5rem;
             list-style: none;
         }
 
-        .category-list li {
-            margin: 0.5rem 0;
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            opacity: 0.85;
+            transition: var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+            color: var(--accent-light);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-light);
+            transition: width 0.3s var(--easing-bounce);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .cart-icon {
+            position: relative;
             display: flex;
             align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-glow);
+            cursor: pointer;
         }
 
-        .category-list a {
-            color: var(--black);
-            text-decoration: none;
-            transition: color 0.3s;
-            flex: 1;
+        .cart-icon:hover {
+            transform: scale(1.1);
+            background: var(--accent-hover);
         }
 
-        .category-list a:hover {
-            color: var(--gold);
+        .cart-count {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--error);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 2px solid var(--background);
         }
 
-        .category-count {
-            background-color: var(--light-gold);
-            border-radius: 10px;
-            padding: 0.1rem 0.5rem;
-            font-size: 0.8rem;
-            color: var(--black);
+        /* Shop Header */
+        .shop-header {
+            padding: 8rem 0 4rem;
+            background: radial-gradient(circle at 70% 50%, var(--secondary) 0%, var(--primary) 50%, var(--background) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shop-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .shop-title {
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .shop-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 2px;
+        }
+
+        .shop-subtitle {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .shop-bg-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.07;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border);
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .filter-dropdown {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            color: var(--text);
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .filter-dropdown:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        .filter-dropdown option {
+            background-color: var(--card);
         }
 
         .price-range {
-            margin: 1rem 0;
-        }
-
-        .price-slider {
-            width: 100%;
-            height: 5px;
-            background: var(--light-gold);
-            outline: none;
-            -webkit-appearance: none;
-            border-radius: 5px;
-        }
-
-        .price-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--gold);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .price-values {
             display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-        }
-
-        .filter-btn {
-            width: 100%;
-            background-color: var(--blue);
-            color: var(--white);
-            border: none;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: background-color 0.3s;
-        }
-
-        .filter-btn:hover {
-            background-color: var(--dark-blue);
-        }
-
-        .products-container {
-            flex: 1;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            background-color: var(--white);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            gap: 0.5rem;
         }
 
-        .sort-by select {
+        .price-range input {
+            width: 100px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
             padding: 0.5rem;
-            border: 1px solid var(--gray);
-            border-radius: 5px;
+            color: var(--text);
             outline: none;
+            font-family: 'Poppins', sans-serif;
         }
 
         .view-options {
             display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
 
-        .view-options button {
-            background-color: var(--light-gray);
-            border: 1px solid var(--gray);
-            padding: 0.5rem;
-            border-radius: 5px;
+        .view-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: var(--transition-fast);
         }
 
-        .view-options button.active {
-            background-color: var(--blue);
-            color: var(--white);
+        .view-btn:hover,
+        .view-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
         }
 
+        /* Shop Content */
+        .shop-content {
+            padding: 4rem 0;
+        }
+
+        /* Product Grid */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .product-card {
-            background-color: var(--white);
-            border-radius: 8px;
+            background: var(--card);
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: var(--transition-normal);
+            border: 1px solid var(--border);
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-light);
         }
 
-        .product-img {
+        .product-image-container {
             position: relative;
-            height: 200px;
+            padding-top: 100%;
             overflow: hidden;
-            background-color: var(--light-gray);
+            background: var(--surface-light);
         }
 
-        .product-img img {
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s;
+            transition: var(--transition-normal);
         }
 
-        .product-card:hover .product-img img {
+        .product-card:hover .product-image {
             transform: scale(1.05);
         }
 
-        .product-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: var(--gold);
-            color: var(--black);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .product-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            background-color: var(--white);
-            color: var(--black);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .action-btn:hover {
-            background-color: var(--gold);
-            color: var(--white);
-        }
-
-        .product-info {
-            padding: 1rem;
-        }
-
-        .product-brand {
-            font-size: 0.9rem;
-            color: var(--gray);
-            text-transform: uppercase;
-        }
-
-        .product-name {
-            margin: 0.5rem 0;
-            font-weight: bold;
-        }
-
-        .product-rating {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .product-price {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .current-price {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--blue);
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .discount {
-            background-color: var(--blue);
-            color: var(--white);
-            padding: 0.1rem 0.3rem;
-            border-radius: 3px;
-            font-size: 0.8rem;
-        }
-
-        .add-to-cart {
-            background-color: var(--gold);
-            color: var(--black);
-            border: none;
-            padding: 0.5rem;
-            width: 100%;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .add-to-cart:hover {
-            background-color: var(--dark-gold);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin: 2rem 0;
-            gap: 0.5rem;
-        }
-
-        .pagination button {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            border: 1px solid var(--gray);
-            background-color: var(--white);
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .pagination button.active {
-            background-color: var(--gold);
-            color: var(--black);
-            border-color: var(--gold);
-        }
-
-        .pagination button:hover:not(.active) {
-            background-color: var(--light-gold);
-        }
-
-        footer {
-            background-color: var(--black);
-            color: var(--white);
-            padding: 2rem 1rem;
-            margin-top: 2rem;
-        }
-
-        .footer-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-section h3 {
-            color: var(--gold);
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--dark-gold);
-            padding-bottom: 0.5rem;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin: 0.5rem 0;
-        }
-
-        .footer-links a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: var(--gold);
-        }
-
-        .contact-info p {
-            margin: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .newsletter input {
-            padding: 0.5rem;
-            width: 100%;
-            margin-bottom: 0.5rem;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .newsletter button {
-            background-color: var(--gold);
-            color: var(--black);
-            border: none;
-            padding: 0.5rem;
-            width: 100%;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .newsletter button:hover {
-            background-color: var(--dark-gold);
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-icons a {
-            color: var(--white);
-            background-color: var(--blue);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s;
-        }
-
-        .social-icons a:hover {
-            background-color: var(--gold);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid var(--gray);
-            margin-top: 2rem;
-            color: var(--gray);
-        }
-
-        /* Sidebar toggle for mobile */
-        .sidebar-toggle {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--gold);
-            color: var(--black);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 992px) {
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                position: fixed;
-                top: 0;
-                left: -100%;
-                height: 100%;
-                z-index: 200;
-                overflow-y: auto;
-                padding-top: 60px;
-            }
-
-            .sidebar.open {
-                left: 0;
-            }
-
-            .sidebar-close {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                cursor: pointer;
-                font-size: 1.5rem;
-            }
-
-            .sidebar-toggle {
-                display: flex;
-            }
-
-            .menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 60px;
-                left: 0;
-                width: 100%;
-                background-color: var(--black);
-                flex-direction: column;
-                padding: 1rem;
-                gap: 0.5rem;
-            }
-
-            .nav-links.open {
-                display: flex;
-            }
-
-            .search-container {
-                margin: 1rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .top-bar {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .footer-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Animation for new arrivals */
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .new-arrival .product-label {
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Quick view modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .modal-content {
-            background-color: var(--white);
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 900px;
-            animation: modal-open 0.3s;
-        }
-
-        @keyframes modal-open {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .close-modal {
-            color: var(--gray);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-modal:hover {
-            color: var(--black);
-        }
-
-        .quick-view-container {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .quick-view-images {
-            flex: 1;
-        }
-
-        .main-image {
-            height: 300px;
-            background-color: var(--light-gray);
-            margin-bottom: 1rem;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .main-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .thumbnail-images {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .thumbnail {
-            width: 70px;
-            height: 70px;
-            border-radius: 5px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .thumbnail.active {
-            border-color: var(--gold);
-        }
-
-        .thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .quick-view-details {
-            flex: 1;
-        }
-
-        .quick-view-brand {
-            font-size: 1rem;
-            color: var(--gray);
-            text-transform: uppercase;
-        }
-
-        .quick-view-name {
-            font-size: 1.5rem;
-            margin: 0.5rem 0;
-        }
-
-        .quick-view-rating {
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .quick-view-price {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .quick-view-current-price {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--blue);
-        }
-
-        .quick-view-original-price {
-            text-decoration: line-through;
-            color: var(--gray);
-        }
-
-        .quick-view-discount {
-            background-color: var(--blue);
-            color: var(--white);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-        }
-
-        .quick-view-description {
-            margin: 1rem 0;
-            line-height: 1.5;
-        }
-
-        .quick-view-specs {
-            margin: 1rem 0;
-        }
-
-        .specs-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .specs-table tr {
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .specs-table td {
-            padding: 0.5rem 0;
-        }
-
-        .specs-table td:first-child {
-            font-weight: bold;
-            width: 40%;
-        }
-
-        .quick-view-actions {
-            margin-top: 2rem;
-        }
-
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .quantity-input {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--gray);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .quantity-input button {
-            background-color: var(--light-gray);
-            border: none;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-        }
-
-        .quantity-input input {
-            width: 60px;
-            height: 40px;
-            border: none;
-            text-align: center;
-            outline: none;
-        }
-
-        .quick-view-btns {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .quick-add-to-cart {
-            flex: 2;
-            background-color: var(--gold);
-            color: var(--black);
-            border: none;
-            padding: 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: background-color 0.3s;
-        }
-
-        .quick-add-to-cart:hover {
-            background-color: var(--dark-gold);
-        }
-
-        .wishlist-btn {
-            flex: 1;
-            background-color: var(--light-gray);
-            border: 1px solid var(--gray);
-            padding: 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: background-color 0.3s;
-        }
-
-        .wishlist-btn:hover {
-            background-color: var(--white);
-        }
-
-        @media (max-width: 768px) {
-            .quick-view-container {
-                flex-direction: column;
-            }
-
-            .quick-view-btns {
-                flex-direction: column;
-            }
-        }
+        .product-tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 5;
+}
+
+.product-tag.sale {
+    background: var(--error);
+}
+
+.product-tag.new {
+    background: var(--success);
+}
+
+.product-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 5;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: var(--transition-normal);
+}
+
+.product-card:hover .product-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.action-btn {
+    background: var(--surface);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border: none;
+    outline: none;
+    box-shadow: var(--shadow-md);
+}
+
+.action-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.1);
+}
+
+.product-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-category {
+    color: var(--accent-light);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+    margin-bottom: 0.5rem;
+}
+
+.product-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    transition: var(--transition-fast);
+}
+
+.product-card:hover .product-title {
+    color: var(--accent-light);
+}
+
+.product-description {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stars {
+    display: flex;
+    gap: 0.15rem;
+    color: var(--warning);
+}
+
+.review-count {
+    color: var(--text-darker);
+    font-size: 0.8rem;
+}
+
+.product-price-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: var(--gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.product-price-old {
+    color: var(--text-darker);
+    text-decoration: line-through;
+    font-size: 1rem;
+}
+
+.product-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.product-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 4rem;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.page-btn:hover,
+.page-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.page-btn.prev,
+.page-btn.next {
+    width: auto;
+    padding: 0 1rem;
+}
+
+/* Footer */
+.footer {
+    background: var(--primary);
+    border-top: 1px solid var(--border);
+    padding: 4rem 0 2rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-logo {
+    margin-bottom: 1.5rem;
+}
+
+.footer-about {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    transition: var(--transition-fast);
+}
+
+.social-link:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.footer-heading {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    list-style: none;
+}
+
+.footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-link:hover {
+    color: var(--accent-light);
+    transform: translateX(3px);
+}
+
+.contact-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+.contact-icon {
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.newsletter-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.newsletter-input:focus {
+    border-color: var(--accent);
+}
+
+.newsletter-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.newsletter-btn:hover {
+    background: var(--accent-hover);
+}
+
+.footer-bottom {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-darker);
+}
+
+.copyright a {
+    color: var(--accent-light);
+    text-decoration: none;
+}
+
+.payment-methods {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.payment-method {
+    width: 40px;
+    height: 25px;
+    border-radius: 4px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filter-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .shop-header {
+        padding: 6rem 0 3rem;
+    }
+    
+    .filter-section {
+        flex-wrap: wrap;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="menu-btn" id="menu-btn">☰</div>
-            <a href="#" class="logo">YTime</a>
-            <div class="nav-links" id="nav-links">
-                <a href="#">Home</a>
-                <a href="#">Watches</a>
-                <a href="#">Brands</a>
-                <a href="#">New Arrivals</a>
-                <a href="#">Sale</a>
-                <a href="#">Contact</a>
+    <header class="navbar">
+        <div class="container navbar-container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/38" alt="YTime Logo">
+                <span class="logo-text">YTime</span>
             </div>
-            <div class="icons">
-                <a href="#" title="Search">🔍</a>
-                <a href="#" title="Account">👤</a>
-                <a href="#" title="Wishlist">❤️</a>
-                <a href="#" title="Cart">🛒 <span class="cart-count">3</span></a>
-            </div>
-        </nav>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link">Collections</a></li>
+                <li><a href="#" class="nav-link">Brands</a></li>
+                <li><a href="#" class="nav-link">About</a></li>
+                <li><a href="#" class="nav-link">Contact</a></li>
+                <li>
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">3</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </header>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-        <input type="text" placeholder="Search for watches, brands...">
-        <button>Search</button>
+    <section class="shop-header">
+        <div class="shop-bg-elements"></div>
+        <div class="container">
+            <div class="shop-header-content">
+                <h1 class="shop-title">Luxury Watch Collection</h1>
+                <p class="shop-subtitle">Discover our handpicked selection of premium timepieces that blend exceptional craftsmanship, innovative technology, and timeless design.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="filter-bar">
+            <div class="filter-section">
+                <span class="filter-title">Category:</span>
+                <select class="filter-dropdown">
+                    <option value="all">All Categories</option>
+                    <option value="automatic">Automatic</option>
+                    <option value="chronograph">Chronograph</option>
+                    <option value="dress">Dress Watches</option>
+                    <option value="dive">Dive Watches</option>
+                    <option value="smart">Smart Watches</option>
+                </select>
+            </div>
+            
+            <div class="filter-section">
+                <span class="filter-title">Brand:</span>
+                <select class="filter-dropdown">
+                    <option value="all">All Brands</option>
+                    <option value="rolex">Rolex</option>
+                    <option value="omega">Omega</option>
+                    <option value="tag">TAG Heuer</option>
+                    <option value="patek">Patek Philippe</option>
+                    <option value="longines">Longines</option>
+                </select>
+            </div>
+            
+            <div class="filter-section">
+                <span class="filter-title">Price:</span>
+                <div class="price-range">
+                    <input type="text" placeholder="Min">
+                    <span>-</span>
+                    <input type="text" placeholder="Max">
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <span class="filter-title">View:</span>
+                <div class="view-options">
+                    <div class="view-btn active">
+                        <i class="fas fa-th"></i>
+                    </div>
+                    <div class="view-btn">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <span class="sidebar-close" id="sidebar-close">✕</span>
-            <h3>Categories</h3>
-            <ul class="category-list">
-                <li><a href="#">Casio</a> <span class="category-count">42</span></li>
-                <li><a href="#">Hublot</a> <span class="category-count">28</span></li>
-                <li><a href="#">Rolex</a> <span class="category-count">36</span></li>
-                <li><a href="#">Curren</a> <span class="category-count">15</span></li>
-                <li><a href="#">Naviforce</a> <span class="category-count">21</span></li>
-                <li><a href="#">Patek Philippe</a> <span class="category-count">19</span></li>
-                <li><a href="#">Omega</a> <span class="category-count">24</span></li>
-                <li><a href="#">Seiko</a> <span class="category-count">30</span></li>
-                <li><a href="#">Citizen</a> <span class="category-count">27</span></li>
-                <li><a href="#">TAG Heuer</a> <span class="category-count">18</span></li>
-            </ul>
-
-            <h3>Filter by Price</h3>
-            <div class="price-range">
-                <input type="range" min="0" max="10000" value="5000" class="price-slider" id="price-range">
-                <div class="price-values">
-                    <span>$0</span>
-                    <span id="price-value">$5000</span>
-                    <span>$10000+</span>
-                </div>
-            </div>
-
-            <h3>Style</h3>
-            <ul class="category-list">
-                <li><a href="#">Analog</a> <span class="category-count">125</span></li>
-                <li><a href="#">Digital</a> <span class="category-count">84</span></li>
-                <li><a href="#">Chronograph</a> <span class="category-count">56</span></li>
-                <li><a href="#">Smart Watch</a> <span class="category-count">32</span></li>
-                <li><a href="#">Diving</a> <span class="category-count">28</span></li>
-            </ul>
-
-            <h3>Material</h3>
-            <ul class="category-list">
-                <li><a href="#">Stainless Steel</a> <span class="category-count">98</span></li>
-                <li><a href="#">Leather</a> <span class="category-count">76</span></li>
-                <li><a href="#">Gold</a> <span class="category-count">43</span></li>
-                <li><a href="#">Titanium</a> <span class="category-count">29</span></li>
-                <li><a href="#">Rubber</a> <span class="category-count">35</span></li>
-            </ul>
-
-            <button class="filter-btn">Apply Filters</button>
-        </aside>
-
-        <div class="sidebar-toggle" id="sidebar-toggle">
-            <span>🔍</span>
-        </div>
-
-        <!-- Products Section -->
-        <div class="products-container">
-            <div class="top-bar">
-                <div class="results-count">
-                    Showing <strong>1-12</strong> of <strong>260</strong> watches
-                </div>
-                <div class="sort-by">
-                    <select>
-                        <option>Featured</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>New Arrivals</option>
-                        <option>Best Sellers</option>
-                        <option>Discount</option>
-                    </select>
-                </div>
-                <div class="view-options">
-                    <button class="active">Grid</button>
-                    <button>List</button>
-                </div>
-            </div>
-
+    <section class="shop-content">
+        <div class="container">
             <div class="products-grid">
                 <!-- Product 1 -->
-                <div class="product-card new-arrival">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Rolex Submariner">
-                        <div class="product-label">New</div>
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
+                        <div class="product-tag new">New</div>
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Rolex', 'Submariner')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">Rolex</div>
-                        <h3 class="product-name">Submariner Date</h3>
-                        <div class="product-rating">★★★★★ (24)</div>
-                        <div class="product-price">
-                            <span class="current-price">$8,995</span>
-                            <span class="original-price">$9,500</span>
-                            <span class="discount">-5%</span>
+                        <div class="product-category">Automatic</div>
+                        <h3 class="product-title">Royal Oak Elite</h3>
+                        <p class="product-description">Refined elegance with a 41mm stainless steel case, automatic movement, and sapphire crystal.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                           </div>
+                            <span class="review-count">(42)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <div class="product-price-container">
+                            <span class="product-price">$12,500</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
-
+                
                 <!-- Product 2 -->
                 <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Omega Seamaster">
-                        <div class="product-label">Bestseller</div>
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
+                        <div class="product-tag sale">Sale</div>
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Omega', 'Seamaster')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">Omega</div>
-                        <h3 class="product-name">Seamaster Professional</h3>
-                        <div class="product-rating">★★★★☆ (18)</div>
-                        <div class="product-price">
-                            <span class="current-price">$4,250</span>
-                            <span class="original-price">$4,800</span>
-                            <span class="discount">-12%</span>
+                        <div class="product-category">Chronograph</div>
+                        <h3 class="product-title">Monaco Grand Prix</h3>
+                        <p class="product-description">Iconic square case with chronograph features, tachymeter scale, and premium leather strap.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(37)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <div class="product-price-container">
+                            <span class="product-price">$8,750</span>
+                            <span class="product-price-old">$10,200</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
-
+                
                 <!-- Product 3 -->
                 <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="TAG Heuer Carrera">
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('TAG Heuer', 'Carrera')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">TAG Heuer</div>
-                        <h3 class="product-name">Carrera Chronograph</h3>
-                        <div class="product-rating">★★★★☆ (15)</div>
-                        <div class="product-price">
-                            <span class="current-price">$3,750</span>
+                        <div class="product-category">Dive Watch</div>
+                        <h3 class="product-title">Seamaster Aquatic</h3>
+                        <p class="product-description">Professional dive watch with 300m water resistance, rotating bezel, and luminous markers.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="review-count">(56)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <div class="product-price-container">
+                            <span class="product-price">$7,200</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
-
+                
                 <!-- Product 4 -->
                 <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Patek Philippe">
-                        <div class="product-label">Limited</div>
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
+                        <div class="product-tag new">New</div>
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Patek Philippe', 'Nautilus')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">Patek Philippe</div>
-                        <h3 class="product-name">Nautilus</h3>
-                        <div class="product-rating">★★★★★ (32)</div>
-                        <div class="product-price">
-                            <span class="current-price">$34,995</span>
-                            <span class="original-price">$37,500</span>
-                            <span class="discount">-7%</span>
+                        <div class="product-category">Dress Watch</div>
+                        <h3 class="product-title">Calatrava Classic</h3>
+                        <p class="product-description">Ultra-thin dress watch with 18k rose gold case, alligator strap, and mechanical movement.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="review-count">(29)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <div class="product-price-container">
+                            <span class="product-price">$21,950</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
-
+                
                 <!-- Product 5 -->
-                <div class="product-card new-arrival">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Seiko Prospex">
-                        <div class="product-label">New</div>
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Seiko', 'Prospex')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">Seiko</div>
-                        <h3 class="product-name">Prospex Diver</h3>
-                        <div class="product-rating">★★★★☆ (21)</div>
-                        <div class="product-price">
-                            <span class="current-price">$495</span>
-                            <span class="original-price">$595</span>
-                            <span class="discount">-17%</span>
+                        <div class="product-category">Smart Watch</div>
+                        <h3 class="product-title">TechMaster Pro</h3>
+                        <p class="product-description">Luxury smart watch with titanium case, OLED display, health monitoring, and 7-day battery life.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(48)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <div class="product-price-container">
+                            <span class="product-price">$3,499</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
-
+                
                 <!-- Product 6 -->
                 <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Casio G-Shock">
-                        <div class="product-label">Bestseller</div>
+                    <div class="product-image-container">
+                        <img src="https://via.placeholder.com/300" alt="Luxury Watch" class="product-image">
+                        <div class="product-tag sale">Sale</div>
                         <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Casio', 'G-Shock')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                            <button class="action-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="product-info">
-                        <div class="product-brand">Casio</div>
-                        <h3 class="product-name">G-Shock Digital</h3>
-                        <div class="product-rating">★★★★★ (47)</div>
-                        <div class="product-price">
-                            <span class="current-price">$125</span>
-                            <span class="original-price">$150</span>
-                            <span class="discount">-17%</span>
+                        <div class="product-category">Automatic</div>
+                        <h3 class="product-title">Pilot's Chronograph</h3>
+                        <p class="product-description">Aviation-inspired design with self-winding movement, date display, and stainless steel bracelet.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(33)</span>
                         </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-
-                <!-- Product 7 -->
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Citizen Eco-Drive">
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Citizen', 'Eco-Drive')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
+                        <div class="product-price-container">
+                            <span class="product-price">$6,350</span>
+                            <span class="product-price-old">$7,200</span>
                         </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Citizen</div>
-                        <h3 class="product-name">Eco-Drive Titanium</h3>
-                        <div class="product-rating">★★★★☆ (19)</div>
-                        <div class="product-price">
-                            <span class="current-price">$295</span>
-                            <span class="original-price">$350</span>
-                            <span class="discount">-16%</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-
-                <!-- Product 8 -->
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Hublot Big Bang">
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Hublot', 'Big Bang')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Hublot</div>
-                        <h3 class="product-name">Big Bang Fusion</h3>
-                        <div class="product-rating">★★★★☆ (14)</div>
-                        <div class="product-price">
-                            <span class="current-price">$12,995</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-                
-                <!-- Product 9 -->
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Naviforce Military">
-                        <div class="product-label">Sale</div>
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Naviforce', 'Military')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Naviforce</div>
-                        <h3 class="product-name">Military Chronograph</h3>
-                        <div class="product-rating">★★★★☆ (38)</div>
-                        <div class="product-price">
-                            <span class="current-price">$45</span>
-                            <span class="original-price">$75</span>
-                            <span class="discount">-40%</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-                
-                <!-- Product 10 -->
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Curren Classic">
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Curren', 'Classic')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Curren</div>
-                        <h3 class="product-name">Classic Leather</h3>
-                        <div class="product-rating">★★★★☆ (26)</div>
-                        <div class="product-price">
-                            <span class="current-price">$39</span>
-                            <span class="original-price">$55</span>
-                            <span class="discount">-29%</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-                
-                <!-- Product 11 -->
-                <div class="product-card new-arrival">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Rolex Datejust">
-                        <div class="product-label">New</div>
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Rolex', 'Datejust')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Rolex</div>
-                        <h3 class="product-name">Datejust 41</h3>
-                        <div class="product-rating">★★★★★ (29)</div>
-                        <div class="product-price">
-                            <span class="current-price">$9,750</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
-                    </div>
-                </div>
-                
-                <!-- Product 12 -->
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="/api/placeholder/300/300" alt="Omega Speedmaster">
-                        <div class="product-actions">
-                            <div class="action-btn" title="Quick View" onclick="openQuickView('Omega', 'Speedmaster')">👁️</div>
-                            <div class="action-btn" title="Add to Wishlist">❤️</div>
-                            <div class="action-btn" title="Compare">⚖️</div>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Omega</div>
-                        <h3 class="product-name">Speedmaster Moonwatch</h3>
-                        <div class="product-rating">★★★★★ (31)</div>
-                        <div class="product-price">
-                            <span class="current-price">$5,250</span>
-                            <span class="original-price">$5,950</span>
-                            <span class="discount">-12%</span>
-                        </div>
-                        <button class="add-to-cart">Add to Cart 🛒</button>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
             </div>
-
+            
             <!-- Pagination -->
             <div class="pagination">
-                <button>«</button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>4</button>
-                <button>5</button>
-                <button>»</button>
+                <button class="page-btn prev">
+                    <i class="fas fa-chevron-left"></i> Prev
+                </button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn next">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Quick View Modal -->
-    <div class="modal" id="quick-view-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-modal">×</span>
-            <div class="quick-view-container">
-                <div class="quick-view-images">
-                    <div class="main-image">
-                        <img src="/api/placeholder/500/500" alt="Watch" id="main-product-image">
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <div class="logo">
+                            <img src="https://via.placeholder.com/38" alt="YTime Logo">
+                            <span class="logo-text">YTime</span>
+                        </div>
                     </div>
-                    <div class="thumbnail-images">
-                        <div class="thumbnail active">
-                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 1">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 2">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 3">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="/api/placeholder/100/100" alt="Watch thumbnail 4">
-                        </div>
+                    <p class="footer-about">
+                        Purveyors of luxury timepieces since 1985. We curate the finest watches from around the world, offering exceptional craftsmanship and heritage.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
                     </div>
                 </div>
-                <div class="quick-view-details">
-                    <div class="quick-view-brand" id="quick-view-brand">Rolex</div>
-                    <h2 class="quick-view-name" id="quick-view-name">Submariner Date</h2>
-                    <div class="quick-view-rating">★★★★★ <span>(24 reviews)</span></div>
-                    <div class="quick-view-price">
-                        <span class="quick-view-current-price" id="quick-view-price">$8,995</span>
-                        <span class="quick-view-original-price" id="quick-view-original-price">$9,500</span>
-                        <span class="quick-view-discount">-5%</span>
+                
+                <div class="footer-column">
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Our Collections</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> New Arrivals</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Special Offers</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Bestsellers</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Watch Care</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 class="footer-heading">Information</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Our Stores</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-chevron-right"></i> Shipping & Returns</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 class="footer-heading">Contact Us</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <span>123 Luxury Avenue, New York, NY 10001</span>
                     </div>
-                    <div class="quick-view-description">
-                        <p>The Rolex Submariner Date is a classic diving watch with water resistance up to 300 meters. Features include a unidirectional rotatable bezel with Cerachrom insert, Chromalight display with long-lasting blue luminescence, and a robust Oyster bracelet.</p>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt contact-icon"></i>
+                        <span>+1 (212) 555-7890</span>
                     </div>
-                    <div class="quick-view-specs">
-                        <table class="specs-table">
-                            <tr>
-                                <td>Case Material</td>
-                                <td>Oystersteel</td>
-                            </tr>
-                            <tr>
-                                <td>Movement</td>
-                                <td>Automatic</td>
-                            </tr>
-                            <tr>
-                                <td>Water Resistance</td>
-                                <td>300m / 1000ft</td>
-                            </tr>
-                            <tr>
-                                <td>Diameter</td>
-                                <td>41mm</td>
-                            </tr>
-                            <tr>
-                                <td>Crystal</td>
-                                <td>Scratch-resistant sapphire</td>
-                            </tr>
-                        </table>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span>info@ytimewatches.com</span>
                     </div>
-                    <div class="quick-view-actions">
-                        <div class="quantity-selector">
-                            <span>Quantity:</span>
-                            <div class="quantity-input">
-                                <button>-</button>
-                                <input type="number" value="1" min="1">
-                                <button>+</button>
-                            </div>
-                        </div>
-                        <div class="quick-view-btns">
-                            <button class="quick-add-to-cart">Add to Cart 🛒</button>
-                            <button class="wishlist-btn">Add to Wishlist ❤️</button>
-                        </div>
-                    </div>
+                    <h3 class="footer-heading">Newsletter</h3>
+                    <p class="footer-about">Subscribe to receive updates, access to exclusive deals, and more.</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Enter your email" class="newsletter-input">
+                        <button type="submit" class="newsletter-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>About YTime</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Our Story</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Store Locations</a></li>
-                    <li><a href="#">Corporate Responsibility</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Customer Service</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Shipping & Delivery</a></li>
-                    <li><a href="#">Returns & Exchanges</a></li>
-                    <li><a href="#">Watch Care & Maintenance</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="#">New Arrivals</a></li>
-                    <li><a href="#">Best Sellers</a></li>
-                    <li><a href="#">Special Offers</a></li>
-                    <li><a href="#">Gift Cards</a></li>
-                    <li><a href="#">Watch Accessories</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Info</h3>
-                <div class="contact-info">
-                    <p>📍 123 Watch Ave, New York, NY 10001</p>
-                    <p>📞 +1 (800) 555-YTIME</p>
-                    <p>✉️ support@ytime.com</p>
-                    <p>⏰ Mon-Fri: 9AM-6PM, Sat: 10AM-4PM</p>
+            
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2025 YTime Luxury Watches. All Rights Reserved. Designed by <a href="#">YourCompany</a>
                 </div>
-                <div class="social-icons">
-                    <a href="#">F</a>
-                    <a href="#">T</a>
-                    <a href="#">I</a>
-                    <a href="#">P</a>
-                    <a href="#">Y</a>
+                <div class="payment-methods">
+                    <div class="payment-method"><i class="fab fa-cc-visa"></i></div>
+                    <div class="payment-method"><i class="fab fa-cc-mastercard"></i></div>
+                    <div class="payment-method"><i class="fab fa-cc-amex"></i></div>
+                    <div class="payment-method"><i class="fab fa-cc-paypal"></i></div>
+                    <div class="payment-method"><i class="fab fa-cc-apple-pay"></i></div>
                 </div>
             </div>
-            <div class="footer-section">
-                <h3>Newsletter</h3>
-                <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
-                <div class="newsletter">
-                    <input type="email" placeholder="Enter your email address">
-                    <button>Subscribe</button>
-                </div>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>© 2025 YTime Watch Store. All Rights Reserved. | Privacy Policy | Terms of Service</p>
         </div>
     </footer>
 
+    <!-- GSAP Animations -->
     <script>
-        // Toggle mobile menu
-        document.getElementById('menu-btn').addEventListener('click', function() {
-            document.getElementById('nav-links').classList.toggle('open');
-        });
-
-        // Toggle sidebar on mobile
-        document.getElementById('sidebar-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('open');
-        });
-
-        document.getElementById('sidebar-close').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.remove('open');
-        });
-
-        // Price range slider
-        const priceRange = document.getElementById('price-range');
-        const priceValue = document.getElementById('price-value');
-
-        priceRange.addEventListener('input', function() {
-            priceValue.textContent = '$' + this.value;
-        });
-
-        // Quick view modal
-        const modal = document.getElementById('quick-view-modal');
-        const closeModal = document.getElementById('close-modal');
-
-        function openQuickView(brand, model) {
-            document.getElementById('quick-view-brand').textContent = brand;
-            document.getElementById('quick-view-name').textContent = model;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navbar animation
+            gsap.from('.navbar', {
+                y: -100,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
             
-            // Set dynamic content based on product
-            if (brand === 'Rolex' && model === 'Submariner') {
-                document.getElementById('quick-view-price').textContent = '$8,995';
-                document.getElementById('quick-view-original-price').textContent = '$9,500';
-            } else if (brand === 'Omega' && model === 'Seamaster') {
-                document.getElementById('quick-view-price').textContent = '$4,250';
-                document.getElementById('quick-view-original-price').textContent = '$4,800';
-            } else if (brand === 'TAG Heuer' && model === 'Carrera') {
-                document.getElementById('quick-view-price').textContent = '$3,750';
-                document.getElementById('quick-view-original-price').textContent = '';
-            }
+            // Header content animation
+            gsap.from('.shop-header-content', {
+                y: 50,
+                opacity: 0,
+                duration: 1.2,
+                delay: 0.3,
+                ease: 'power3.out'
+            });
             
-            modal.style.display = 'block';
-        }
-
-        closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Thumbnail images
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        thumbnails.forEach(thumb => {
-            thumb.addEventListener('click', function() {
-                thumbnails.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                // In a real implementation, would change the main image source here
+            // Filter bar animation
+            gsap.from('.filter-bar', {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: 'back.out(1.7)'
+            });
+            
+            // Products animation with stagger
+            gsap.from('.product-card', {
+                y: 100,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                delay: 0.7,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.products-grid',
+                    start: 'top bottom-=100',
+                    toggleActions: 'play none none none'
+                }
+            });
+            
+            // Footer animation
+            gsap.from('.footer-column', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: 'power2.out',
+                scrollTrigger: {
+                    trigger: '.footer',
+                    start: 'top bottom-=100',
+                    toggleActions: 'play none none none'
+                }
+            });
+            
+            // Product hover effect enhancements
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    gsap.to(this.querySelector('.product-image'), {
+                        scale: 1.05,
+                        duration: 0.4,
+                        ease: 'power2.out'
+                    });
+                    
+                    gsap.to(this.querySelector('.product-actions'), {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.3,
+                        stagger: 0.05,
+                        ease: 'back.out(1.7)'
+                    });
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    gsap.to(this.querySelector('.product-image'), {
+                        scale: 1,
+                        duration: 0.4,
+                        ease: 'power2.out'
+                    });
+                    
+                    gsap.to(this.querySelector('.product-actions'), {
+                        opacity: 0,
+                        x: 10,
+                        duration: 0.3,
+                        ease: 'power2.in'
+                    });
+                });
             });
         });
-
-        // Quantity selector
-        const quantityBtns = document.querySelectorAll('.quantity-input button');
-        const quantityInput = document.querySelector('.quantity-input input');
-
-        quantityBtns[0].addEventListener('click', function() {
-            if (quantityInput.value > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-            }
-        });
-
-        quantityBtns[1].addEventListener('click', function() {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
+        
+        // Add to cart animation
+        function addToCartAnimation(btn) {
+            gsap.to(btn, {
+                scale: 0.95,
+                duration: 0.1,
+                onComplete: function() {
+                    gsap.to(btn, {
+                        scale: 1,
+                        duration: 0.3,
+                        ease: 'elastic.out(1.2, 0.4)'
+                    });
+                }
+            });
+            
+            // Simulate cart count increase
+            const cartCount = document.querySelector('.cart-count');
+            const currentCount = parseInt(cartCount.textContent);
+            cartCount.textContent = currentCount + 1;
+            
+            gsap.from(cartCount, {
+                scale: 1.5,
+                duration: 0.3,
+                ease: 'back.out(1.7)'
+            });
+        }
+        
+        // Initialize product buttons
+        document.querySelectorAll('.product-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                addToCartAnimation(this);
+            });
         });
     </script>
 </body>
