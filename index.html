@@ -2056,167 +2056,349 @@ section {
 
     <!-- Custom JS -->
     <script>
-        // Mobile Navigation
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
+      // Mobile Navigation
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
+
+// Navbar Scroll Effect
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+
+// Budget Slider Value
+const budgetSlider = document.getElementById('budget-amount');
+const budgetValue = document.getElementById('budget-value');
+
+if (budgetSlider && budgetValue) {
+    budgetSlider.addEventListener('input', () => {
+        budgetValue.textContent = `$${parseInt(budgetSlider.value).toLocaleString()}`;
         
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-        
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-        
-        // Budget Slider Value
-        const budgetSlider = document.getElementById('budget-amount');
-        const budgetValue = document.getElementById('budget-value');
-        
-        budgetSlider.addEventListener('input', () => {
-            budgetValue.textContent = `$${parseInt(budgetSlider.value).toLocaleString()}`;
-        });
-        
-        // Category Selection
-        const categories = document.querySelectorAll('.budget-category');
-        categories.forEach(category => {
-            category.addEventListener('click', () => {
-                categories.forEach(c => c.classList.remove('active'));
-                category.classList.add('active');
+        // Add SweetAlert notification when budget changes significantly
+        if (parseInt(budgetSlider.value) >= 20000) {
+            Swal.fire({
+                title: 'High-End Selection',
+                text: 'You now have access to our premium collection',
+                icon: 'info',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
             });
+        }
+    });
+}
+
+// Category Selection
+const categories = document.querySelectorAll('.budget-category');
+categories.forEach(category => {
+    category.addEventListener('click', () => {
+        categories.forEach(c => c.classList.remove('active'));
+        category.classList.add('active');
+        
+        // SweetAlert notification for category selection
+        Swal.fire({
+            title: 'Category Selected',
+            text: `You selected the ${category.textContent.trim()} category`,
+            icon: 'success',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    });
+});
+
+// Collection Tabs
+const tabs = document.querySelectorAll('.collection-tab');
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // SweetAlert notification for tab switching
+        Swal.fire({
+            title: 'Collection Changed',
+            text: `Viewing ${tab.textContent.trim()} collection`,
+            icon: 'info',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500
         });
         
-        // Collection Tabs
-        const tabs = document.querySelectorAll('.collection-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                // Add filtering logic here
-            });
-        });
-        
-        // Swiper Initialization
-        const swiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            spaceBetween: 30,
-            loop: true,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
+        // Add filtering logic here
+    });
+});
+
+// Error handling function
+function handleError(message) {
+    Swal.fire({
+        title: 'Oops!',
+        text: message || 'Something went wrong',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+}
+
+// Initialize Swiper with error handling
+let swiper;
+try {
+    swiper = new Swiper('.swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 2,
             },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                640: {
-                    slidesPerView: 2,
-                },
-                992: {
-                    slidesPerView: 3,
-                },
+            992: {
+                slidesPerView: 3,
             }
-        });
+        },
+        on: {
+            init: function () {
+                console.log('Swiper initialized successfully');
+            }
+        }
+    });
+} catch (error) {
+    console.error('Swiper initialization failed:', error);
+    handleError('Slider could not be initialized');
+}
+
+// Dynamically add swiper slides
+const watches = [
+    { brand: 'Rolex', name: 'Daytona', price: '$32,000', image: '/api/placeholder/400/400', tag: 'Limited' },
+    { brand: 'Omega', name: 'Seamaster', price: '$5,700', image: '/api/placeholder/400/400', tag: 'Featured' },
+    { brand: 'Patek Philippe', name: 'Calatrava', price: '$23,900', image: '/api/placeholder/400/400', tag: 'New' },
+    { brand: 'Audemars Piguet', name: 'Code 11.59', price: '$42,500', image: '/api/placeholder/400/400', tag: 'Limited' },
+    { brand: 'Cartier', name: 'Santos', price: '$7,450', image: '/api/placeholder/400/400', tag: 'Featured' }
+];
+
+const swiperWrapper = document.querySelector('.swiper-wrapper');
+if (swiperWrapper) {
+    watches.forEach(watch => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
         
-        // Dynamically add swiper slides
-        const watches = [
-            { brand: 'Rolex', name: 'Daytona', price: '$32,000', image: '/api/placeholder/400/400', tag: 'Limited' },
-            { brand: 'Omega', name: 'Seamaster', price: '$5,700', image: '/api/placeholder/400/400', tag: 'Featured' },
-            { brand: 'Patek Philippe', name: 'Calatrava', price: '$23,900', image: '/api/placeholder/400/400', tag: 'New' },
-            { brand: 'Audemars Piguet', name: 'Code 11.59', price: '$42,500', image: '/api/placeholder/400/400', tag: 'Limited' },
-            { brand: 'Cartier', name: 'Santos', price: '$7,450', image: '/api/placeholder/400/400', tag: 'Featured' }
-        ];
-        
-        const swiperWrapper = document.querySelector('.swiper-wrapper');
-        watches.forEach(watch => {
-            const slide = document.createElement('div');
-            slide.className = 'swiper-slide';
-            
-            slide.innerHTML = `
-                <div class="watch-card">
-                    <div class="watch-image-container">
-                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
-                        <img src="${watch.image}" alt="${watch.brand} ${watch.name}" class="watch-image">
-                    </div>
-                    <div class="watch-content">
-                        <span class="watch-brand">${watch.brand}</span>
-                        <h3 class="watch-name">${watch.name}</h3>
-                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
-                        <div class="watch-footer">
-                            <span class="watch-price">${watch.price}</span>
-                            <button class="add-to-cart">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
+        slide.innerHTML = `
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
+                    <img src="${watch.image}" alt="${watch.brand} ${watch.name}" class="watch-image">
+                </div>
+                <div class="watch-content">
+                    <span class="watch-brand">${watch.brand}</span>
+                    <h3 class="watch-name">${watch.name}</h3>
+                    <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">${watch.price}</span>
+                        <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
+        
+        swiperWrapper.appendChild(slide);
+    });
+    
+    // Add event listeners to the dynamically created buttons
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const brand = this.getAttribute('data-brand');
+            const name = this.getAttribute('data-name');
+            const price = this.getAttribute('data-price');
             
-            swiperWrapper.appendChild(slide);
+            // SweetAlert for add to cart
+            Swal.fire({
+                title: 'Added to Cart',
+                text: `${brand} ${name} (${price}) has been added to your cart`,
+                icon: 'success',
+                confirmButtonText: 'Continue Shopping',
+                showCancelButton: true,
+                cancelButtonText: 'View Cart'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    // Logic to view cart goes here
+                    Swal.fire({
+                        title: 'Cart',
+                        text: 'Redirecting to cart...',
+                        icon: 'info',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
+        });
+    });
+} else {
+    handleError('Product display area not found');
+}
+
+// Form submission handler
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Simple form validation
+        const email = this.querySelector('input[type="email"]');
+        if (email && !email.value.includes('@')) {
+            Swal.fire({
+                title: 'Invalid Email',
+                text: 'Please enter a valid email address',
+                icon: 'warning'
+            });
+            return;
+        }
+        
+        // Success message
+        Swal.fire({
+            title: 'Message Sent!',
+            text: 'We will get back to you shortly',
+            icon: 'success',
+            confirmButtonText: 'OK'
         });
         
-        // GSAP Animations
-        document.addEventListener('DOMContentLoaded', () => {
-            // Hero animations
-            gsap.from('.hero-content h1', { opacity: 0, y: 50, duration: 1, delay: 0.2 });
-            gsap.from('.hero-content p', { opacity: 0, y: 30, duration: 1, delay: 0.5 });
-            gsap.from('.hero-content .btn', { opacity: 0, y: 30, duration: 1, delay: 0.8 });
-            
-            // Scroll animations
-            gsap.registerPlugin(ScrollTrigger);
-            
-            // Section titles
-            gsap.utils.toArray('.section-title').forEach(title => {
-                gsap.from(title, {
-                    scrollTrigger: {
-                        trigger: title,
-                        start: 'top 80%',
-                    },
-                    opacity: 0,
-                    y: 50,
-                    duration: 1
-                });
+        // Reset form
+        this.reset();
+    });
+}
+
+// Newsletter subscription
+const newsletterForm = document.querySelector('.newsletter-form');
+if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const emailInput = this.querySelector('input[type="email"]');
+        if (emailInput && emailInput.value) {
+            Swal.fire({
+                title: 'Subscribed!',
+                text: 'You have been subscribed to our newsletter',
+                icon: 'success',
+                confirmButtonText: 'Great!'
             });
-            
-            // Watch cards
-            gsap.utils.toArray('.watch-card').forEach((card, i) => {
-                gsap.from(card, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                    },
-                    opacity: 0,
-                    y: 50,
-                    duration: 0.8,
-                    delay: i * 0.1
-                });
+            this.reset();
+        } else {
+            Swal.fire({
+                title: 'Empty Email',
+                text: 'Please enter your email address',
+                icon: 'warning'
             });
-            
-            // Service cards
-            gsap.utils.toArray('.service-card').forEach((card, i) => {
-                gsap.from(card, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                    },
-                    opacity: 0,
-                    y: 50,
-                    duration: 0.8,
-                    delay: i * 0.1
-                });
+        }
+    });
+}
+
+// GSAP Animations
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Hero animations
+        gsap.from('.hero-content h1', { opacity: 0, y: 50, duration: 1, delay: 0.2 });
+        gsap.from('.hero-content p', { opacity: 0, y: 30, duration: 1, delay: 0.5 });
+        gsap.from('.hero-content .btn', { opacity: 0, y: 30, duration: 1, delay: 0.8 });
+        
+        // Scroll animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Section titles
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.from(title, {
+                scrollTrigger: {
+                    trigger: title,
+                    start: 'top 80%',
+                },
+                opacity: 0,
+                y: 50,
+                duration: 1
             });
         });
+        
+        // Watch cards
+        gsap.utils.toArray('.watch-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1
+            });
+        });
+        
+        // Service cards
+        gsap.utils.toArray('.service-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1
+            });
+        });
+        
+        // Show welcome notification
+        setTimeout(() => {
+            Swal.fire({
+                title: 'Welcome to Luxury Watches',
+                text: 'Discover our exclusive collection of premium timepieces',
+                icon: 'info',
+                confirmButtonText: 'Start Browsing'
+            });
+        }, 1000);
+    } catch (error) {
+        console.error('Animation error:', error);
+        handleError('Animation issue detected');
+    }
+});
+
+// Window load event for performance tracking
+window.addEventListener('load', () => {
+    const loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+    console.log(`Page loaded in ${loadTime}ms`);
+    
+    // Show notification if page load time is too long
+    if (loadTime > 3000) {
+        Swal.fire({
+            title: 'Slow Connection Detected',
+            text: 'You might experience delays while browsing',
+            icon: 'warning',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    }
+});
     </script>
 </body>
 </html>
