@@ -1622,7 +1622,7 @@ main {
     </style>
 </head>
 <body>
-     <!-- Navigation -->
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="container navbar-container">
             <div class="logo">
@@ -1631,15 +1631,16 @@ main {
             </div>
             
             <div class="hamburger">
-<span></span>
+                <span></span>
+                <span></span>
                 <span></span>
             </div>
             
             <ul class="nav-links">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="shop.html" class="nav-link">Collection</a></li>
-                <li><a href="#budget" class="nav-link">Budget Tool</a></li>
-                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="shop.html" class="nav-link active">Collection</a></li>
+                <li><a href="budget.html" class="nav-link">Budget Tool</a></li>
+                <li><a href="services.html" class="nav-link">Services</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
             
@@ -1650,7 +1651,8 @@ main {
         </div>
     </nav>
 
-    <section class="shop-header">
+    <!-- Shop Header -->
+    <section class="shop-header" id="shop">
         <div class="shop-bg-elements"></div>
         <div class="container">
             <div class="shop-header-content">
@@ -1660,326 +1662,331 @@ main {
         </div>
     </section>
 
-    <div class="container">
-        <div class="filter-bar">
-            <div class="filter-section">
-                <span class="filter-title">Category:</span>
-                <select class="filter-dropdown">
-                    <option value="all">All Categories</option>
-                    <option value="automatic">Automatic</option>
-                    <option value="chronograph">Chronograph</option>
-                    <option value="dress">Dress Watches</option>
-                    <option value="dive">Dive Watches</option>
-                    <option value="smart">Smart Watches</option>
-                </select>
-            </div>
-            
-            <div class="filter-section">
-                <span class="filter-title">Brand:</span>
-                <select class="filter-dropdown">
-                    <option value="all">All Brands</option>
-                    <option value="rolex">Rolex</option>
-                    <option value="omega">Omega</option>
-                    <option value="tag">TAG Heuer</option>
-                    <option value="patek">Patek Philippe</option>
-                    <option value="longines">Longines</option>
-                </select>
-            </div>
-            
-            <div class="filter-section">
-                <span class="filter-title">Price:</span>
-                <div class="price-range">
-                    <input type="text" placeholder="Min">
-                    <span>-</span>
-                    <input type="text" placeholder="Max">
+    <!-- Filter Bar -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-bar">
+                <div class="filter-section">
+                    <span class="filter-title">Category:</span>
+                    <select class="filter-dropdown" aria-label="Filter by category">
+                        <option value="all">All Categories</option>
+                        <option value="automatic">Automatic</option>
+                        <option value="chronograph">Chronograph</option>
+                        <option value="dress">Dress Watches</option>
+                        <option value="dive">Dive Watches</option>
+                        <option value="smart">Smart Watches</option>
+                    </select>
                 </div>
-            </div>
-            
-            <div class="filter-section">
-                <span class="filter-title">View:</span>
-                <div class="view-options">
-                    <div class="view-btn active">
-                        <i class="fas fa-th"></i>
+                
+                <div class="filter-section">
+                    <span class="filter-title">Brand:</span>
+                    <select class="filter-dropdown" aria-label="Filter by brand">
+                        <option value="all">All Brands</option>
+                        <option value="rolex">Rolex</option>
+                        <option value="omega">Omega</option>
+                        <option value="tag">TAG Heuer</option>
+                        <option value="patek">Patek Philippe</option>
+                        <option value="longines">Longines</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <span class="filter-title">Price:</span>
+                    <div class="price-range">
+                        <input type="number" placeholder="Min" aria-label="Minimum price">
+                        <span>-</span>
+                        <input type="number" placeholder="Max" aria-label="Maximum price">
                     </div>
-                    <div class="view-btn">
-                        <i class="fas fa-list"></i>
+                </div>
+                
+                <div class="filter-section">
+                    <span class="filter-title">View:</span>
+                    <div class="view-options">
+                        <button class="view-btn active" aria-label="Grid view">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" aria-label="List view">
+                            <i class="fas fa-list"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <!-- Shop Content -->
     <section class="shop-content">
         <div class="container">
             <div class="products-grid">
                 <!-- Product 1 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="casio round 1.jpg" alt="Casio Watch" class="product-image">
-        <div class="product-tag new">New</div>
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Digital</div>
-        <h3 class="product-title">Casio</h3>
-        <p class="product-description">Reliable digital timepiece with multiple functions, water resistance, and durable resin construction.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-            </div>
-            <span class="review-count">(42)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 3,500</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="casio round 1.jpg" alt="Casio Digital Watch" class="product-image">
+                        <div class="product-tag new">New</div>
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Digital</div>
+                        <h3 class="product-title">Casio</h3>
+                        <p class="product-description">Reliable digital timepiece with multiple functions, water resistance, and durable resin construction.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="review-count">(42)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 3,500</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
 
-<!-- Product 2 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="g shock 1.jpg" alt="G-Shock Watch" class="product-image">
-        <div class="product-tag sale">Sale</div>
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Shock Resistant</div>
-        <h3 class="product-title">G-Shock Casio</h3>
-        <p class="product-description">Rugged shock-resistant watch with 200m water resistance, world time, and advanced durability features.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
-            </div>
-            <span class="review-count">(37)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 3,500</span>
-            <span class="product-price-old">KSh 4,200</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="g shock 1.jpg" alt="G-Shock Watch" class="product-image">
+                        <div class="product-tag sale">Sale</div>
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Shock Resistant</div>
+                        <h3 class="product-title">G-Shock Casio</h3>
+                        <p class="product-description">Rugged shock-resistant watch with 200m water resistance, world time, and advanced durability features.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(37)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 3,500</span>
+                            <span class="product-price-old">KSh 4,200</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
 
-<!-- Product 3 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="hublot 1.jpg" alt="Hublot Watch" class="product-image">
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Luxury</div>
-        <h3 class="product-title">Hublot</h3>
-        <p class="product-description">Premium Swiss craftsmanship with distinctive porthole design, chronograph functions, and ceramic bezel.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-            </div>
-            <span class="review-count">(56)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 7,000</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="hublot 1.jpg" alt="Hublot Luxury Watch" class="product-image">
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Luxury</div>
+                        <h3 class="product-title">Hublot</h3>
+                        <p class="product-description">Premium Swiss craftsmanship with distinctive porthole design, chronograph functions, and ceramic bezel.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="review-count">(56)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 7,000</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
 
-<!-- Product 4 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="rolex 1.jpg" alt="Rolex Watch" class="product-image">
-        <div class="product-tag new">New</div>
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Luxury</div>
-        <h3 class="product-title">Rolex</h3>
-        <p class="product-description">Iconic Swiss timepiece with automatic movement, precise timekeeping, and timeless elegant design.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-            </div>
-            <span class="review-count">(29)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 10,000</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="rolex 1.jpg" alt="Rolex Luxury Watch" class="product-image">
+                        <div class="product-tag new">New</div>
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Luxury</div>
+                        <h3 class="product-title">Rolex</h3>
+                        <p class="product-description">Iconic Swiss timepiece with automatic movement, precise timekeeping, and timeless elegant design.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="review-count">(29)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 10,000</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
 
-<!-- Product 5 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="Naviforce 1.jpg" alt="Naviforce Watch" class="product-image">
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Sports</div>
-        <h3 class="product-title">Naviforce</h3>
-        <p class="product-description">Military-inspired design with multiple dials, genuine leather strap, and quartz movement functionality.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
-            </div>
-            <span class="review-count">(48)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 5,000</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
+                <!-- Product 5 -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="Naviforce 1.jpg" alt="Naviforce Sports Watch" class="product-image">
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Sports</div>
+                        <h3 class="product-title">Naviforce</h3>
+                        <p class="product-description">Military-inspired design with multiple dials, genuine leather strap, and quartz movement functionality.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(48)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 5,000</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
 
-<!-- Product 6 -->
-<div class="product-card">
-    <div class="product-image-container">
-        <img src="skemei 1.jpg" alt="Skmei Watch" class="product-image">
-        <div class="product-tag sale">Sale</div>
-        <div class="product-actions">
-            <button class="action-btn">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-search"></i>
-            </button>
-            <button class="action-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-    <div class="product-info">
-        <div class="product-category">Sports</div>
-        <h3 class="product-title">Skmei</h3>
-        <p class="product-description">Versatile sports watch with digital display, countdown timer, alarm functions, and water resistance.</p>
-        <div class="product-rating">
-            <div class="stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
+                <!-- Product 6 -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="skemei 1.jpg" alt="Skmei Sports Watch" class="product-image">
+                        <div class="product-tag sale">Sale</div>
+                        <div class="product-actions">
+                            <button class="action-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Quick view">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="action-btn" aria-label="Compare">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Sports</div>
+                        <h3 class="product-title">Skmei</h3>
+                        <p class="product-description">Versatile sports watch with digital display, countdown timer, alarm functions, and water resistance.</p>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="review-count">(33)</span>
+                        </div>
+                        <div class="product-price-container">
+                            <span class="product-price">KSh 5,000</span>
+                            <span class="product-price-old">KSh 5,800</span>
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
             </div>
-            <span class="review-count">(33)</span>
-        </div>
-        <div class="product-price-container">
-            <span class="product-price">KSh 5,000</span>
-            <span class="product-price-old">KSh 5,800</span>
-        </div>
-        <button class="product-btn">
-            <i class="fas fa-shopping-cart"></i>
-            Add to Cart
-        </button>
-    </div>
-</div>
             
             <!-- Pagination -->
             <div class="pagination">
-                <button class="page-btn prev">
+                <button class="page-btn prev" aria-label="Previous page">
                     <i class="fas fa-chevron-left"></i> Prev
                 </button>
-                <button class="page-btn active">1</button>
+                <button class="page-btn active" aria-current="page">1</button>
                 <button class="page-btn">2</button>
                 <button class="page-btn">3</button>
                 <button class="page-btn">4</button>
                 <button class="page-btn">5</button>
-                <button class="page-btn next">
+                <button class="page-btn next" aria-label="Next page">
                     Next <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
     </section>
 
-     <!-- Footer -->
+    <!-- Footer -->
     <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-grid">
-                <div>
+                <div class="footer-about-section">
                     <div class="footer-logo">
                         <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
                         <span class="logo-text">YTime</span>
@@ -1988,49 +1995,51 @@ main {
                         YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
                     </p>
                     <div class="footer-social">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 
-                <div>
+                <div class="footer-links-section">
                     <h3 class="footer-heading">Quick Links</h3>
                     <ul class="footer-links">
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#collection">Collection</a></li>
-                        <li><a href="#budget">Budget Tool</a></li>
-                        <li><a href="#services">Services</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Collection</a></li>
+                        <li><a href="budget.html">Budget Tool</a></li>
+                        <li><a href="services.html">Services</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 
-                <div>
+                <div class="footer-links-section">
                     <h3 class="footer-heading">Help & Support</h3>
                     <ul class="footer-links">
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Shipping Info</a></li>
-                        <li><a href="#">Returns Policy</a></li>
-                        <li><a href="#">Warranty</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="faq.html">FAQs</a></li>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns Policy</a></li>
+                        <li><a href="warranty.html">Warranty</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
                     </ul>
                 </div>
                 
-                <div>
+                <div class="footer-contact-section">
                     <h3 class="footer-heading">Contact Us</h3>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Nairobi Kenya</span>
-                    </div>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+254117278821</span>
-                    </div>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>info@ytime.co.ke</span>
-                    </div>
+                    <address>
+                        <div class="footer-contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Nairobi, Kenya</span>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="fas fa-phone"></i>
+                            <a href="tel:+254117278821">+254 117 278 821</a>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:info@ytime.co.ke">info@ytime.co.ke</a>
+                        </div>
+                    </address>
                 </div>
             </div>
             
@@ -2039,6 +2048,8 @@ main {
             </div>
         </div>
     </footer>
+
+
 
 
     <!-- GSAP Animations -->
