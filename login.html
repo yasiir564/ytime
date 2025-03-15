@@ -391,203 +391,214 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAR8q6YrTcdQ_gJriuT_LLXHTJRe3MXpCQ",
-            authDomain: "ytime-25968.firebaseapp.com",
-            projectId: "ytime-25968",
-            storageBucket: "ytime-25968.firebasestorage.app",
-            messagingSenderId: "423787298021",
-            appId: "1:423787298021:web:58446b52b55407f313680c"
-        };
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAR8q6YrTcdQ_gJriuT_LLXHTJRe3MXpCQ",
+    authDomain: "ytime-25968.firebaseapp.com",
+    projectId: "ytime-25968",
+    storageBucket: "ytime-25968.firebasestorage.app",
+    messagingSenderId: "423787298021",
+    appId: "1:423787298021:web:58446b52b55407f313680c"
+};
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-        // DOM Elements
-        const emailLoginForm = document.getElementById('emailLoginForm');
-        const googleSignIn = document.getElementById('googleSignIn');
-        const appleSignIn = document.getElementById('appleSignIn');
+// DOM Elements
+const emailLoginForm = document.getElementById('emailLoginForm');
+const googleSignIn = document.getElementById('googleSignIn');
+const appleSignIn = document.getElementById('appleSignIn');
 
-        // Email Link Authentication
-        emailLoginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
+// Function to handle successful login
+function handleSuccessfulLogin(user) {
+    // Store user email in localStorage
+    localStorage.setItem('userEmail', user.email);
+    
+    // You can store additional user info if needed
+    if (user.displayName) {
+        localStorage.setItem('userName', user.displayName);
+    }
+    
+    // Show success message
+    swal({
+        title: "Success!",
+        text: "You have successfully signed in!",
+        icon: "success",
+        button: "Continue",
+    }).then(() => {
+        // Redirect to index.html after successful login
+        window.location.href = "index.html";
+    });
+}
+
+// Email Link Authentication
+emailLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    
+    // Configure email link authentication
+    const actionCodeSettings = {
+        // URL you want to redirect to after email is verified
+        url: window.location.href,
+        handleCodeInApp: true
+    };
+    
+    auth.sendSignInLinkToEmail(email, actionCodeSettings)
+        .then(() => {
+            // Save the email for later use (to match with the link)
+            window.localStorage.setItem('emailForSignIn', email);
             
-            // Configure email link authentication
-            const actionCodeSettings = {
-                // URL you want to redirect to after email is verified
-                url: window.location.href,
-                handleCodeInApp: true
-            };
-            
-            auth.sendSignInLinkToEmail(email, actionCodeSettings)
-                .then(() => {
-                    // Save the email for later use (to match with the link)
-                    window.localStorage.setItem('emailForSignIn', email);
-                    
-                    swal({
-                        title: "Email Sent!",
-                        text: "Check your email for a sign-in link. Click the link to sign in.",
-                        icon: "success",
-                        button: "OK",
-                    });
-                })
-                .catch((error) => {
-                    swal({
-                        title: "Error!",
-                        text: error.message,
-                        icon: "error",
-                        button: "Try Again",
-                    });
-                });
+            swal({
+                title: "Email Sent!",
+                text: "Check your email for a sign-in link. Click the link to sign in.",
+                icon: "success",
+                button: "OK",
+            });
+        })
+        .catch((error) => {
+            swal({
+                title: "Error!",
+                text: error.message,
+                icon: "error",
+                button: "Try Again",
+            });
         });
+});
+
+// Check if the user is opening a sign-in link
+if (auth.isSignInWithEmailLink(window.location.href)) {
+    // Get email from localStorage that we saved when sending the link
+    let email = window.localStorage.getItem('emailForSignIn');
+    
+    // If no stored email, prompt the user for it
+    if (!email) {
+        email = window.prompt('Please provide your email for confirmation');
+    }
+    
+    // Complete the sign-in process
+    auth.signInWithEmailLink(email, window.location.href)
+        .then((result) => {
+            // Clear the email from storage
+            window.localStorage.removeItem('emailForSignIn');
+            
+            // Handle successful login
+            handleSuccessfulLogin(result.user);
+        })
+        .catch((error) => {
+            swal({
+                title: "Error!",
+                text: error.message,
+                icon: "error",
+                button: "Try Again",
+            });
+        });
+}
+
+// Google Authentication
+googleSignIn.addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            // Handle successful login
+            handleSuccessfulLogin(result.user);
+        })
+        .catch((error) => {
+            swal({
+                title: "Error!",
+                text: error.message,
+                icon: "error",
+                button: "OK",
+            });
+        });
+});
+
+// Apple Authentication
+appleSignIn.addEventListener('click', () => {
+    const provider = new firebase.auth.OAuthProvider('apple.com');
+    
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            // Handle successful login
+            handleSuccessfulLogin(result.user);
+        })
+        .catch((error) => {
+            swal({
+                title: "Error!",
+                text: error.message,
+                icon: "error",
+                button: "OK",
+            });
+        });
+});
+
+// Slideshow functionality
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const indicators = document.querySelectorAll('.indicator');
+const slideCount = slides.length;
+
+function showSlide(index) {
+    // Hide all slides
+    slides.forEach(slide => {
+        slide.classList.remove('active');
+    });
+    
+    // Remove active state from all indicators
+    indicators.forEach(indicator => {
+        indicator.classList.remove('active');
+    });
+    
+    // Show the selected slide and indicator
+    slides[index].classList.add('active');
+    indicators[index].classList.add('active');
+    
+    // Update current slide index
+    currentSlide = index;
+}
+
+// Automatic slideshow
+setInterval(() => {
+    let nextSlide = (currentSlide + 1) % slideCount;
+    showSlide(nextSlide);
+}, 5000);
+
+// Click on indicators to change slides
+indicators.forEach(indicator => {
+    indicator.addEventListener('click', () => {
+        const slideIndex = parseInt(indicator.getAttribute('data-index'));
+        showSlide(slideIndex);
+    });
+});
+
+// Check authentication state
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // User is signed in
+        console.log("User is signed in:", user);
         
-        // Check if the user is opening a sign-in link
-        if (auth.isSignInWithEmailLink(window.location.href)) {
-            // Get email from localStorage that we saved when sending the link
-            let email = window.localStorage.getItem('emailForSignIn');
-            
-            // If no stored email, prompt the user for it
-            if (!email) {
-                email = window.prompt('Please provide your email for confirmation');
-            }
-            
-            // Complete the sign-in process
-            auth.signInWithEmailLink(email, window.location.href)
-                .then((result) => {
-                    // Clear the email from storage
-                    window.localStorage.removeItem('emailForSignIn');
-                    
-                    // Show success message
-                    swal({
-                        title: "Success!",
-                        text: "You have successfully signed in!",
-                        icon: "success",
-                        button: "Continue",
-                    }).then(() => {
-                        // Redirect or perform action after successful login
-                        console.log("Logged in user:", result.user);
-                        // You would normally redirect to a dashboard here
-                    });
-                })
-                .catch((error) => {
-                    swal({
-                        title: "Error!",
-                        text: error.message,
-                        icon: "error",
-                        button: "Try Again",
-                    });
-                });
+        // Store user info in localStorage (in case they refresh the page)
+        localStorage.setItem('userEmail', user.email);
+        if (user.displayName) {
+            localStorage.setItem('userName', user.displayName);
         }
         
-        // Google Authentication
-        googleSignIn.addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    swal({
-                        title: "Success!",
-                        text: "You have successfully signed in with Google!",
-                        icon: "success",
-                        button: "Continue",
-                    }).then(() => {
-                        // Redirect or perform action after successful login
-                        console.log("Google user:", user);
-                        // You would normally redirect to a dashboard here
-                    });
-                })
-                .catch((error) => {
-                    swal({
-                        title: "Error!",
-                        text: error.message,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
-        });
-        
-        // Apple Authentication
-        appleSignIn.addEventListener('click', () => {
-            const provider = new firebase.auth.OAuthProvider('apple.com');
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    swal({
-                        title: "Success!",
-                        text: "You have successfully signed in with Apple!",
-                        icon: "success",
-                        button: "Continue",
-                    }).then(() => {
-                        // Redirect or perform action after successful login
-                        console.log("Apple user:", user);
-                        // You would normally redirect to a dashboard here
-                    });
-                })
-                .catch((error) => {
-                    swal({
-                        title: "Error!",
-                        text: error.message,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
-        });
-
-        // Slideshow functionality
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const indicators = document.querySelectorAll('.indicator');
-        const slideCount = slides.length;
-        
-        function showSlide(index) {
-            // Hide all slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // Remove active state from all indicators
-            indicators.forEach(indicator => {
-                indicator.classList.remove('active');
-            });
-            
-            // Show the selected slide and indicator
-            slides[index].classList.add('active');
-            indicators[index].classList.add('active');
-            
-            // Update current slide index
-            currentSlide = index;
+        // If on the login page, redirect to index.html
+        if (!window.location.href.includes('index.html')) {
+            window.location.href = "index.html";
         }
+    } else {
+        // User is signed out
+        console.log("No user is signed in");
         
-        // Automatic slideshow
-        setInterval(() => {
-            let nextSlide = (currentSlide + 1) % slideCount;
-            showSlide(nextSlide);
-        }, 5000);
-        
-        // Click on indicators to change slides
-        indicators.forEach(indicator => {
-            indicator.addEventListener('click', () => {
-                const slideIndex = parseInt(indicator.getAttribute('data-index'));
-                showSlide(slideIndex);
-            });
-        });
-
-        // Check authentication state
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in
-                console.log("User is signed in:", user);
-                // You would normally redirect to a dashboard here
-            } else {
-                // User is signed out
-                console.log("No user is signed in");
-            }
-        });
+        // If on a protected page (not login page), redirect back to login
+        if (window.location.href.includes('index.html')) {
+            // You can uncomment this if you want to force users to log in to view index.html
+            // window.location.href = "login.html"; // or whatever your login page is called
+        }
+    }
+});
     </script>
 </body>
 </html>
