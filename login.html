@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTime - Sign In</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-auth-compat.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --gold: #d4af37;
+            --gold-hover: #f2d259;
+            --text-color: #f5f5f5;
+            --text-secondary: #aaaaaa;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+
+        /* Showcase Side */
+        .showcase {
+            display: none;
+            background-color: var(--darker-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .showcase {
+                display: block;
+                width: 50%;
+            }
+        }
+
+        .slideshow {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide img {
+            max-width: 80%;
+            max-height: 60%;
+            object-fit: contain;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .slide-content h2 {
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .indicator.active {
+            background-color: var(--gold);
+            transform: scale(1.2);
+        }
+
+        /* Auth Side */
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .logo {
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        .auth-form {
+            width: 100%;
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--gold);
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--gold-hover);
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        .social-auth {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .social-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .social-btn img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .toggle-form {
+            margin-top: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .toggle-form a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .terms {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .terms a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .forgot-password a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modern scroll */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-hover);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-form {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Showcase Side (visible only on larger screens) -->
+        <div class="showcase">
+            <div class="slideshow">
+                <div class="slide active">
+                    <img src="/api/placeholder/500/300" alt="Premium Watch" />
+                    <div class="slide-content">
+                        <h2>Elegant Craftsmanship</h2>
+                        <p>Experience timeless elegance with our handcrafted luxury timepieces.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="/api/placeholder/500/300" alt="Smart Watch" />
+                    <div class="slide-content">
+                        <h2>Smart Technology</h2>
+                        <p>Stay connected with cutting-edge smartwatches designed for modern life.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="/api/placeholder/500/300" alt="Sports Watch" />
+                    <div class="slide-content">
+                        <h2>Performance Driven</h2>
+                        <p>Push your limits with durable sports watches built for adventure.</p>
+                    </div>
+                </div>
+                <div class="slide-indicators">
+                    <div class="indicator active" data-index="0"></div>
+                    <div class="indicator" data-index="1"></div>
+                    <div class="indicator" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Side -->
+        <div class="auth-container">
+            <div class="logo">
+                <h1>YTime</h1>
+            </div>
+            <div class="auth-form" id="loginForm">
+                <h2 class="form-title">Sign In</h2>
+                <div class="social-auth">
+                    <button class="social-btn" id="googleSignIn" title="Sign in with Google">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                            <path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                            <path fill="#4A90E2" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                            <path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                        </svg>
+                    </button>
+                    <button class="social-btn" id="appleSignIn" title="Sign in with Apple">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="white" d="M17.05 12.536c-.021-2.403 1.972-3.59 2.062-3.643-1.132-1.645-2.886-1.87-3.497-1.89-1.466-.156-2.898.89-3.65.89-.767 0-1.93-.876-3.177-.851-1.613.024-3.13.961-3.968 2.426-1.72 2.976-.435 7.356 1.213 9.765.834 1.193 1.807 2.526 3.086 2.48 1.246-.052 1.713-.795 3.22-.795 1.491 0 1.925.795 3.23.767 1.339-.022 2.182-1.202 2.99-2.404.956-1.368 1.343-2.712 1.36-2.78-.032-.011-2.598-.988-2.625-3.937-.021-1.024.307-2.195 1.163-2.868-.695-.978-1.732-1.088-2.101-1.108-1.046-.096-2.004.577-2.504.577-.526 0-1.325-.552-2.33-.552zM19.33 6.106c.69-.862 1.16-2.057.97-3.246-.938.039-2.106.644-2.772 1.458-.596.69-1.12 1.815-.982 2.887 1.042.08 2.128-.525 2.784-1.1z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="divider">
+                    <span>or sign in with email</span>
+                </div>
+                <form id="emailLoginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                <div class="toggle-form">
+                    <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+                </div>
+                <div class="terms">
+                    <p>By signing in, you agree to our <a href="#" id="termsLink">Terms & Conditions</a> and <a href="#" id="privacyLink">Privacy Policy</a></p>
+                </div>
+            </div>
+
+            <div class="auth-form" id="signupForm" style="display: none;">
+                <h2 class="form-title">Create Account</h2>
+                <div class="social-auth">
+                    <button class="social-btn" id="googleSignUp" title="Sign up with Google">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/>
+                            <path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/>
+                            <path fill="#4A90E2" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/>
+                            <path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/>
+                        </svg>
+                    </button>
+                    <button class="social-btn" id="appleSignUp" title="Sign up with Apple">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="white" d="M17.05 12.536c-.021-2.403 1.972-3.59 2.062-3.643-1.132-1.645-2.886-1.87-3.497-1.89-1.466-.156-2.898.89-3.65.89-.767 0-1.93-.876-3.177-.851-1.613.024-3.13.961-3.968 2.426-1.72 2.976-.435 7.356 1.213 9.765.834 1.193 1.807 2.526 3.086 2.48 1.246-.052 1.713-.795 3.22-.795 1.491 0 1.925.795 3.23.767 1.339-.022 2.182-1.202 2.99-2.404.956-1.368 1.343-2.712 1.36-2.78-.032-.011-2.598-.988-2.625-3.937-.021-1.024.307-2.195 1.163-2.868-.695-.978-1.732-1.088-2.101-1.108-1.046-.096-2.004.577-2.504.577-.526 0-1.325-.552-2.33-.552zM19.33 6.106c.69-.862 1.16-2.057.97-3.246-.938.039-2.106.644-2.772 1.458-.596.69-1.12 1.815-.982 2.887 1.042.08 2.128-.525 2.784-1.1z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="divider">
+                    <span>or sign up with email</span>
+                </div>
+                <form id="emailSignupForm">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+                <div class="toggle-form">
+                    <p>Already have an account? <a href="#" id="switchToLogin">Sign In</a></p>
+                </div>
+                <div class="terms">
+                    <p>By signing up, you agree to our <a href="#" id="termsLinkSignup">Terms & Conditions</a> and <a href="#" id="privacyLinkSignup">Privacy Policy</a></p>
+                </div>
+            </div>
+
+            <div class="auth-form" id="forgotPasswordForm" style="display: none;">
+                <h2 class="form-title">Reset Password</h2>
+                <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-secondary);">Enter your email address and we'll send you a link to reset your password.</p>
+                <form id="resetPasswordForm">
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" placeholder="your@email.com" required>
+                    </div>
+                    <button type="submit" class="btn">Send Reset Link</button>
+                </form>
+                <div class="toggle-form">
+                    <p>Remember your password? <a href="#" id="backToLogin">Back to Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Terms and Conditions -->
+    <div id="termsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: var(--dark-bg); width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h2 style="color: var(--gold); margin-bottom: 1.5rem;">Terms & Conditions</h2>
+            <div style="color: var(--text-secondary); line-height: 1.6;">
+                <p>Last updated: March 15, 2025</p>
+                <p>Please read these Terms and Conditions carefully before using the YTime application.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">1. Acceptance of Terms</h3>
+                <p>By accessing or using the YTime service, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you disagree with any part of the terms, you do not have permission to access the service.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">2. Accounts</h3>
+                <p>When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">3. Intellectual Property</h3>
+                <p>The service and its original content, features, and functionality are and will remain the exclusive property of YTime and its licensors.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">4. Limitation of Liability</h3>
+                <p>In no event shall YTime, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">5. Governing Law</h3>
+                <p>These Terms shall be governed and construed in accordance with the laws, without regard to its conflict of law provisions.</p>
+            </div>
+            <button id="closeTerms" class="btn" style="margin-top: 1.5rem;">I Understand</button>
+        </div>
+    </div>
+
+    <!-- Modal for Privacy Policy -->
+    <div id="privacyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: var(--dark-bg); width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h2 style="color: var(--gold); margin-bottom: 1.5rem;">Privacy Policy</h2>
+            <div style="color: var(--text-secondary); line-height: 1.6;">
+                <p>Last updated: March 15, 2025</p>
+                <p>This Privacy Policy describes our policies and procedures on the collection, use and disclosure of your information.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">1. Information Collection</h3>
+                <p>We collect information that you provide directly to us when you register for an account, create or modify your profile, and make purchases.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">2. Use of Data</h3>
+                <p>We use the collected data for various purposes, including to provide and maintain our service, notify you about changes to our service, and provide customer support.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">3. Data Security</h3>
+                <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">4. Analytics</h3>
+                <p>We may use third-party Service Providers to monitor and analyze the use of our service.</p>
+                <h3 style="color: var(--text-color); margin: 1.5rem 0 0.5rem;">5. Changes to This Privacy Policy</h3>
+                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+            </div>
+            <button id="closePrivacy" class="btn" style="margin-top: 1.5rem;">I Understand</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAR8q6YrTcdQ_gJriuT_LLXHTJRe3MXpCQ",
+            authDomain: "ytime-25968.firebaseapp.com",
+            projectId: "ytime-25968",
+            storageBucket: "ytime-25968.firebasestorage.app",
+            messagingSenderId: "423787298021",
+            appId: "1:423787298021:web:58446b52b55407f313680c"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const switchToSignup = document.getElementById('switchToSignup');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const backToLogin = document.getElementById('backToLogin');
+        const emailLoginForm = document.getElementById('emailLoginForm');
+        const emailSignupForm = document.getElementById('emailSignupForm');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        const googleSignIn = document.getElementById('googleSignIn');
+        const googleSignUp = document.getElementById('googleSignUp');
+        const appleSignIn = document.getElementById('appleSignIn');
+        const appleSignUp = document.getElementById('appleSignUp');
+        const termsLink = document.getElementById('termsLink');
+        const privacyLink = document.getElementById('privacyLink');
+        const termsLinkSignup = document.getElementById('termsLinkSignup');
+        const privacyLinkSignup = document.getElementById('privacyLinkSignup');
+        const termsModal = document.getElementById('termsModal');
+        const privacyModal = document.getElementById('privacyModal');
+        const closeTerms = document.getElementById('closeTerms');
+        const closePrivacy = document.getElementById('closePrivacy');
+
+        // Form toggle functions
+        switchToSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            forgotPasswordForm.style.display = 'none';
+        });
+
+        switchToLogin.addEventListener('click', (e.preventDefault();
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            forgotPasswordForm.style.display = 'none';
+        });
+
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'none';
+            forgotPasswordForm.style.display = 'block';
+        });
+
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            forgotPasswordForm.style.display = 'none';
+        });
+
+        // Terms and Privacy modals
+        termsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            termsModal.style.display = 'flex';
+        });
+
+        privacyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            privacyModal.style.display = 'flex';
+        });
+
+        termsLinkSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            termsModal.style.display = 'flex';
+        });
+
+        privacyLinkSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            privacyModal.style.display = 'flex';
+        });
+
+        closeTerms.addEventListener('click', () => {
+            termsModal.style.display = 'none';
+        });
+
+        closePrivacy.addEventListener('click', () => {
+            privacyModal.style.display = 'none';
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === termsModal) {
+                termsModal.style.display = 'none';
+            }
+            if (e.target === privacyModal) {
+                privacyModal.style.display = 'none';
+            }
+        });
+
+        // Firebase Authentication Functions
+        
+        // Email/Password Login
+        emailLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    swal({
+                        title: "Success!",
+                        text: "You have successfully signed in!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Redirect or perform action after successful login
+                        console.log("Logged in user:", user);
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "Try Again",
+                    });
+                });
+        });
+        
+        // Email/Password Sign Up
+        emailSignupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                swal({
+                    title: "Error!",
+                    text: "Passwords do not match!",
+                    icon: "error",
+                    button: "Try Again",
+                });
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up
+                    const user = userCredential.user;
+                    
+                    // Update profile with name
+                    return user.updateProfile({
+                        displayName: name
+                    }).then(() => {
+                        swal({
+                            title: "Success!",
+                            text: "Your account has been created!",
+                            icon: "success",
+                            button: "Continue",
+                        }).then(() => {
+                            // Redirect or perform action after successful signup
+                            console.log("Created user:", user);
+                            // Switch to login form
+                            loginForm.style.display = 'block';
+                            signupForm.style.display = 'none';
+                        });
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "Try Again",
+                    });
+                });
+        });
+        
+        // Password Reset
+        resetPasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    swal({
+                        title: "Success!",
+                        text: "Password reset link has been sent to your email!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Switch back to login form
+                        loginForm.style.display = 'block';
+                        forgotPasswordForm.style.display = 'none';
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "Try Again",
+                    });
+                });
+        });
+        
+        // Google Authentication
+        googleSignIn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    swal({
+                        title: "Success!",
+                        text: "You have successfully signed in with Google!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Redirect or perform action after successful login
+                        console.log("Google user:", user);
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+        });
+        
+        googleSignUp.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    const isNewUser = result.additionalUserInfo.isNewUser;
+                    
+                    swal({
+                        title: isNewUser ? "Account Created!" : "Welcome Back!",
+                        text: isNewUser ? "Your account has been created with Google!" : "You have successfully signed in with Google!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Redirect or perform action after successful signup/login
+                        console.log("Google user:", user);
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+        });
+        
+        // Apple Authentication
+        appleSignIn.addEventListener('click', () => {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    swal({
+                        title: "Success!",
+                        text: "You have successfully signed in with Apple!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Redirect or perform action after successful login
+                        console.log("Apple user:", user);
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+        });
+        
+        appleSignUp.addEventListener('click', () => {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    const isNewUser = result.additionalUserInfo.isNewUser;
+                    
+                    swal({
+                        title: isNewUser ? "Account Created!" : "Welcome Back!",
+                        text: isNewUser ? "Your account has been created with Apple!" : "You have successfully signed in with Apple!",
+                        icon: "success",
+                        button: "Continue",
+                    }).then(() => {
+                        // Redirect or perform action after successful signup/login
+                        console.log("Apple user:", user);
+                    });
+                })
+                .catch((error) => {
+                    swal({
+                        title: "Error!",
+                        text: error.message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+        });
+
+        // Slideshow functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const slideCount = slides.length;
+        
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Remove active state from all indicators
+            indicators.forEach(indicator => {
+                indicator.classList.remove('active');
+            });
+            
+            // Show the selected slide and indicator
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+            
+            // Update current slide index
+            currentSlide = index;
+        }
+        
+        // Automatic slideshow
+        setInterval(() => {
+            let nextSlide = (currentSlide + 1) % slideCount;
+            showSlide(nextSlide);
+        }, 5000);
+        
+        // Click on indicators to change slides
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                const slideIndex = parseInt(indicator.getAttribute('data-index'));
+                showSlide(slideIndex);
+            });
+        });
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                console.log("User is signed in:", user);
+                // You can redirect to a dashboard or home page here
+            } else {
+                // User is signed out
+                console.log("No user is signed in");
+            }
+        });
+    </script>
+</body>
+</html>
