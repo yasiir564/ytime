@@ -1652,9 +1652,57 @@ section {
     .dot.active {
         background-color: white;
     }
-    
+       
+ /* CSS for the sign-in button */
+  .nav-auth-container {
+    display: inline-block;
+  }
 
+  .auth-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
+  .auth-button:hover {
+    background-color: #165cc2;
+  }
+
+  .auth-button-logged-in {
+    background-color: #f1f3f4;
+    color: #202124;
+    border: 1px solid #dadce0;
+    padding: 5px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+
+  .user-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #1a73e8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    text-transform: uppercase;
+  }
     </style>
 </head>
 <body>
@@ -1684,6 +1732,9 @@ section {
                 <span class="cart-count">0</span>
             </div>
         </div>
+         <div class="nav-auth-container">
+  <button id="authButton" class="auth-button">Sign In</button>
+</div>
     </nav>
 
     <!-- Hero Section -->
@@ -2153,6 +2204,59 @@ section {
 
     <!-- Custom JS -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const authButton = document.getElementById('authButton');
+    
+    // Function to update UI based on authentication state
+    function updateAuthUI() {
+      const userEmail = localStorage.getItem('userEmail');
+      
+      if (userEmail) {
+        // User is signed in - Show avatar button
+        const firstLetter = userEmail.charAt(0);
+        
+        authButton.className = 'auth-button auth-button-logged-in';
+        authButton.innerHTML = `<div class="user-avatar">${firstLetter}</div>`;
+        
+        // When clicking on avatar, go to user profile or dashboard
+        authButton.onclick = function() {
+          // You can change this to any user profile page you have
+          // window.location.href = 'profile.html';
+          
+          // For now, let's just sign out when clicking on avatar
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userName');
+          
+          // If using Firebase Auth, sign out there too
+          if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().signOut();
+          }
+          
+          // Refresh page or redirect to login
+          window.location.href = 'login.html';
+        };
+      } else {
+        // User is not signed in - Show sign in button
+        authButton.className = 'auth-button';
+        authButton.innerHTML = 'Sign In';
+        
+        // Redirect to login page when clicking sign in
+        authButton.onclick = function() {
+          window.location.href = 'login.html';
+        };
+      }
+    }
+    
+    // Initial UI update
+    updateAuthUI();
+    
+    // Listen for changes to localStorage (for testing purposes)
+    window.addEventListener('storage', function(event) {
+      if (event.key === 'userEmail') {
+        updateAuthUI();
+      }
+    });
+  });
         document.addEventListener('DOMContentLoaded', function() {
     // Image gallery dot navigation
     const dots = document.querySelectorAll('.dot');
