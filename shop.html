@@ -2041,114 +2041,157 @@ main {
 
     <!-- GSAP Animations -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Navbar animation
-            gsap.from('.navbar', {
-                y: -100,
-                opacity: 0,
-                duration: 1,
-                ease: 'power3.out'
-            });
-            
-            // Header content animation
-            gsap.from('.shop-header-content', {
-                y: 50,
-                opacity: 0,
-                duration: 1.2,
-                delay: 0.3,
-                ease: 'power3.out'
-            });
-            
-            // Filter bar animation
-            gsap.from('.filter-bar', {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                delay: 0.5,
-                ease: 'back.out(1.7)'
-            });
-            
-            // Products animation with stagger
-            gsap.from('.product-card', {
-                y: 100,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                delay: 0.7,
-                ease: 'power3.out',
-                scrollTrigger: {
-                    trigger: '.products-grid',
-                    start: 'top bottom-=100',
-                    toggleActions: 'play none none none'
-                }
-            });
-            
-            // Footer animation
-            gsap.from('.footer-column', {
-                y: 50,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: '.footer',
-                    start: 'top bottom-=100',
-                    toggleActions: 'play none none none'
-                }
-            });
-            
-            // Product hover effect enhancements
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    gsap.to(this.querySelector('.product-image'), {
-                        scale: 1.05,
-                        duration: 0.4,
-                        ease: 'power2.out'
-                    });
-                    
-                    gsap.to(this.querySelector('.product-actions'), {
-                        opacity: 1,
-                        x: 0,
-                        duration: 0.3,
-                        stagger: 0.05,
-                        ease: 'back.out(1.7)'
-                    });
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    gsap.to(this.querySelector('.product-image'), {
-                        scale: 1,
-                        duration: 0.4,
-                        ease: 'power2.out'
-                    });
-                    
-                    gsap.to(this.querySelector('.product-actions'), {
-                        opacity: 0,
-                        x: 10,
-                        duration: 0.3,
-                        ease: 'power2.in'
-                    });
-                });
-            });
+       document.addEventListener('DOMContentLoaded', function() {
+    // Cache DOM selections to improve performance
+    const navbar = document.querySelector('.navbar');
+    const shopHeaderContent = document.querySelector('.shop-header-content');
+    const filterBar = document.querySelector('.filter-bar');
+    const productsGrid = document.querySelector('.products-grid');
+    const productCards = document.querySelectorAll('.product-card');
+    const footer = document.querySelector('.footer');
+    const footerColumns = document.querySelectorAll('.footer-column');
+    const cartCount = document.querySelector('.cart-count');
+    
+    // Initialize GSAP animations if elements exist
+    // Navbar animation
+    if (navbar) {
+        gsap.from(navbar, {
+            y: -100,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        });
+    }
+    
+    // Header content animation
+    if (shopHeaderContent) {
+        gsap.from(shopHeaderContent, {
+            y: 50,
+            opacity: 0,
+            duration: 1.2,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
+    }
+    
+    // Filter bar animation
+    if (filterBar) {
+        gsap.from(filterBar, {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            delay: 0.5,
+            ease: 'back.out(1.7)'
+        });
+    }
+    
+    // Products animation with stagger
+    if (productsGrid && productCards.length > 0) {
+        gsap.from(productCards, {
+            y: 100,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            delay: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: productsGrid,
+                start: 'top bottom-=100',
+                toggleActions: 'play none none none'
+            }
+        });
+    }
+    
+    // Footer animation
+    if (footer && footerColumns.length > 0) {
+        gsap.from(footerColumns, {
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: footer,
+                start: 'top bottom-=100',
+                toggleActions: 'play none none none'
+            }
+        });
+    }
+    
+    // Product hover effects using event delegation
+    if (productsGrid) {
+        productsGrid.addEventListener('mouseenter', handleProductHover, true);
+        productsGrid.addEventListener('mouseleave', handleProductHover, true);
+    }
+    
+    // Add click event listeners to product buttons
+    initializeProductButtons();
+    
+    // Show welcome notification when page loads
+    showNotification('welcome', 'Welcome to our store!', 'Discover our latest products and exclusive offers.');
+});
+
+// Handle product hover effects
+function handleProductHover(event) {
+    const card = event.target.closest('.product-card');
+    if (!card) return;
+    
+    const productImage = card.querySelector('.product-image');
+    const productActions = card.querySelector('.product-actions');
+    
+    if (!productImage || !productActions) return;
+    
+    if (event.type === 'mouseenter') {
+        gsap.to(productImage, {
+            scale: 1.05,
+            duration: 0.4,
+            ease: 'power2.out'
         });
         
-        // Add to cart animation
-        function addToCartAnimation(btn) {
+        gsap.to(productActions, {
+            opacity: 1,
+            x: 0,
+            duration: 0.3,
+            stagger: 0.05,
+            ease: 'back.out(1.7)'
+        });
+    } else {
+        gsap.to(productImage, {
+            scale: 1,
+            duration: 0.4,
+            ease: 'power2.out'
+        });
+        
+        gsap.to(productActions, {
+            opacity: 0,
+            x: 10,
+            duration: 0.3,
+            ease: 'power2.in'
+        });
+    }
+}
+
+// Add to cart animation and notification
+function addToCartAnimation(btn) {
+    if (!btn) return;
+    
+    gsap.to(btn, {
+        scale: 0.95,
+        duration: 0.1,
+        onComplete: function() {
             gsap.to(btn, {
-                scale: 0.95,
-                duration: 0.1,
-                onComplete: function() {
-                    gsap.to(btn, {
-                        scale: 1,
-                        duration: 0.3,
-                        ease: 'elastic.out(1.2, 0.4)'
-                    });
-                }
+                scale: 1,
+                duration: 0.3,
+                ease: 'elastic.out(1.2, 0.4)'
             });
-            
-            // Simulate cart count increase
-            const cartCount = document.querySelector('.cart-count');
-            const currentCount = parseInt(cartCount.textContent);
+        }
+    });
+    
+    // Update cart count with animation
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+        try {
+            const currentCount = parseInt(cartCount.textContent) || 0;
             cartCount.textContent = currentCount + 1;
             
             gsap.from(cartCount, {
@@ -2156,14 +2199,259 @@ main {
                 duration: 0.3,
                 ease: 'back.out(1.7)'
             });
+            
+            // Get product information from card
+            const card = btn.closest('.product-card');
+            const productName = card ? (card.querySelector('.product-title')?.textContent || 'Product') : 'Product';
+            const productPrice = card ? (card.querySelector('.product-price')?.textContent || '') : '';
+            
+            // Show add to cart notification
+            showNotification('success', 'Added to Cart!', `${productName} ${productPrice} has been added to your cart.`);
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+            showNotification('error', 'Error', 'Could not add product to cart.');
         }
-        
-        // Initialize product buttons
-        document.querySelectorAll('.product-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                addToCartAnimation(this);
+    }
+    
+    // Trigger custom event for cart update
+    document.dispatchEvent(new CustomEvent('cartUpdated', {
+        detail: { button: btn }
+    }));
+}
+
+// Initialize product buttons with event delegation
+function initializeProductButtons() {
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('product-btn')) {
+            addToCartAnimation(event.target);
+            event.preventDefault(); // Prevent default if button is inside a form
+        }
+    });
+}
+
+// SweetAlert2 Notification System
+function showNotification(type, title, message) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+    
+    // Configure notification based on type
+    switch(type) {
+        case 'success':
+            Toast.fire({
+                icon: 'success',
+                title: title,
+                text: message,
+                background: '#f0f9eb',
+                iconColor: '#67c23a'
             });
+            break;
+        case 'error':
+            Toast.fire({
+                icon: 'error',
+                title: title,
+                text: message,
+                background: '#fef0f0',
+                iconColor: '#f56c6c'
+            });
+            break;
+        case 'warning':
+            Toast.fire({
+                icon: 'warning',
+                title: title,
+                text: message,
+                background: '#fdf6ec',
+                iconColor: '#e6a23c'
+            });
+            break;
+        case 'info':
+            Toast.fire({
+                icon: 'info',
+                title: title,
+                text: message,
+                background: '#f4f4f5',
+                iconColor: '#909399'
+            });
+            break;
+        case 'welcome':
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'Start Shopping',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+            break;
+        default:
+            Toast.fire({
+                icon: 'question',
+                title: title,
+                text: message
+            });
+    }
+}
+
+// Function to handle out of stock products
+function handleOutOfStock(productElement) {
+    if (!productElement) return;
+    
+    const productName = productElement.querySelector('.product-title')?.textContent || 'This product';
+    
+    Swal.fire({
+        title: 'Out of Stock',
+        text: `${productName} is currently out of stock. Would you like to be notified when it's available?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Notify Me',
+        cancelButtonText: 'No, Thanks',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showNotificationForm(productName);
+        }
+    });
+}
+
+// Show notification form for out of stock products
+function showNotificationForm(productName) {
+    Swal.fire({
+        title: 'Get Notified',
+        html: `
+            <p>We'll email you when ${productName} is back in stock.</p>
+            <input id="notification-email" class="swal2-input" placeholder="Your Email Address">
+        `,
+        focusConfirm: false,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            const email = document.getElementById('notification-email').value;
+            if (!email || !email.includes('@')) {
+                Swal.showValidationMessage('Please enter a valid email address');
+                return false;
+            }
+            return email;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showNotification('success', 'Notification Set', `We'll email you at ${result.value} when ${productName} is back in stock.`);
+            // Here you would typically send this information to your backend
+        }
+    });
+}
+
+// Add wishlist notification
+function addToWishlist(productElement) {
+    if (!productElement) return;
+    
+    const productName = productElement.querySelector('.product-title')?.textContent || 'Product';
+    
+    showNotification('success', 'Added to Wishlist', `${productName} has been added to your wishlist.`);
+    
+    // Animate heart icon
+    const wishlistIcon = productElement.querySelector('.wishlist-icon');
+    if (wishlistIcon) {
+        gsap.to(wishlistIcon, {
+            scale: 1.5,
+            duration: 0.2,
+            ease: 'power2.out',
+            onComplete: function() {
+                gsap.to(wishlistIcon, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: 'elastic.out(1.2, 0.4)'
+                });
+                wishlistIcon.classList.add('active');
+            }
         });
+    }
+}
+
+// Debounce function to improve performance for resize handlers
+function debounce(func, wait = 20, immediate = true) {
+    let timeout;
+    return function() {
+        const context = this, args = arguments;
+        const later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+}
+
+// Optional: Add resize handler for responsive animations
+window.addEventListener('resize', debounce(function() {
+    // Refresh ScrollTrigger on resize for better responsiveness
+    if (window.ScrollTrigger) {
+        ScrollTrigger.refresh();
+    }
+}));
+
+// Add event listeners for wishlist and out of stock buttons
+document.addEventListener('click', function(event) {
+    // Handle wishlist button clicks
+    if (event.target.closest('.wishlist-btn')) {
+        const productCard = event.target.closest('.product-card');
+        addToWishlist(productCard);
+        event.preventDefault();
+    }
+    
+    // Handle out of stock button clicks
+    if (event.target.closest('.out-of-stock-btn')) {
+        const productCard = event.target.closest('.product-card');
+        handleOutOfStock(productCard);
+        event.preventDefault();
+    }
+});
+
+// Show cart summary notification
+function showCartSummary() {
+    Swal.fire({
+        title: 'Your Cart',
+        html: `
+            <div class="cart-summary">
+                <p>You have <strong>${document.querySelector('.cart-count')?.textContent || '0'}</strong> items in your cart.</p>
+                <p>Subtotal: <strong>$XXX.XX</strong></p>
+            </div>
+        `,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Checkout',
+        cancelButtonText: 'Continue Shopping',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/checkout'; // Redirect to checkout page
+        }
+    });
+}
+
+// Add event listener for cart icon click
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.cart-icon')) {
+        showCartSummary();
+        event.preventDefault();
+    }
+});
     </script>
 </body>
 </html>
