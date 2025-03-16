@@ -2176,753 +2176,394 @@ a, button, .watch-card, .service-card, .brand-logo {
       }
     });
   });
-        document.addEventListener('DOMContentLoaded', function() {
-    // Image gallery dot navigation
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach(dot => {
-        dot.addEventListener('click', function() {
-            const container = this.closest('.watch-image-container');
-            const images = container.querySelectorAll('.watch-image');
-            const allDots = container.querySelectorAll('.dot');
-            const index = parseInt(this.getAttribute('data-index'));
-            
-            // Remove active class from all images and dots
-            images.forEach(img => img.classList.remove('active'));
-            allDots.forEach(d => d.classList.remove('active'));
-            
-            // Add active class to current image and dot
-            // Check if index is valid before accessing
-            if (images[index] && allDots[index]) {
-                images[index].classList.add('active');
-                this.classList.add('active');
-            }
-        });
-    });
-
-    // Mobile Navigation
+        // Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation functionality
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
     
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
+    if (hamburger) {
+        hamburger.addEventListener('click', function() {
             hamburger.classList.toggle('active');
             navLinks.classList.toggle('active');
         });
     }
-
-    // Navbar Scroll Effect
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    }
-
-    // Budget Slider Value
-    const budgetSlider = document.getElementById('budget-amount');
-    const budgetValue = document.getElementById('budget-value');
-
-    if (budgetSlider && budgetValue) {
-        budgetSlider.addEventListener('input', () => {
-            const value = parseInt(budgetSlider.value);
-            budgetValue.textContent = `$${isNaN(value) ? 0 : value.toLocaleString()}`;
-            
-            // Check if SweetAlert is available before using it
-            if (typeof Swal !== 'undefined' && value >= 20000) {
-                Swal.fire({
-                    title: 'High-End Selection',
-                    text: 'You now have access to our premium collection',
-                    icon: 'info',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
-        });
-    }
-
-    // Category Selection
-    const categories = document.querySelectorAll('.budget-category');
-    if (categories.length > 0 && typeof Swal !== 'undefined') {
-        categories.forEach(category => {
-            category.addEventListener('click', () => {
-                categories.forEach(c => c.classList.remove('active'));
-                category.classList.add('active');
-                
-                Swal.fire({
-                    title: 'Category Selected',
-                    text: `You selected the ${category.textContent.trim()} category`,
-                    icon: 'success',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        });
-    }
-
-    // Collection Tabs
-    const tabs = document.querySelectorAll('.collection-tab');
-    if (tabs.length > 0 && typeof Swal !== 'undefined') {
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                Swal.fire({
-                    title: 'Collection Changed',
-                    text: `Viewing ${tab.textContent.trim()} collection`,
-                    icon: 'info',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                
-                // Add filtering logic here
-            });
-        });
-    }
-
-    // Error handling function
-    function handleError(message) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Oops!',
-                text: message || 'Something went wrong',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        } else {
-            console.error(message || 'Something went wrong');
-            alert(message || 'Something went wrong');
-        }
-    }
-
-    // Initialize Swiper with error handling
-    let swiper;
-    if (typeof Swiper !== 'undefined') {
-        try {
-            const swiperContainer = document.querySelector('.swiper-container');
-            if (swiperContainer) {
-                swiper = new Swiper('.swiper-container', {
-                    slidesPerView: 1,
-                    spaceBetween: 30,
-                    loop: true,
-                    autoplay: {
-                        delay: 3000,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    breakpoints: {
-                        640: {
-                            slidesPerView: 2,
-                        },
-                        992: {
-                            slidesPerView: 3,
-                        }
-                    },
-                    on: {
-                        init: function () {
-                            console.log('Swiper initialized successfully');
-                        }
-                    }
-                });
-            } else {
-                console.warn('Swiper container not found in the DOM');
-            }
-        } catch (error) {
-            console.error('Swiper initialization failed:', error);
-            handleError('Slider could not be initialized');
-        }
-    } else {
-        console.warn('Swiper library not loaded');
-    }
-
-    // Dynamically add swiper slides
-    const watches = [
-        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'rolex 1.jpg', tag: 'Limited' },
-        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'hublot 1.jpg', tag: 'Featured' },
-        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'PatekPhilippe-WorldTime-5230G-001-323908-241118-134610.webp', tag: 'New' },
-        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'casio round 1.jpg', tag: 'Limited' },
-        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'Naviforce 1.jpg', tag: 'Featured' }
-    ];
-
-    const swiperWrapper = document.querySelector('.swiper-wrapper');
-    if (swiperWrapper) {
-        watches.forEach(watch => {
-            // Validate image path to prevent broken images
-            const imagePath = watch.image || 'placeholder.jpg';
-            
-            const slide = document.createElement('div');
-            slide.className = 'swiper-slide';
-            
-            slide.innerHTML = `
-                <div class="watch-card">
-                    <div class="watch-image-container">
-                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
-                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image" onerror="this.src='placeholder.jpg'; this.onerror=null;">
-                    </div>
-                    <div class="watch-content">
-                        <span class="watch-brand">${watch.brand}</span>
-                        <h3 class="watch-name">${watch.name}</h3>
-                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
-                        <div class="watch-footer">
-                            <span class="watch-price">${watch.price}</span>
-                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            swiperWrapper.appendChild(slide);
-        });
+    
+    // Watch image gallery functionality
+    const watchCards = document.querySelectorAll('.watch-card');
+    
+    watchCards.forEach(card => {
+        const dots = card.querySelectorAll('.dot');
+        const images = card.querySelectorAll('.watch-image');
         
-        // Add event listeners to the dynamically created buttons
-        if (typeof Swal !== 'undefined') {
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const brand = this.getAttribute('data-brand');
-                    const name = this.getAttribute('data-name');
-                    const price = this.getAttribute('data-price');
-                    
-                    Swal.fire({
-                        title: 'Added to Cart',
-                        text: `${brand} ${name} (${price}) has been added to your cart`,
-                        icon: 'success',
-                        confirmButtonText: 'Continue Shopping',
-                        showCancelButton: true,
-                        cancelButtonText: 'View Cart'
-                    }).then((result) => {
-                        if (!result.isConfirmed) {
-                            // Logic to view cart goes here
-                            Swal.fire({
-                                title: 'Cart',
-                                text: 'Redirecting to cart...',
-                                icon: 'info',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                    });
-                });
+        dots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                const index = this.getAttribute('data-index');
+                
+                // Remove active class from all images and dots
+                images.forEach(img => img.classList.remove('active'));
+                dots.forEach(d => d.classList.remove('active'));
+                
+                // Add active class to selected image and dot
+                images[index].classList.add('active');
+                this.classList.add('active');
             });
-        }
-    } else {
-        console.warn('Product display area (swiper-wrapper) not found');
-    }
-
-    // Form submission handler
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        });
+    });
+    
+    // Shopping cart functionality
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const cartCount = document.querySelector('.cart-count');
+    let cartItems = 0;
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Increment cart count
+            cartItems++;
+            cartCount.textContent = cartItems;
             
-            // Simple form validation
-            const email = this.querySelector('input[type="email"]');
-            if (email && !email.value.includes('@')) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Invalid Email',
-                        text: 'Please enter a valid email address',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Please enter a valid email address');
+            // Get product info
+            const watchCard = this.closest('.watch-card');
+            const watchName = watchCard.querySelector('.watch-name').textContent;
+            const watchPrice = watchCard.querySelector('.watch-price').textContent;
+            
+            // Show SweetAlert notification
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${watchName} (${watchPrice}) has been added to your cart.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        });
+    });
+    
+    // Authentication button functionality
+    const authButton = document.getElementById('authButton');
+    
+    if (authButton) {
+        authButton.addEventListener('click', function() {
+            Swal.fire({
+                title: 'Sign In',
+                html: `
+                    <input id="email" class="swal2-input" placeholder="Email">
+                    <input id="password" type="password" class="swal2-input" placeholder="Password">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Sign In',
+                showCloseButton: true,
+                footer: '<a href="#">Forgot password?</a> | <a href="#">Create account</a>',
+                preConfirm: () => {
+                    const email = Swal.getPopup().querySelector('#email').value;
+                    const password = Swal.getPopup().querySelector('#password').value;
+                    
+                    if (!email || !password) {
+                        Swal.showValidationMessage('Please enter email and password');
+                    }
+                    return { email, password };
                 }
-                return;
-            }
-            
-            // Success message
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Message Sent!',
-                    text: 'We will get back to you shortly',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                alert('Message sent! We will get back to you shortly.');
-            }
-            
-            // Reset form
-            this.reset();
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Here you would typically handle authentication
+                    // This is just a mock success message
+                    Swal.fire({
+                        title: 'Signed In!',
+                        text: 'You have successfully signed in.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    authButton.textContent = 'My Account';
+                }
+            });
         });
     }
-
-    // Newsletter subscription
+    
+    // Newsletter subscription with SweetAlert
     const newsletterForm = document.querySelector('.newsletter-form');
+    
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const emailInput = this.querySelector('input[type="email"]');
-            if (emailInput && emailInput.value) {
-                if (typeof Swal !== 'undefined') {
+            const emailInput = this.querySelector('.newsletter-input');
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter your email address.',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                Swal.fire({
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address.',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            // Simulate API call with timeout
+            Swal.fire({
+                title: 'Subscribing...',
+                text: 'Please wait while we process your subscription.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'Subscribed!',
+                    text: 'Thank you for subscribing to our newsletter. You\'ll receive updates on our latest collections and exclusive offers.',
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+                emailInput.value = '';
+            }, 1500);
+        });
+    }
+    
+    // Luxury slider initialization (assuming you're using Swiper)
+    if (document.querySelector('.swiper-container')) {
+        const luxuryWatches = [
+            { name: "Rolex Submariner", price: "Ksh 150,000", image: "rolex 1.jpg" },
+            { name: "Patek Philippe Calatrava", price: "Ksh 200,000", image: "images (1).png" },
+            { name: "Audemars Piguet Royal Oak", price: "Ksh 180,000", image: "hublot 1.jpg" },
+            { name: "Omega Speedmaster", price: "Ksh 120,000", image: "g shock 1.jpg" }
+        ];
+        
+        const swiperWrapper = document.querySelector('.swiper-wrapper');
+        
+        // Create slides dynamically
+        luxuryWatches.forEach(watch => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            slide.innerHTML = `
+                <div class="luxury-watch-card">
+                    <div class="luxury-watch-image">
+                        <img src="${watch.image}" alt="${watch.name}">
+                    </div>
+                    <div class="luxury-watch-info">
+                        <h3>${watch.name}</h3>
+                        <p>${watch.price}</p>
+                        <button class="btn btn-secondary btn-effect">View Details</button>
+                    </div>
+                </div>
+            `;
+            swiperWrapper.appendChild(slide);
+        });
+        
+        // Initialize Swiper
+        new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev'
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1
+                },
+                768: {
+                    slidesPerView: 2
+                },
+                1024: {
+                    slidesPerView: 3
+                }
+            },
+            autoplay: {
+                delay: 5000
+            }
+        });
+    }
+    
+    // Watch interactive animations
+    const watchElements = document.querySelectorAll('.watch-card');
+    
+    watchElements.forEach(watch => {
+        watch.addEventListener('mouseenter', function() {
+            this.classList.add('watch-hover');
+        });
+        
+        watch.addEventListener('mouseleave', function() {
+            this.classList.remove('watch-hover');
+        });
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Close mobile menu if open
+                if (hamburger && hamburger.classList.contains('active')) {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                }
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80, // Adjust for header height
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Watch details modal for when users click on watch names
+    const watchNames = document.querySelectorAll('.watch-name');
+    
+    watchNames.forEach(name => {
+        name.addEventListener('click', function() {
+            const watchCard = this.closest('.watch-card');
+            const watchBrand = watchCard.querySelector('.watch-brand').textContent;
+            const watchName = this.textContent;
+            const watchDescription = watchCard.querySelector('.watch-description').textContent;
+            const watchPrice = watchCard.querySelector('.watch-price').textContent;
+            const watchImage = watchCard.querySelector('.watch-image.active').src;
+            
+            Swal.fire({
+                title: watchName,
+                html: `
+                    <div class="watch-modal">
+                        <div class="watch-modal-image">
+                            <img src="${watchImage}" alt="${watchName}">
+                        </div>
+                        <div class="watch-modal-info">
+                            <p class="watch-modal-brand">${watchBrand}</p>
+                            <p class="watch-modal-description">${watchDescription}</p>
+                            <p class="watch-modal-price">${watchPrice}</p>
+                            <p class="watch-modal-specs">
+                                <strong>Specifications:</strong><br>
+                                Case: Stainless Steel<br>
+                                Movement: Automatic<br>
+                                Water Resistance: 100m<br>
+                                Dial: Sapphire Crystal
+                            </p>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Add to Cart',
+                cancelButtonText: 'Close',
+                width: '800px',
+                imageWidth: 400,
+                imageHeight: 400,
+                imageAlt: watchName
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Add to cart functionality
+                    cartItems++;
+                    cartCount.textContent = cartItems;
+                    
                     Swal.fire({
-                        title: 'Subscribed!',
-                        text: 'You have been subscribed to our newsletter',
+                        title: 'Added to Cart!',
+                        text: `${watchName} (${watchPrice}) has been added to your cart.`,
                         icon: 'success',
-                        confirmButtonText: 'Great!'
+                        timer: 2000,
+                        showConfirmButton: false
                     });
-                } else {
-                    alert('You have been subscribed to our newsletter');
                 }
-                this.reset();
-            } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Empty Email',
-                        text: 'Please enter your email address',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Please enter your email address');
-                }
-            }
+            });
         });
-    }
-
-    // GSAP Animations
-    if (typeof gsap !== 'undefined') {
-        try {
-            // Hero animations
-            const heroTitle = document.querySelector('.hero-content h1');
-            const heroParagraph = document.querySelector('.hero-content p');
-            const heroButton = document.querySelector('.hero-content .btn');
+    });
+    
+    // Contact form validation (for the footer contact form if added later)
+    const contactForm = document.querySelector('.contact-form');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            if (heroTitle) gsap.from(heroTitle, { opacity: 0, y: 50, duration: 1, delay: 0.2 });
-            if (heroParagraph) gsap.from(heroParagraph, { opacity: 0, y: 30, duration: 1, delay: 0.5 });
-            if (heroButton) gsap.from(heroButton, { opacity: 0, y: 30, duration: 1, delay: 0.8 });
+            const nameInput = this.querySelector('#name');
+            const emailInput = this.querySelector('#email');
+            const messageInput = this.querySelector('#message');
             
-            // Check if ScrollTrigger plugin is available
-            if (gsap.registerPlugin && typeof ScrollTrigger !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger);
-                
-                // Section titles
-                gsap.utils.toArray('.section-title').forEach(title => {
-                    gsap.from(title, {
-                        scrollTrigger: {
-                            trigger: title,
-                            start: 'top 80%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 1
-                    });
+            // Simple validation
+            if (!nameInput.value.trim() || !emailInput.value.trim() || !messageInput.value.trim()) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please fill in all fields.',
+                    icon: 'error'
                 });
-                
-                // Watch cards
-                gsap.utils.toArray('.watch-card').forEach((card, i) => {
-                    gsap.from(card, {
-                        scrollTrigger: {
-                            trigger: card,
-                            start: 'top 85%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 0.8,
-                        delay: i * 0.1
-                    });
-                });
-                
-                // Service cards
-                gsap.utils.toArray('.service-card').forEach((card, i) => {
-                    gsap.from(card, {
-                        scrollTrigger: {
-                            trigger: card,
-                            start: 'top 85%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 0.8,
-                        delay: i * 0.1
-                    });
-                });
+                return;
             }
             
-            // Show welcome notification
-            if (typeof Swal !== 'undefined') {
-                setTimeout(() => {
-                    Swal.fire({
-                        title: 'Welcome to Luxury Watches',
-                        text: 'Discover our exclusive collection of premium timepieces',
-                        icon: 'info',
-                        confirmButtonText: 'Start Browsing'
-                    });
-                }, 1000);
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value.trim())) {
+                Swal.fire({
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address.',
+                    icon: 'warning'
+                });
+                return;
             }
-        } catch (error) {
-            console.error('Animation error:', error);
-            handleError('Animation issue detected');
-        }
-    } else {
-        console.warn('GSAP library not loaded');
-    }
-});
-
-// Window load event for performance tracking
-window.addEventListener('load', () => {
-    // Make sure performance API is available
-    if (window.performance && window.performance.timing) {
-        const loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        console.log(`Page loaded in ${loadTime}ms`);
-        
-        // Show notification if page load time is too long
-        if (loadTime > 3000 && typeof Swal !== 'undefined') {
+            
+            // Submit form (simulate API call)
             Swal.fire({
-                title: 'Slow Connection Detected',
-                text: 'You might experience delays while browsing',
-                icon: 'warning',
-                toast: true,
-                position: 'top-end',
+                title: 'Sending...',
+                text: 'Please wait while we send your message.',
+                allowOutsideClick: false,
                 showConfirmButton: false,
-                timer: 3000
+                willOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        }
-    } else {
-        console.warn('Performance timing API not available');
-    }
-});
-
-// Product filtering functionality
-function filterProducts(category) {
-    const allProducts = document.querySelectorAll('.watch-card');
-    
-    if (allProducts.length === 0) return;
-    
-    if (category === 'all') {
-        allProducts.forEach(product => {
-            product.style.display = 'block';
-        });
-    } else {
-        allProducts.forEach(product => {
-            const productCategory = product.getAttribute('data-category');
-            if (productCategory === category) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
-}
-
-// Add filter buttons event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.filter-button');
-    
-    if (filterButtons.length > 0) {
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const category = this.getAttribute('data-filter');
+            
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'Message Sent!',
+                    text: 'Thank you for contacting us. We\'ll get back to you soon.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 
-                // Update active button
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter products
-                filterProducts(category);
-            });
+                // Reset form
+                nameInput.value = '';
+                emailInput.value = '';
+                messageInput.value = '';
+            }, 2000);
         });
     }
-});
-
-// Search functionality
-const searchInput = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
-
-if (searchInput && searchButton) {
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-}
-
-function performSearch() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const allProducts = document.querySelectorAll('.watch-card');
     
-    if (searchTerm === '') {
-        // If search is empty, show all products
-        allProducts.forEach(product => {
-            product.style.display = 'block';
-        });
-        return;
-    }
-    
-    let foundResults = false;
-    
-    allProducts.forEach(product => {
-        const brandElement = product.querySelector('.watch-brand');
-        const nameElement = product.querySelector('.watch-name');
-        const descElement = product.querySelector('.watch-description');
-        
-        const brand = brandElement ? brandElement.textContent.toLowerCase() : '';
-        const name = nameElement ? nameElement.textContent.toLowerCase() : '';
-        const description = descElement ? descElement.textContent.toLowerCase() : '';
-        
-        if (brand.includes(searchTerm) || name.includes(searchTerm) || description.includes(searchTerm)) {
-            product.style.display = 'block';
-            foundResults = true;
-        } else {
-            product.style.display = 'none';
-        }
-    });
-    
-    // Show message if no results found
-    const noResultsMessage = document.getElementById('no-results-message');
-    
-    if (noResultsMessage) {
-        if (!foundResults) {
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-        }
-    } else if (!foundResults && typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'No Results',
-            text: `No watches found matching "${searchTerm}"`,
-            icon: 'info',
-            confirmButtonText: 'OK'
-        });
-    }
-}
-
-// Currency switcher
-const currencySwitcher = document.getElementById('currency-switcher');
-if (currencySwitcher) {
-    currencySwitcher.addEventListener('change', function() {
-        const selectedCurrency = this.value;
-        const priceElements = document.querySelectorAll('.watch-price');
-        
-        // Define conversion rates (in a real app, these would come from an API)
-        const conversionRates = {
-            'KSH': 1,
-            'USD': 0.0088,
-            'EUR': 0.0081,
-            'GBP': 0.0069
+    // Animated watch in hero section iframe
+    const watchIframe = document.querySelector('.iframe-container iframe');
+    if (watchIframe) {
+        // Handle iframe load event if needed
+        watchIframe.onload = function() {
+            console.log('Watch iframe loaded successfully');
+            // Any additional iframe initialization
         };
-        
-        priceElements.forEach(priceElement => {
-            const originalPrice = priceElement.getAttribute('data-original-price');
-            let basePrice;
-            
-            // If we haven't stored the original price yet, store it now
-            if (!originalPrice) {
-                const currentPrice = priceElement.textContent.trim();
-                const numericPrice = parseFloat(currentPrice.replace(/[^0-9.]/g, ''));
-                priceElement.setAttribute('data-original-price', numericPrice);
-                basePrice = numericPrice;
-            } else {
-                basePrice = parseFloat(originalPrice);
-            }
-            
-            // Convert to the selected currency
-            const rate = conversionRates[selectedCurrency] || 1;
-            const convertedPrice = basePrice * rate;
-            
-            // Format the price according to currency
-            let formattedPrice;
-            switch(selectedCurrency) {
-                case 'USD':
-                    formattedPrice = `$${convertedPrice.toFixed(2)}`;
-                    break;
-                case 'EUR':
-                    formattedPrice = `€${convertedPrice.toFixed(2)}`;
-                    break;
-                case 'GBP':
-                    formattedPrice = `£${convertedPrice.toFixed(2)}`;
-                    break;
-                default:
-                    formattedPrice = `Ksh ${convertedPrice.toFixed(0)}`;
-            }
-            
-            priceElement.textContent = formattedPrice;
-        });
-        
-        // Notify user of currency change
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Currency Changed',
-                text: `Prices now displayed in ${selectedCurrency}`,
-                icon: 'info',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
-    });
-}
-
-// Lazy loading for images
-document.addEventListener('DOMContentLoaded', () => {
-    if ('IntersectionObserver' in window) {
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        lazyImages.forEach(img => {
-            imageObserver.observe(img);
-        });
-    } else {
-        // Fallback for browsers that don't support IntersectionObserver
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        
-        function lazyLoad() {
-            lazyImages.forEach(img => {
-                if (img.getBoundingClientRect().top <= window.innerHeight && 
-                    img.getBoundingClientRect().bottom >= 0 &&
-                    getComputedStyle(img).display !== 'none') {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                }
-            });
-        }
-        
-        // Load initially visible images
-        document.addEventListener('DOMContentLoaded', lazyLoad);
-        // Load images during scroll
-        window.addEventListener('scroll', lazyLoad);
-        // Load images on resize
-        window.addEventListener('resize', lazyLoad);
     }
-});
 
-// Add to wish list functionality
-document.addEventListener('DOMContentLoaded', () => {
-    const wishlistButtons = document.querySelectorAll('.add-to-wishlist');
-    
-    if (wishlistButtons.length > 0) {
-        wishlistButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-id');
-                const productName = this.getAttribute('data-name');
-                
-                // Toggle wishlist status
-                this.classList.toggle('in-wishlist');
-                
-                const isInWishlist = this.classList.contains('in-wishlist');
-                
-                // Update icon
-                const icon = this.querySelector('i');
-                if (icon) {
-                    if (isInWishlist) {
-                        icon.className = 'fas fa-heart';
-                    } else {
-                        icon.className = 'far fa-heart';
-                    }
-                }
-                
-                // Show notification
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist',
-                        text: `${productName} has been ${isInWishlist ? 'added to' : 'removed from'} your wishlist`,
-                        icon: isInWishlist ? 'success' : 'info',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
-                }
-                
-                // In a real app, you would save this to localStorage or send to server
-                saveWishlistToStorage(productId, isInWishlist);
-            });
+    // Initialize AOS (Animate on Scroll) if included in your project
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
         });
-    }
-});
-
-// Helper function to save wishlist to localStorage
-function saveWishlistToStorage(productId, isAdding) {
-    try {
-        // Get current wishlist from localStorage
-        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        
-        if (isAdding) {
-            // Add to wishlist if not already there
-            if (!wishlist.includes(productId)) {
-                wishlist.push(productId);
-            }
-        } else {
-            // Remove from wishlist
-            wishlist = wishlist.filter(id => id !== productId);
-        }
-        
-        // Save back to localStorage
-        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-        
-        // Update wishlist count in UI
-        updateWishlistCount(wishlist.length);
-    } catch (error) {
-        console.error('Error saving wishlist to localStorage:', error);
-    }
-}
-
-// Update wishlist count in UI
-function updateWishlistCount(count) {
-    const wishlistCounter = document.querySelector('.wishlist-count');
-    if (wishlistCounter) {
-        wishlistCounter.textContent = count;
-        
-        // Show/hide based on count
-        if (count > 0) {
-            wishlistCounter.style.display = 'block';
-        } else {
-            wishlistCounter.style.display = 'none';
-        }
-    }
-}
-
-// Load wishlist state on page load
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        
-        // Update UI based on stored wishlist
-        wishlist.forEach(productId => {
-            const button = document.querySelector(`.add-to-wishlist[data-id="${productId}"]`);
-            if (button) {
-                button.classList.add('in-wishlist');
-                
-                const icon = button.querySelector('i');
-                if (icon) {
-                    icon.className = 'fas fa-heart';
-                }
-            }
-        });
-        
-        // Update wishlist count
-        updateWishlistCount(wishlist.length);
-    } catch (error) {
-        console.error('Error loading wishlist from localStorage:', error);
     }
 });
     </script>
