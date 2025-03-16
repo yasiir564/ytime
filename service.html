@@ -872,224 +872,152 @@ h1, h2, h3, h4, h5, h6 {
     flex-wrap: wrap;
 }
 
-/* Footer Styles */
-.footer {
-    background-color: var(--black);
-    padding: 80px 0 20px;
-    position: relative;
-}
+        /* Footer */
+        .footer {
+            background-color: var(--primary);
+            padding: 5rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-.footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(to right, var(--primary-blue), var(--accent-gold), var(--primary-blue));
-}
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 3rem;
+        }
 
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-    margin-bottom: 60px;
-}
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-.footer-logo {
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
-}
+        .footer-logo img {
+            height: 40px;
+        }
 
-.footer-logo img {
-    height: 40px;
-    margin-right: 10px;
-    transition: var(--transition-standard);
-}
+        .footer-about {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
 
-.footer-logo:hover img {
-    transform: rotate(5deg);
-}
+        .footer-heading {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
 
-.footer-logo-text {
-    color: var(--accent-gold);
-    font-size: 22px;
-    font-weight: 700;
-    font-family: 'Montserrat', sans-serif;
-}
+        .footer-links {
+            list-style: none;
+        }
 
-.footer-about {
-    margin-bottom: 25px;
-    opacity: 0.8;
-    line-height: 1.7;
-}
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
 
-.footer-social {
-    display: flex;
-    gap: 15px;
-}
+        .footer-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
 
-.social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: rgba(23, 42, 70, 0.7);
-    border-radius: 50%;
-    color: var(--text-white);
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
+        .footer-links a:hover {
+            color: var(--accent);
+        }
 
-.social-icon:hover {
-    background-color: var(--accent-gold);
-    color: var(--black);
-    transform: translateY(-5px);
-}
+        .footer-contact-item {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
 
-.footer-heading {
-    color: var(--accent-gold);
-    font-size: 20px;
-    margin-bottom: 25px;
-    font-weight: 600;
-    font-family: 'Montserrat', sans-serif;
-    position: relative;
-    padding-bottom: 10px;
-}
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
 
-.footer-heading::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 2px;
-    background-color: var(--accent-gold);
-}
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            color: var(--text);
+            transition: all 0.3s;
+        }
 
-.footer-links {
-    list-style: none;
-}
+        .social-icon:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
 
-.footer-links li {
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-}
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+        }
 
-.footer-links li:hover {
-    transform: translateX(5px);
-}
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
 
-.footer-links a {
-    color: var(--text-light);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    opacity: 0.8;
-    display: inline-flex;
-    align-items: center;
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
 
-.footer-links a i {
-    margin-right: 8px;
-    font-size: 12px;
-    color: var(--accent-gold);
-}
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.footer-links a:hover {
-    color: var(--accent-gold);
-    opacity: 1;
-}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
-.footer-contact-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
 
-.footer-contact-item:hover {
-    transform: translateX(5px);
-}
 
-.footer-contact-item i {
-    color: var(--accent-gold);
-    margin-right: 15px;
-    font-size: 20px;
-}
-
-.footer-contact-text {
-    opacity: 0.8;
-    transition: var(--transition-standard);
-}
-
-.footer-contact-item:hover .footer-contact-text {
-    opacity: 1;
-    color: var(--text-white);
-}
-
-.footer-newsletter {
-    margin-top: 20px;
-}
-
-.footer-newsletter p {
-    margin-bottom: 15px;
-    opacity: 0.8;
-}
-
-.newsletter-form {
-    display: flex;
-    margin-top: 15px;
-}
-
-.newsletter-input {
-    flex-grow: 1;
-    padding: 12px 15px;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-white);
-    border-radius: 4px 0 0 4px;
-    transition: var(--transition-standard);
-}
-
-.newsletter-input:focus {
-    outline: none;
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.newsletter-button {
-    background-color: var(--accent-gold);
-    color: var(--black);
-    border: none;
-    padding: 0 20px;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    transition: var(--transition-standard);
-    font-weight: 600;
-}
-
-.newsletter-button:hover {
-    background-color: #c09c29;
-}
-
-.footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 25px;
-    text-align: center;
-    font-size: 14px;
-    opacity: 0.7;
-}
-
-.footer-bottom a {
-    color: var(--accent-gold);
-    text-decoration: none;
-    transition: var(--transition-standard);
-}
-
-.footer-bottom a:hover {
-    text-decoration: underline;
-}
 
 /* Media Queries */
 @media (max-width: 1100px) {
@@ -1385,11 +1313,11 @@ h1, h2, h3, h4, h5, h6 {
             </div>
 
             <ul class="nav-links">
-                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="shop.html" class="nav-link">Collection</a></li>
-                <li><a href="#budget" class="nav-link">Budget Tool</a></li>
-                <li><a href="#services" class="nav-link">Services</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="budget.html" class="nav-link">Budget Tool</a></li>
+                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
             </ul>
 
             <div class="nav-icons-container">
@@ -1487,8 +1415,8 @@ h1, h2, h3, h4, h5, h6 {
     <!-- Process Section -->
     <section class="process">
         <div class="container">
-            <h2 class="section-heading">Our Service Process</h2>
-            <p class="section-subheading">Experience our meticulous approach to luxury watch care. Each timepiece receives our undivided attention through a comprehensive service process.</p>
+            <h2 class="section-heading">Our Watch Import & Customization Process</h2>
+<p class="section-subheading">Experience our efficient approach to bringing quality timepieces from around the world to Kenya. Each watch is carefully sourced, imported, tested, and personalized to create your unique customized timepiece.</p>
             
            <div class="process-timeline">
     <div class="timeline-item">
@@ -1607,7 +1535,7 @@ h1, h2, h3, h4, h5, h6 {
         <div class="container">
             <h2 class="cta-title">Experience Excellence</h2>
             <p class="cta-text">Schedule a consultation with our watch experts and discover how we can care for your treasured timepiece.</p>
-            <a href="#contact" class="btn">Book A Consultation</a>
+            <a href="contact.html" class="btn">Book A Consultation</a>
         </div>
     </section>
 
