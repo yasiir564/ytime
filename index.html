@@ -659,139 +659,130 @@ section {
 /* Brands Section */
 .brands {
     background-color: var(--surface);
-    padding: 8rem 0;
+    padding: 6rem 0;
     position: relative;
-    overflow: hidden;
-}
-
-/* Add subtle geometric background pattern */
-.brands::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 8%), 
-                      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.02) 0%, transparent 6%);
-    z-index: 1;
 }
 
 .brands-title {
     text-align: center;
-    margin-bottom: 4.5rem;
-    font-size: 2.5rem;
-    font-weight: 700;
+    margin-bottom: 3.5rem;
+    font-size: 2.25rem;
+    font-weight: 600;
     letter-spacing: -0.5px;
     position: relative;
-    padding-bottom: 1.5rem;
-    color: var(--text, #333);
-    z-index: 2;
+    padding-bottom: 1.2rem;
 }
 
-/* Modern underline with gradient effect */
 .brands-title::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 120px;
+    width: 60px;
+    height: 3px;
+    background-color: gold;
+    border-radius: 2px;
+}
+
+/* New unified container with border */
+.brands-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem;
+    border: 1px solid rgba(255, 215, 0, 0.3); /* Gold-colored border with transparency */
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Line at the top of the container */
+.brands-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 10%;
+    right: 10%;
     height: 4px;
     background: linear-gradient(90deg, transparent, gold, transparent);
     border-radius: 4px;
 }
 
-.brands-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 4rem 5rem;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    position: relative;
-    z-index: 2;
+/* Line at the bottom of the container */
+.brands-container::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 10%;
+    right: 10%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, gold, transparent);
+    border-radius: 4px;
 }
 
 .brand-logo {
-    height: auto;
-    max-height: 50px;
-    width: 100%;
-    object-fit: contain;
+    height: 45px;
     filter: grayscale(100%) brightness(150%);
-    opacity: 0.65;
-    transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
-    transform: translateY(0);
+    opacity: 0.6;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0.9);
     cursor: pointer;
 }
 
 .brand-logo:hover {
     filter: grayscale(0%) brightness(100%);
     opacity: 1;
-    transform: translateY(-8px);
-    /* Elevated shadow with gold highlight */
-    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.08)) 
-           drop-shadow(0 4px 4px rgba(255, 215, 0, 0.1));
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* Add subtle animation to logos */
-@keyframes float {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0); }
+/* Add overflow container to handle additional logos gracefully */
+.brands-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: gold rgba(0,0,0,0.1); /* For Firefox */
 }
 
-.brand-logo:nth-child(odd) {
-    animation: float 6s ease-in-out infinite;
+/* Customize scrollbar for Webkit browsers */
+.brands-container::-webkit-scrollbar {
+    height: 4px;
 }
 
-.brand-logo:nth-child(even) {
-    animation: float 8s ease-in-out infinite 1s;
+.brands-container::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}
+
+.brands-container::-webkit-scrollbar-thumb {
+    background-color: gold;
+    border-radius: 4px;
 }
 
 @media (max-width: 768px) {
-    .brands {
-        padding: 6rem 0;
-    }
-    
     .brands-container {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 3rem 2rem;
+        gap: 3rem;
+        padding: 2rem;
     }
     
     .brand-logo {
-        max-height: 40px;
+        height: 35px;
     }
     
     .brands-title {
-        font-size: 2rem;
-        margin-bottom: 3rem;
-    }
-    
-    .brands-title::after {
-        width: 80px;
+        font-size: 1.8rem;
+        margin-bottom: 2.5rem;
     }
 }
 
-/* Add more responsive breakpoints */
 @media (max-width: 480px) {
-    .brands {
-        padding: 4rem 0;
-    }
-    
     .brands-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2.5rem 2rem;
-    }
-    
-    .brand-logo {
-        max-height: 32px;
-    }
-    
-    .brands-title {
-        font-size: 1.75rem;
-        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+        gap: 2rem;
     }
 }
 
