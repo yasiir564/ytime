@@ -786,38 +786,41 @@ section {
     }
 }
 
-/* Watch Collection */
+/* Watch Collection - Isolated Styles */
 .collection {
     background-color: var(--background);
     padding: 4rem 0;
     overflow: hidden;
 }
 
-/* Watches Grid (replacing watches-grid) */
-.container {
+/* Keep watches grid within collection only */
+.collection .container {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 1rem;
+}
+
+/* Watches Grid */
+.collection .watches-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
 }
 
 @media (max-width: 768px) {
-    .container {
+    .collection .watches-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 1.5rem;
     }
 }
 
-.section-title-container {
-    grid-column: 1 / -1;
+.collection .section-title-container {
     text-align: center;
     margin-bottom: 3rem;
 }
 
-.section-title {
+.collection .section-title {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
@@ -825,7 +828,7 @@ section {
     display: inline-block;
 }
 
-.gold-underline::after {
+.collection .gold-underline::after {
     content: '';
     position: absolute;
     bottom: -0.5rem;
@@ -837,14 +840,14 @@ section {
     border-radius: 2px;
 }
 
-.section-subtitle {
+.collection .section-subtitle {
     color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
 }
 
 /* Watch Card */
-.watch-card {
+.collection .watch-card {
     background: var(--card);
     border-radius: 16px;
     overflow: hidden;
@@ -855,25 +858,23 @@ section {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
-    animation: fadeIn 0.6s ease-out both;
-    animation-delay: calc(var(--delay, 0) * 0.1s);
 }
 
-.watch-card:hover {
+.collection .watch-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg), 0 10px 20px rgba(79, 70, 229, 0.15);
     border-color: rgba(99, 102, 241, 0.2);
 }
 
 /* Watch Image Container */
-.watch-image-container {
+.collection .watch-image-container {
     position: relative;
     padding-top: 100%;
     overflow: hidden;
     background: var(--surface-dark);
 }
 
-.watch-images {
+.collection .watch-images {
     position: absolute;
     top: 0;
     left: 0;
@@ -881,7 +882,7 @@ section {
     height: 100%;
 }
 
-.watch-image {
+.collection .watch-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -892,16 +893,16 @@ section {
     transition: opacity 0.4s ease, transform 0.6s ease;
 }
 
-.watch-image.active {
+.collection .watch-image.active {
     opacity: 1;
 }
 
-.watch-card:hover .watch-image.active {
+.collection .watch-card:hover .watch-image.active {
     transform: scale(1.05);
 }
 
 /* Image Navigation Dots */
-.image-dots {
+.collection .image-dots {
     position: absolute;
     bottom: 12px;
     left: 50%;
@@ -911,7 +912,7 @@ section {
     z-index: 2;
 }
 
-.dot {
+.collection .dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -920,17 +921,17 @@ section {
     transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.dot.active {
+.collection .dot.active {
     background: var(--accent);
     transform: scale(1.2);
 }
 
-.dot:hover {
+.collection .dot:hover {
     background: var(--accent-light);
 }
 
 /* Watch Tags */
-.watch-tag {
+.collection .watch-tag {
     position: absolute;
     top: 1rem;
     left: 1rem;
@@ -943,20 +944,30 @@ section {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.watch-tag:not([class*="sale"]):not([class*="new"]):not([class*="limited"]) {
-    background: var(--accent);
+.collection .watch-tag.sale {
+    background: var(--error);
     color: var(--text);
 }
 
+.collection .watch-tag.new {
+    background: var(--success);
+    color: var(--text);
+}
+
+.collection .watch-tag.limited {
+    background: linear-gradient(45deg, #d4af37, #f9f295, #d4af37);
+    color: #000;
+}
+
 /* Watch Content */
-.watch-content {
+.collection .watch-content {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-.watch-brand {
+.collection .watch-brand {
     font-size: 0.875rem;
     color: var(--accent-light);
     font-weight: 600;
@@ -965,7 +976,7 @@ section {
     letter-spacing: 0.05em;
 }
 
-.watch-name {
+.collection .watch-name {
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
@@ -973,11 +984,11 @@ section {
     transition: color 0.3s ease;
 }
 
-.watch-card:hover .watch-name {
+.collection .watch-card:hover .watch-name {
     color: var(--accent-light);
 }
 
-.watch-description {
+.collection .watch-description {
     color: var(--text-muted);
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
@@ -986,14 +997,14 @@ section {
 }
 
 /* Watch Footer */
-.watch-footer {
+.collection .watch-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
 }
 
-.watch-price {
+.collection .watch-price {
     font-size: 1.25rem;
     font-weight: 700;
     background: var(--gold);
@@ -1002,7 +1013,7 @@ section {
     color: transparent;
 }
 
-.add-to-cart {
+.collection .add-to-cart {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1017,47 +1028,34 @@ section {
     box-shadow: var(--shadow-sm);
 }
 
-.add-to-cart:hover {
+.collection .add-to-cart:hover {
     background: var(--accent-hover);
     transform: scale(1.1);
 }
 
 /* Mobile Optimization */
 @media (max-width: 480px) {
-    .section-title {
+    .collection .section-title {
         font-size: 2rem;
     }
     
-    .watch-content {
+    .collection .watch-content {
         padding: 1.25rem;
     }
     
-    .watch-name {
+    .collection .watch-name {
         font-size: 1.125rem;
     }
     
-    .watch-price {
+    .collection .watch-price {
         font-size: 1.125rem;
     }
     
-    .add-to-cart {
+    .collection .add-to-cart {
         width: 36px;
         height: 36px;
     }
 }
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Luxury Collection Slider */
 .luxury-slider {
     position: relative;
@@ -1959,7 +1957,7 @@ section {
     </div>
 </section>
 
-    <!-- Collection Section -->
+<!-- Collection Section -->
 <section class="collection" id="collection">
     <div class="container">
         <div class="section-title-container">
@@ -1967,167 +1965,169 @@ section {
             <p class="section-subtitle">Discover timepieces that combine heritage craftsmanship with innovative design.</p>
         </div>
         
-        <!-- Watch Card 1 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <span class="watch-tag">New</span>
-                <div class="watch-images">
-                    <img src="g shock 1.jpg" alt="G-Shock Watch Front" class="watch-image active">
-                    <img src="g shock 2.jpg" alt="G-Shock Watch Side" class="watch-image">
-                    <img src="g shock 3.jpg" alt="G-Shock Watch Back" class="watch-image">
+        <div class="watches-grid">
+            <!-- Watch Card 1 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <span class="watch-tag new">New</span>
+                    <div class="watch-images">
+                        <img src="g shock 1.jpg" alt="G-Shock Watch Front" class="watch-image active">
+                        <img src="g shock 2.jpg" alt="G-Shock Watch Side" class="watch-image">
+                        <img src="g shock 3.jpg" alt="G-Shock Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
                 </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
-                </div>
-            </div>
-            <div class="watch-content">
-                <span class="watch-brand">G-Shock</span>
-                <h3 class="watch-name">G-Shock GA-2100</h3>
-                <p class="watch-description">Rugged and durable design with shock resistance and versatile functionality.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 3,500</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Watch Card 2 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <div class="watch-images">
-                    <img src="casio round 1.jpg" alt="Casio Watch Front" class="watch-image active">
-                    <img src="casio round 2.jpg" alt="Casio Watch Side" class="watch-image">
-                    <img src="casio round 3.jpg" alt="Casio Watch Back" class="watch-image">
-                </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
+                <div class="watch-content">
+                    <span class="watch-brand">G-Shock</span>
+                    <h3 class="watch-name">G-Shock GA-2100</h3>
+                    <p class="watch-description">Rugged and durable design with shock resistance and versatile functionality.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 3,500</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="watch-content">
-                <span class="watch-brand">Casio</span>
-                <h3 class="watch-name">Casio MTP-1370</h3>
-                <p class="watch-description">Classic timepiece featuring elegant design and reliable quartz movement.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 3,500</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
+            
+            <!-- Watch Card 2 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <div class="watch-images">
+                        <img src="casio round 1.jpg" alt="Casio Watch Front" class="watch-image active">
+                        <img src="casio round 2.jpg" alt="Casio Watch Side" class="watch-image">
+                        <img src="casio round 3.jpg" alt="Casio Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                </div>
+                <div class="watch-content">
+                    <span class="watch-brand">Casio</span>
+                    <h3 class="watch-name">Casio MTP-1370</h3>
+                    <p class="watch-description">Classic timepiece featuring elegant design and reliable quartz movement.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 3,500</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Watch Card 3 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <span class="watch-tag">Limited</span>
-                <div class="watch-images">
-                    <img src="hublot 1.jpg" alt="Hublot Watch Front" class="watch-image active">
-                    <img src="hublot 2.jpg" alt="Hublot Watch Side" class="watch-image">
-                    <img src="hublot 3.jpg" alt="Hublot Watch Back" class="watch-image">
+            
+            <!-- Watch Card 3 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <span class="watch-tag limited">Limited</span>
+                    <div class="watch-images">
+                        <img src="hublot 1.jpg" alt="Hublot Watch Front" class="watch-image active">
+                        <img src="hublot 2.jpg" alt="Hublot Watch Side" class="watch-image">
+                        <img src="hublot 3.jpg" alt="Hublot Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
                 </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
-                </div>
-            </div>
-            <div class="watch-content">
-                <span class="watch-brand">Hublot</span>
-                <h3 class="watch-name">Hublot Classic Fusion</h3>
-                <p class="watch-description">An elegant sports watch with distinctive porthole-shaped case design.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 7,000</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Watch Card 4 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <div class="watch-images">
-                    <img src="rolex 1.jpg" alt="Rolex Watch Front" class="watch-image active">
-                    <img src="rolex 2.jpg" alt="Rolex Watch Side" class="watch-image">
-                    <img src="rolex 3.jpg" alt="Rolex Watch Back" class="watch-image">
-                </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
+                <div class="watch-content">
+                    <span class="watch-brand">Hublot</span>
+                    <h3 class="watch-name">Hublot Classic Fusion</h3>
+                    <p class="watch-description">An elegant sports watch with distinctive porthole-shaped case design.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 7,000</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="watch-content">
-                <span class="watch-brand">Rolex</span>
-                <h3 class="watch-name">Rolex Datejust</h3>
-                <p class="watch-description">Iconic luxury timepiece with signature date display and fluted bezel design.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 10,000</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
+            
+            <!-- Watch Card 4 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <div class="watch-images">
+                        <img src="rolex 1.jpg" alt="Rolex Watch Front" class="watch-image active">
+                        <img src="rolex 2.jpg" alt="Rolex Watch Side" class="watch-image">
+                        <img src="rolex 3.jpg" alt="Rolex Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                </div>
+                <div class="watch-content">
+                    <span class="watch-brand">Rolex</span>
+                    <h3 class="watch-name">Rolex Datejust</h3>
+                    <p class="watch-description">Iconic luxury timepiece with signature date display and fluted bezel design.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 10,000</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Watch Card 5 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <span class="watch-tag">Sale</span>
-                <div class="watch-images">
-                    <img src="Naviforce 1.jpg" alt="Naviforce Watch Front" class="watch-image active">
-                    <img src="Naviforce 2.jpg" alt="Naviforce Watch Side" class="watch-image">
-                    <img src="Naviforce 3.jpg" alt="Naviforce Watch Back" class="watch-image">
+            
+            <!-- Watch Card 5 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <span class="watch-tag sale">Sale</span>
+                    <div class="watch-images">
+                        <img src="Naviforce 1.jpg" alt="Naviforce Watch Front" class="watch-image active">
+                        <img src="Naviforce 2.jpg" alt="Naviforce Watch Side" class="watch-image">
+                        <img src="Naviforce 3.jpg" alt="Naviforce Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
                 </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
-                </div>
-            </div>
-            <div class="watch-content">
-                <span class="watch-brand">Naviforce</span>
-                <h3 class="watch-name">Naviforce NF9153</h3>
-                <p class="watch-description">Racing-inspired chronograph with clean dial design and precision timing.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 5,000</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Watch Card 6 -->
-        <div class="watch-card">
-            <div class="watch-image-container">
-                <div class="watch-images">
-                    <img src="skemei 1.jpg" alt="Skmei Watch Front" class="watch-image active">
-                    <img src="skemei 2.jpg" alt="Skmei Watch Side" class="watch-image">
-                    <img src="skemei 3.jpg" alt="Skmei Watch Back" class="watch-image">
-                </div>
-                <div class="image-dots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
+                <div class="watch-content">
+                    <span class="watch-brand">Naviforce</span>
+                    <h3 class="watch-name">Naviforce NF9153</h3>
+                    <p class="watch-description">Racing-inspired chronograph with clean dial design and precision timing.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 5,000</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="watch-content">
-                <span class="watch-brand">Skmei</span>
-                <h3 class="watch-name">Skmei 1370</h3>
-                <p class="watch-description">Classic styling with large case size and clean dial arrangement.</p>
-                <div class="watch-footer">
-                    <span class="watch-price">Ksh 4,500</span>
-                    <button class="add-to-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
+            
+            <!-- Watch Card 6 -->
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    <div class="watch-images">
+                        <img src="skemei 1.jpg" alt="Skmei Watch Front" class="watch-image active">
+                        <img src="skemei 2.jpg" alt="Skmei Watch Side" class="watch-image">
+                        <img src="skemei 3.jpg" alt="Skmei Watch Back" class="watch-image">
+                    </div>
+                    <div class="image-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                </div>
+                <div class="watch-content">
+                    <span class="watch-brand">Skmei</span>
+                    <h3 class="watch-name">Skmei 1370</h3>
+                    <p class="watch-description">Classic styling with large case size and clean dial arrangement.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">Ksh 4,500</span>
+                        <button class="add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
