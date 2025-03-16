@@ -685,7 +685,7 @@ section {
     border-radius: 2px;
 }
 
-/* Unified container with border */
+/* New unified container with border */
 .brands-container {
     display: flex;
     justify-content: center;
@@ -698,7 +698,6 @@ section {
     border: 1px solid rgba(255, 215, 0, 0.3); /* Gold-colored border with transparency */
     border-radius: 8px;
     position: relative;
-    overflow-x: auto; /* Basic overflow handling */
 }
 
 /* Line at the top of the container */
@@ -729,11 +728,40 @@ section {
     height: 45px;
     filter: grayscale(100%) brightness(150%);
     opacity: 0.6;
-    /* No transition or transform since hover effect is removed */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0.9);
     cursor: pointer;
 }
 
-/* Removed hover effect */
+.brand-logo:hover {
+    filter: grayscale(0%) brightness(100%);
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Add overflow container to handle additional logos gracefully */
+.brands-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: gold rgba(0,0,0,0.1); /* For Firefox */
+}
+
+/* Customize scrollbar for Webkit browsers */
+.brands-container::-webkit-scrollbar {
+    height: 4px;
+}
+
+.brands-container::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}
+
+.brands-container::-webkit-scrollbar-thumb {
+    background-color: gold;
+    border-radius: 4px;
+}
 
 @media (max-width: 768px) {
     .brands-container {
