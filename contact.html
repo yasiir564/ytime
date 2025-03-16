@@ -924,34 +924,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
         // Initialize AOS animation
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                easing: 'ease',
-                once: true,
-                offset: 100
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 800,
+        easing: 'ease',
+        once: true,
+        offset: 100
+    });
+    
+    // Mobile menu toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    hamburger.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+    
+    // Initialize OpenStreetMap for Nairobi
+    const nairobiMap = L.map('map').setView([-1.2921, 36.8219], 12);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    }).addTo(nairobiMap);
+    
+    // Add a marker for Nairobi city center
+    const nairobiMarker = L.marker([-1.2921, 36.8219]).addTo(nairobiMap);
+    nairobiMarker.bindPopup("<b>Nairobi</b><br>Capital of Kenya").openPopup();
+    
+    // Contact form validation
+    const contactForm = document.getElementById('contactForm');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Mobile menu toggle
-            const hamburger = document.querySelector('.hamburger');
-            const navLinks = document.querySelector('.nav-links');
+            let isValid = true;
             
-            hamburger.addEventListener('click', function() {
-                navLinks.classList.toggle('active');
-                hamburger.classList.toggle('active');
-            });
-            
-            // Contact form validation
-            const contactForm = document.getElementById('contactForm');
-            
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                let isValid = true;
-                
-                // Name validation
-                const name = document.getElementById('name');
-                const nameError = document.getElementById('name-error');
+            // Name validation
+            const name = document.getElementById('name');
+            const nameError = document.getElementById('name-error');
+            if (name && nameError) {
                 if (name.value.trim() === '') {
                     name.classList.add('error');
                     name.classList.remove('success');
@@ -962,10 +976,12 @@
                     name.classList.add('success');
                     nameError.style.display = 'none';
                 }
-                
-                // Email validation
-                const email = document.getElementById('email');
-                const emailError = document.getElementById('email-error');
+            }
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailError = document.getElementById('email-error');
+            if (email && emailError) {
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailPattern.test(email.value)) {
                     email.classList.add('error');
@@ -977,10 +993,12 @@
                     email.classList.add('success');
                     emailError.style.display = 'none';
                 }
-                
-                // Phone validation
-                const phone = document.getElementById('phone');
-                const phoneError = document.getElementById('phone-error');
+            }
+            
+            // Phone validation
+            const phone = document.getElementById('phone');
+            const phoneError = document.getElementById('phone-error');
+            if (phone && phoneError) {
                 if (phone.value.trim() === '') {
                     phone.classList.add('error');
                     phone.classList.remove('success');
@@ -991,10 +1009,12 @@
                     phone.classList.add('success');
                     phoneError.style.display = 'none';
                 }
-                
-                // Subject validation
-                const subject = document.getElementById('subject');
-                const subjectError = document.getElementById('subject-error');
+            }
+            
+            // Subject validation
+            const subject = document.getElementById('subject');
+            const subjectError = document.getElementById('subject-error');
+            if (subject && subjectError) {
                 if (subject.value.trim() === '') {
                     subject.classList.add('error');
                     subject.classList.remove('success');
@@ -1005,10 +1025,12 @@
                     subject.classList.add('success');
                     subjectError.style.display = 'none';
                 }
-                
-                // Message validation
-                const message = document.getElementById('message');
-                const messageError = document.getElementById('message-error');
+            }
+            
+            // Message validation
+            const message = document.getElementById('message');
+            const messageError = document.getElementById('message-error');
+            if (message && messageError) {
                 if (message.value.trim() === '') {
                     message.classList.add('error');
                     message.classList.remove('success');
@@ -1019,12 +1041,14 @@
                     message.classList.add('success');
                     messageError.style.display = 'none';
                 }
-                
-                // If form is valid, submit
-                if (isValid) {
-                    // Here you would normally send the form data to your server
-                    // For demonstration purposes, we'll just show the success message
-                    const successMessage = document.querySelector('.success-message');
+            }
+            
+            // If form is valid, submit
+            if (isValid) {
+                // Here you would normally send the form data to your server
+                // For demonstration purposes, we'll just show the success message
+                const successMessage = document.querySelector('.success-message');
+                if (successMessage) {
                     successMessage.style.display = 'block';
                     
                     // Reset form after successful submission
@@ -1040,59 +1064,63 @@
                         }, 5000);
                     }, 1000);
                 }
-            });
-            
-            // Smooth scroll for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    
-                    const target = document.querySelector(targetId);
-                    if (target) {
-                        window.scrollTo({
-                            top: target.offsetTop - 70,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Close mobile menu if open
-                        if (navLinks.classList.contains('active')) {
-                            navLinks.classList.remove('active');
-                            hamburger.classList.remove('active');
-                        }
-                    }
-                });
-            });
-            
-            // Navbar scroll effect
-            window.addEventListener('scroll', function() {
-                const navbar = document.querySelector('.navbar');
-                if (window.scrollY > 100) {
-                    navbar.style.padding = '5px 0';
-                    navbar.style.backgroundColor = 'rgba(10, 25, 47, 0.95)';
-                } else {
-                    navbar.style.padding = '10px 0';
-                    navbar.style.backgroundColor = 'rgba(10, 25, 47, 0.95)';
-                }
-            });
-            
-            // Animate elements on scroll
-            function animateOnScroll() {
-                const elements = document.querySelectorAll('.fade-up');
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    if (elementPosition < windowHeight - 100) {
-                        element.classList.add('active');
-                    }
-                });
             }
-            
-            window.addEventListener('scroll', animateOnScroll);
-            animateOnScroll(); // Initial check on page load
         });
+    }
+    
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const target = document.querySelector(targetId);
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 70,
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                if (navLinks && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                }
+            }
+        });
+    });
+    
+    // Navbar scroll effect
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                navbar.style.padding = '5px 0';
+                navbar.style.backgroundColor = 'rgba(10, 25, 47, 0.95)';
+            } else {
+                navbar.style.padding = '10px 0';
+                navbar.style.backgroundColor = 'rgba(10, 25, 47, 0.95)';
+            }
+        });
+    }
+    
+    // Animate elements on scroll
+    function animateOnScroll() {
+        const elements = document.querySelectorAll('.fade-up');
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            if (elementPosition < windowHeight - 100) {
+                element.classList.add('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', animateOnScroll);
+    animateOnScroll(); // Initial check on page load
+});
     </script>
 </body>
 </html>
