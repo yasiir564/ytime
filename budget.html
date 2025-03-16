@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YTime Luxury Watches - Budget Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
        /* Base Styles */
 * {
@@ -1030,196 +1031,228 @@ h1, h2, h3, h4 {
 
     <script>
         // Sample watch data (simulating database)
-        const watches = [
-            {
-                id: 1,
-                brand: 'rolex',
-                name: 'Submariner',
-                style: 'diving',
-                price: 1200000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 2,
-                brand: 'casio',
-                name: 'G-Shock MT-G',
-                style: 'sports',
-                price: 45000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 3,
-                brand: 'hublot',
-                name: 'Big Bang',
-                style: 'chronograph',
-                price: 2500000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 4,
-                brand: 'patek-philippe',
-                name: 'Nautilus',
-                style: 'dress',
-                price: 5000000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 5,
-                brand: 'skmei',
-                name: 'Digital Sport',
-                style: 'sports',
-                price: 3500,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 6,
-                brand: 'seiko',
-                name: 'Prospex Diver',
-                style: 'diving',
-                price: 65000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 7,
-                brand: 'citizen',
-                name: 'Eco-Drive',
-                style: 'dress',
-                price: 38000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 8,
-                brand: 'casio',
-                name: 'Edifice',
-                style: 'chronograph',
-                price: 25000,
-                image: '/api/placeholder/400/300'
-            },
-            {
-                id: 9,
-                brand: 'rolex',
-                name: 'Datejust',
-                style: 'dress',
-                price: 950000,
-                image: '/api/placeholder/400/300'
-            }
-        ];
+const watches = [
+    {
+        id: 1,
+        brand: 'rolex',
+        name: 'Submariner',
+        style: 'diving',
+        price: 1200000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 2,
+        brand: 'casio',
+        name: 'G-Shock MT-G',
+        style: 'sports',
+        price: 45000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 3,
+        brand: 'hublot',
+        name: 'Big Bang',
+        style: 'chronograph',
+        price: 2500000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 4,
+        brand: 'patek-philippe',
+        name: 'Nautilus',
+        style: 'dress',
+        price: 5000000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 5,
+        brand: 'skmei',
+        name: 'Digital Sport',
+        style: 'sports',
+        price: 3500,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 6,
+        brand: 'seiko',
+        name: 'Prospex Diver',
+        style: 'diving',
+        price: 65000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 7,
+        brand: 'citizen',
+        name: 'Eco-Drive',
+        style: 'dress',
+        price: 38000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 8,
+        brand: 'casio',
+        name: 'Edifice',
+        style: 'chronograph',
+        price: 25000,
+        image: '/api/placeholder/400/300'
+    },
+    {
+        id: 9,
+        brand: 'rolex',
+        name: 'Datejust',
+        style: 'dress',
+        price: 950000,
+        image: '/api/placeholder/400/300'
+    }
+];
 
-        // DOM Elements
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
-        const calculateBtn = document.getElementById('calculateBtn');
-        const budgetResults = document.getElementById('budgetResults');
-        const recommendedWatchesContainer = document.getElementById('recommendedWatches');
+// DOM Elements
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+const calculateBtn = document.getElementById('calculateBtn');
+const budgetResults = document.getElementById('budgetResults');
+const recommendedWatchesContainer = document.getElementById('recommendedWatches');
 
-        // Mobile Menu Toggle
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+// Mobile Menu Toggle
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+});
+
+// Budget Calculation
+calculateBtn.addEventListener('click', function() {
+    const budget = parseFloat(document.getElementById('budget').value);
+    const brand = document.getElementById('brand').value;
+    const style = document.getElementById('style').value;
+    const paymentPlan = document.getElementById('payment').value;
+    
+    if (isNaN(budget) || budget <= 0) {
+        // Replace standard alert with SweetAlert
+        Swal.fire({
+            title: 'Invalid Input',
+            text: 'Please enter a valid budget amount',
+            icon: 'error',
+            confirmButtonText: 'OK'
         });
+        return;
+    }
+    
+    // Calculate budget metrics
+    let monthlyPayment = 0;
+    if (paymentPlan === 'monthly') {
+        // Assume 12-month payment plan with 10% interest
+        monthlyPayment = (budget * 1.1) / 12;
+    }
+    
+    // Filter watches based on criteria
+    let filteredWatches = watches.filter(watch => {
+        let matchesBrand = brand === 'all' || watch.brand === brand;
+        let matchesStyle = style === 'all' || watch.style === style;
+        let isAffordable = watch.price <= budget;
+        return matchesBrand && matchesStyle && isAffordable;
+    });
+    
+    // Sort by price (ascending)
+    filteredWatches.sort((a, b) => a.price - b.price);
+    
+    // Update results display
+    document.getElementById('availableBudget').textContent = `KSH ${budget.toLocaleString()}`;
+    
+    document.getElementById('monthlyPayment').textContent = paymentPlan === 'monthly' ? 
+        `KSH ${monthlyPayment.toFixed(2).toLocaleString()}` : 'N/A';
+    
+    const minPrice = filteredWatches.length > 0 ? filteredWatches[0].price : 0;
+    const maxPrice = filteredWatches.length > 0 ? filteredWatches[filteredWatches.length - 1].price : 0;
+    document.getElementById('priceRange').textContent = `KSH ${minPrice.toLocaleString()} - KSH ${maxPrice.toLocaleString()}`;
+    
+    document.getElementById('watchCount').textContent = `${filteredWatches.length} watches`;
+    
+    // Display results
+    budgetResults.style.display = 'block';
+    
+    // Generate watch recommendations
+    displayWatchRecommendations(filteredWatches);
+    
+    // Scroll to results
+    setTimeout(() => {
+        budgetResults.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+});
 
-        // Budget Calculation
-        calculateBtn.addEventListener('click', function() {
-            const budget = parseFloat(document.getElementById('budget').value);
-            const brand = document.getElementById('brand').value;
-            const style = document.getElementById('style').value;
-            const paymentPlan = document.getElementById('payment').value;
-            
-            if (isNaN(budget) || budget <= 0) {
-                alert('Please enter a valid budget amount');
-                return;
-            }
-            
-            // Calculate budget metrics
-            let monthlyPayment = 0;
-            if (paymentPlan === 'monthly') {
-                // Assume 12-month payment plan with 10% interest
-                monthlyPayment = (budget * 1.1) / 12;
-            }
-            
-            // Filter watches based on criteria
-            let filteredWatches = watches.filter(watch => {
-                let matchesBrand = brand === 'all' || watch.brand === brand;
-                let matchesStyle = style === 'all' || watch.style === style;
-                let isAffordable = watch.price <= budget;
-                return matchesBrand && matchesStyle && isAffordable;
-            });
-            
-            // Sort by price (ascending)
-            filteredWatches.sort((a, b) => a.price - b.price);
-            
-            // Update results display
-            document.getElementById('availableBudget').textContent = `KSH ${budget.toLocaleString()}`;
-            
-            document.getElementById('monthlyPayment').textContent = paymentPlan === 'monthly' ? 
-                `KSH ${monthlyPayment.toFixed(2).toLocaleString()}` : 'N/A';
-            
-            const minPrice = filteredWatches.length > 0 ? filteredWatches[0].price : 0;
-            const maxPrice = filteredWatches.length > 0 ? filteredWatches[filteredWatches.length - 1].price : 0;
-            document.getElementById('priceRange').textContent = `KSH ${minPrice.toLocaleString()} - KSH ${maxPrice.toLocaleString()}`;
-            
-            document.getElementById('watchCount').textContent = `${filteredWatches.length} watches`;
-            
-            // Display results
-            budgetResults.style.display = 'block';
-            
-            // Generate watch recommendations
-            displayWatchRecommendations(filteredWatches);
-            
-            // Scroll to results
-            setTimeout(() => {
-                budgetResults.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+// Display watch recommendations
+function displayWatchRecommendations(watchesList) {
+    recommendedWatchesContainer.innerHTML = '';
+    
+    if (watchesList.length === 0) {
+        recommendedWatchesContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 30px;">
+                <h3>No watches match your criteria</h3>
+                <p>Try adjusting your budget or preferences</p>
+            </div>
+        `;
+        
+        // Add SweetAlert notification for no results
+        Swal.fire({
+            title: 'No Matches Found',
+            text: 'Try adjusting your budget or preferences',
+            icon: 'info',
+            confirmButtonText: 'OK'
         });
-
-        // Display watch recommendations
-        function displayWatchRecommendations(watchesList) {
-            recommendedWatchesContainer.innerHTML = '';
+        
+        return;
+    }
+    
+    watchesList.forEach(watch => {
+        const watchCard = document.createElement('div');
+        watchCard.className = 'watch-card';
+        watchCard.innerHTML = `
+            <img src="${watch.image}" alt="${watch.name}" class="watch-img">
+            <div class="watch-content">
+                <div class="watch-brand">${watch.brand.toUpperCase()}</div>
+                <h3 class="watch-name">${watch.name}</h3>
+                <div class="watch-price">KSH ${watch.price.toLocaleString()}</div>
+                <button class="btn add-to-cart-btn" data-id="${watch.id}">Add to Cart</button>
+            </div>
+        `;
+        recommendedWatchesContainer.appendChild(watchCard);
+    });
+    
+    // Add event listeners for "Add to Cart" buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const watchId = this.getAttribute('data-id');
+            const selectedWatch = watches.find(watch => watch.id == watchId);
             
-            if (watchesList.length === 0) {
-                recommendedWatchesContainer.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 30px;">
-                        <h3>No watches match your criteria</h3>
-                        <p>Try adjusting your budget or preferences</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            watchesList.forEach(watch => {
-                const watchCard = document.createElement('div');
-                watchCard.className = 'watch-card';
-                watchCard.innerHTML = `
-                    <img src="${watch.image}" alt="${watch.name}" class="watch-img">
-                    <div class="watch-content">
-                        <div class="watch-brand">${watch.brand.toUpperCase()}</div>
-                        <h3 class="watch-name">${watch.name}</h3>
-                        <div class="watch-price">KSH ${watch.price.toLocaleString()}</div>
-                        <button class="btn">Add to Cart</button>
-                    </div>
-                `;
-                recommendedWatchesContainer.appendChild(watchCard);
+            // Use SweetAlert for add to cart confirmation
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${selectedWatch.brand.toUpperCase()} ${selectedWatch.name} has been added to your cart`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
-        }
+        });
+    });
+}
 
-        // Animation on scroll
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.budget-tool, .watches-grid');
-            
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementBottom = element.getBoundingClientRect().bottom;
-                const isVisible = elementTop < window.innerHeight && elementBottom > 0;
-                
-                if (isVisible) {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }
-            });
+// Animation on scroll
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.budget-tool, .watches-grid');
+    
+    elements.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const elementBottom = element.getBoundingClientRect().bottom;
+        const isVisible = elementTop < window.innerHeight && elementBottom > 0;
+        
+        if (isVisible) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
         }
+    });
+}
 
-        // Initial animation
-        window.addEventListener('load', animateOnScroll);
-        window.addEventListener('scroll', animateOnScroll);
+// Initial animation
+window.addEventListener('load', animateOnScroll);
+window.addEventListener('scroll', animateOnScroll);
     </script>
 </body>
 </html>
