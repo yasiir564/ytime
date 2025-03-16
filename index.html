@@ -789,41 +789,58 @@ section {
 /* Watch Collection */
 .collection {
     background-color: var(--background);
+    padding: 4rem 0;
     overflow: hidden;
 }
 
-.collection-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 3.5rem;
-    flex-wrap: wrap;
-}
-
-.collection-tab {
-    padding: 0.5rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: rgba(30, 41, 59, 0.6);
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-    font-size: 0.9rem;
-}
-
-.collection-tab.active {
-    background: var(--accent);
-    color: var(--text);
-    border-color: var(--accent);
-    box-shadow: var(--shadow-glow);
-}
-
-/* Watches Grid */
-.watches-grid {
+/* Watches Grid (replacing watches-grid) */
+.container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2.5rem;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.section-title-container {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.gold-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 /* Watch Card */
@@ -832,27 +849,36 @@ section {
     border-radius: 16px;
     overflow: hidden;
     position: relative;
-    transition: transform 0.4s var(--easing-bounce), box-shadow 0.4s;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease;
     box-shadow: var(--shadow-md);
     height: 100%;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
-    animation: fadeInUp 0.8s both;
-    animation-delay: calc(var(--delay) * 0.1s);
+    animation: fadeIn 0.6s ease-out both;
+    animation-delay: calc(var(--delay, 0) * 0.1s);
 }
 
 .watch-card:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: var(--shadow-lg), 0 10px 25px -5px rgba(79, 70, 229, 0.25);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg), 0 10px 20px rgba(79, 70, 229, 0.15);
     border-color: rgba(99, 102, 241, 0.2);
 }
 
+/* Watch Image Container */
 .watch-image-container {
     position: relative;
     padding-top: 100%;
     overflow: hidden;
     background: var(--surface-dark);
+}
+
+.watch-images {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .watch-image {
@@ -862,41 +888,67 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s var(--easing-bounce);
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.6s ease;
 }
 
-.watch-card:hover .watch-image {
-    transform: scale(1.08) rotate(1deg);
+.watch-image.active {
+    opacity: 1;
 }
 
+.watch-card:hover .watch-image.active {
+    transform: scale(1.05);
+}
+
+/* Image Navigation Dots */
+.image-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.dot.active {
+    background: var(--accent);
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background: var(--accent-light);
+}
+
+/* Watch Tags */
 .watch-tag {
     position: absolute;
     top: 1rem;
     left: 1rem;
     padding: 0.25rem 0.75rem;
-    background: var(--accent);
-    color: var(--text);
     border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 600;
     z-index: 2;
     letter-spacing: 0.02em;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.watch-tag.sale {
-    background: var(--error);
+.watch-tag:not([class*="sale"]):not([class*="new"]):not([class*="limited"]) {
+    background: var(--accent);
+    color: var(--text);
 }
 
-.watch-tag.new {
-    background: var(--success);
-}
-
-.watch-tag.limited {
-    background: linear-gradient(45deg, #d4af37, #f9f295, #d4af37);
-    color: #000;
-}
-
+/* Watch Content */
 .watch-content {
     padding: 1.5rem;
     display: flex;
@@ -918,7 +970,7 @@ section {
     font-weight: 700;
     margin-bottom: 0.75rem;
     color: var(--text);
-    transition: var(--transition-normal);
+    transition: color 0.3s ease;
 }
 
 .watch-card:hover .watch-name {
@@ -933,6 +985,7 @@ section {
     line-height: 1.6;
 }
 
+/* Watch Footer */
 .watch-footer {
     display: flex;
     justify-content: space-between;
@@ -949,13 +1002,6 @@ section {
     color: transparent;
 }
 
-.watch-price-old {
-    text-decoration: line-through;
-    color: var(--text-darker);
-    font-size: 0.875rem;
-    margin-right: 0.5rem;
-}
-
 .add-to-cart {
     display: flex;
     align-items: center;
@@ -967,14 +1013,49 @@ section {
     color: var(--text);
     border: none;
     cursor: pointer;
-    transition: var(--transition-normal);
+    transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
 }
 
 .add-to-cart:hover {
     background: var(--accent-hover);
     transform: scale(1.1);
-    box-shadow: var(--shadow-glow);
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .watch-content {
+        padding: 1.25rem;
+    }
+    
+    .watch-name {
+        font-size: 1.125rem;
+    }
+    
+    .watch-price {
+        font-size: 1.125rem;
+    }
+    
+    .add-to-cart {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Luxury Collection Slider */
