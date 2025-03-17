@@ -2953,7 +2953,7 @@ function showCartOverlay() {
                     cart.map((item, index) => `
                         <div class="cart-item">
                             <div class="cart-item-image">
-                                <img src="${item.image}" alt="${item.name}" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                                <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.jpg'">
                             </div>
                             <div class="cart-item-details">
                                 <h3>${item.brand} ${item.name}</h3>
@@ -3136,8 +3136,19 @@ function initializeWatchImageGallery() {
         const images = card.querySelectorAll('.watch-image');
         
         if (dots.length > 0 && images.length > 0) {
+            // Ensure first image is always visible initially
+            if (images[0]) {
+                images[0].classList.add('active');
+            }
+            if (dots[0]) {
+                dots[0].classList.add('active');
+            }
+            
             dots.forEach(dot => {
-                dot.addEventListener('click', function() {
+                dot.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     const index = parseInt(this.dataset.index);
                     
                     // Hide all images
@@ -3157,25 +3168,30 @@ function initializeWatchImageGallery() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Function to initialize Swiper slider
+function initializeSwiper() {
     // Initialize Swiper with error handling
-    let swiper;
     const swiperContainer = document.querySelector('.swiper-container');
     
-    // Dynamically add swiper slides first
+    if (!swiperContainer) return;
+    
+    // Dynamically add swiper slides
     const watches = [
-        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'rolex 1.jpg', tag: 'Limited' },
-        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'hublot 1.jpg', tag: 'Featured' },
-        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'PatekPhilippe-WorldTime-5230G-001-323908-241118-134610.webp', tag: 'New' },
-        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'casio round 1.jpg', tag: 'Limited' },
-        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'Naviforce 1.jpg', tag: 'Featured' }
+        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'images/rolex1.jpg', tag: 'Limited' },
+        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'images/hublot1.jpg', tag: 'Featured' },
+        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'images/patekphilippe1.jpg', tag: 'New' },
+        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'images/casio1.jpg', tag: 'Limited' },
+        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'images/naviforce1.jpg', tag: 'Featured' }
     ];
 
     const swiperWrapper = document.querySelector('.swiper-wrapper');
     if (swiperWrapper) {
+        // Clear any existing slides
+        swiperWrapper.innerHTML = '';
+        
         watches.forEach(watch => {
-            // Validate image path to prevent broken images
-            const imagePath = watch.image || 'placeholder.jpg';
+            // Ensure we have a valid image path
+            const imagePath = watch.image || 'images/placeholder.jpg';
             
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
@@ -3184,7 +3200,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="watch-card">
                     <div class="watch-image-container">
                         ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
-                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image active" onerror="this.src='images/placeholder.jpg';">
                     </div>
                     <div class="watch-content">
                         <span class="watch-brand">${watch.brand}</span>
@@ -3207,7 +3223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Swiper if available, otherwise use fallback
     if (typeof Swiper !== 'undefined' && swiperContainer) {
         try {
-            swiper = new Swiper('.swiper-container', {
+            new Swiper('.swiper-container', {
                 slidesPerView: 1,
                 spaceBetween: 30,
                 loop: true,
@@ -3239,91 +3255,74 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (swiperContainer) {
         initFallbackSlider();
     }
+}
+
+// Fallback slider function
+function initFallbackSlider() {
+    const swiperContainer = document.querySelector('.swiper-container');
+    if (!swiperContainer) return;
     
-    // Fallback slider function
-    function initFallbackSlider() {
-        const slides = swiperContainer.querySelectorAll('.swiper-slide');
-        if (slides.length > 0) {
-            // Create a basic slider
-            let currentSlide = 0;
+    const slides = swiperContainer.querySelectorAll('.swiper-slide');
+    if (slides.length > 0) {
+        // Create a basic slider
+        let currentSlide = 0;
+        
+        // Show only current slide
+        const showSlide = (index) => {
+            slides.forEach((slide, i) => {
+                slide.style.display = i === index ? 'block' : 'none';
+            });
+        };
+        
+        // Initial display
+        showSlide(currentSlide);
+        
+        // Create prev/next buttons if they don't exist
+        if (!swiperContainer.querySelector('.swiper-button-prev')) {
+            const prevButton = document.createElement('div');
+            prevButton.className = 'swiper-button-prev';
+            prevButton.innerHTML = '❮';
+            prevButton.style.position = 'absolute';
+            prevButton.style.left = '10px';
+            prevButton.style.top = '50%';
+            prevButton.style.zIndex = '10';
+            prevButton.style.cursor = 'pointer';
+            swiperContainer.appendChild(prevButton);
             
-            // Show only current slide
-            const showSlide = (index) => {
-                slides.forEach((slide, i) => {
-                    slide.style.display = i === index ? 'block' : 'none';
-                });
-            };
+            prevButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(currentSlide);
+            });
+        }
+        
+        if (!swiperContainer.querySelector('.swiper-button-next')) {
+            const nextButton = document.createElement('div');
+            nextButton.className = 'swiper-button-next';
+            nextButton.innerHTML = '❯';
+            nextButton.style.position = 'absolute';
+            nextButton.style.right = '10px';
+            nextButton.style.top = '50%';
+            nextButton.style.zIndex = '10';
+            nextButton.style.cursor = 'pointer';
+            swiperContainer.appendChild(nextButton);
             
-            // Initial display
-            showSlide(currentSlide);
-            
-            // Create prev/next buttons if they don't exist
-            if (!swiperContainer.querySelector('.swiper-button-prev')) {
-                const prevButton = document.createElement('div');
-                prevButton.className = 'swiper-button-prev';
-                prevButton.innerHTML = '❮';
-                prevButton.style.position = 'absolute';
-                prevButton.style.left = '10px';
-                prevButton.style.top = '50%';
-                prevButton.style.zIndex = '10';
-                prevButton.style.cursor = 'pointer';
-                swiperContainer.appendChild(prevButton);
-                
-                prevButton.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent page movement
-                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                    showSlide(currentSlide);
-                });
-            }
-            
-            if (!swiperContainer.querySelector('.swiper-button-next')) {
-                const nextButton = document.createElement('div');
-                nextButton.className = 'swiper-button-next';
-                nextButton.innerHTML = '❯';
-                nextButton.style.position = 'absolute';
-                nextButton.style.right = '10px';
-                nextButton.style.top = '50%';
-                nextButton.style.zIndex = '10';
-                nextButton.style.cursor = 'pointer';
-                swiperContainer.appendChild(nextButton);
-                
-                nextButton.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent page movement
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    showSlide(currentSlide);
-                });
-            }
-            
-            // Auto slide every 3 seconds
-            setInterval(() => {
+            nextButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 currentSlide = (currentSlide + 1) % slides.length;
                 showSlide(currentSlide);
-            }, 3000);
+            });
         }
+        
+        // Auto slide every 3 seconds
+        setInterval(function() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 3000);
     }
-    
-    // Image gallery dot navigation
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach(dot => {
-        dot.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent page movement
-            const container = this.closest('.watch-image-container');
-            const images = container.querySelectorAll('.watch-image');
-            const allDots = container.querySelectorAll('.dot');
-            const index = parseInt(this.getAttribute('data-index'));
-            
-            // Remove active class from all images and dots
-            images.forEach(img => img.classList.remove('active'));
-            allDots.forEach(d => d.classList.remove('active'));
-            
-            // Add active class to current image and dot
-            if (images[index] && allDots[index]) {
-                images[index].classList.add('active');
-                this.classList.add('active');
-            }
-        });
-    });
-});
+}
 
 // Function to handle mobile navigation
 function initMobileNav() {
@@ -3331,9 +3330,24 @@ function initMobileNav() {
     const navLinks = document.querySelector('.nav-links');
     
     if (hamburger && navLinks) {
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
+        // Remove any existing event listeners
+        const newHamburger = hamburger.cloneNode(true);
+        hamburger.parentNode.replaceChild(newHamburger, hamburger);
+        
+        // Add event listener to new element
+        newHamburger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle('active');
             navLinks.classList.toggle('active');
+        });
+        
+        // Add click event outside to close menu
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && !newHamburger.contains(e.target) && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                newHamburger.classList.remove('active');
+            }
         });
     }
     
@@ -3341,6 +3355,7 @@ function initMobileNav() {
     const mobileNavLinks = document.querySelectorAll('.nav-links a');
     mobileNavLinks.forEach(link => {
         link.addEventListener('click', function() {
+            const hamburger = document.querySelector('.hamburger');
             if (hamburger && hamburger.classList.contains('active')) {
                 hamburger.classList.remove('active');
                 navLinks.classList.remove('active');
@@ -3428,6 +3443,7 @@ function initWatchCardEffects() {
     });
 }
 
+// Initialize price filter
 function initPriceFilter() {
     const priceRange = document.querySelector('.price-range');
     
@@ -3436,26 +3452,28 @@ function initPriceFilter() {
         const priceMax = document.querySelector('.price-max');
         const rangeInputs = priceRange.querySelectorAll('input[type="range"]');
         
-        rangeInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const minVal = parseInt(rangeInputs[0].value);
-                const maxVal = parseInt(rangeInputs[1].value);
-                
-                if (maxVal - minVal < 1000) {
-                    if (this === rangeInputs[0]) {
-                        rangeInputs[0].value = maxVal - 1000;
-                    } else {
-                        rangeInputs[1].value = minVal + 1000;
-                    }
-                } else {
-                    priceMin.textContent = `Ksh ${minVal}`;
-                    priceMax.textContent = `Ksh ${maxVal}`;
+        if (rangeInputs.length >= 2 && priceMin && priceMax) {
+            rangeInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const minVal = parseInt(rangeInputs[0].value);
+                    const maxVal = parseInt(rangeInputs[1].value);
                     
-                    // Apply filter to products (if on collection page)
-                    filterProductsByPrice(minVal, maxVal);
-                }
+                    if (maxVal - minVal < 1000) {
+                        if (this === rangeInputs[0]) {
+                            rangeInputs[0].value = maxVal - 1000;
+                        } else {
+                            rangeInputs[1].value = minVal + 1000;
+                        }
+                    } else {
+                        priceMin.textContent = `Ksh ${minVal}`;
+                        priceMax.textContent = `Ksh ${maxVal}`;
+                        
+                        // Apply filter to products (if on collection page)
+                        filterProductsByPrice(minVal, maxVal);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -3464,13 +3482,17 @@ function filterProductsByPrice(min, max) {
     const watchCards = document.querySelectorAll('.watch-card');
     
     watchCards.forEach(card => {
-        const priceText = card.querySelector('.watch-price').textContent;
+        const priceElement = card.querySelector('.watch-price');
+        if (!priceElement) return;
+        
+        const priceText = priceElement.textContent;
+        // Extract numeric value from price text (e.g., "Ksh 10000" -> 10000)
         const price = parseInt(priceText.replace(/[^\d]/g, ''));
         
         if (price >= min && price <= max) {
-            card.style.display = 'block';
+            card.closest('.product-item, .swiper-slide').style.display = 'block';
         } else {
-            card.style.display = 'none';
+            card.closest('.product-item, .swiper-slide').style.display = 'none';
         }
     });
 }
@@ -3502,30 +3524,30 @@ function initSmoothScroll() {
 
 // Function to initialize cart buttons
 function initializeCartButtons() {
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
-    const cartIcon = document.querySelector('.cart-icon');
-
-    // Add click event to all "Add to Cart" buttons
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+    // Use event delegation for better performance and to handle dynamically added buttons
+    document.addEventListener('click', function(e) {
+        // Check if clicked element is an add-to-cart button or its child
+        const addToCartBtn = e.target.closest('.add-to-cart');
+        if (addToCartBtn) {
             e.preventDefault();
             
             // Get product data from button attributes or closest parent
-            const watchCard = this.closest('.watch-card');
+            const watchCard = addToCartBtn.closest('.watch-card');
             const productData = {
-                brand: this.dataset.brand || watchCard.querySelector('.watch-brand')?.textContent,
-                name: this.dataset.name || watchCard.querySelector('.watch-name')?.textContent,
-                price: this.dataset.price || watchCard.querySelector('.watch-price')?.textContent,
-                image: this.dataset.image || watchCard.querySelector('.watch-image.active, .watch-image:first-child')?.src || 'placeholder.jpg',
+                brand: addToCartBtn.dataset.brand || watchCard.querySelector('.watch-brand')?.textContent,
+                name: addToCartBtn.dataset.name || watchCard.querySelector('.watch-name')?.textContent,
+                price: addToCartBtn.dataset.price || watchCard.querySelector('.watch-price')?.textContent,
+                image: addToCartBtn.dataset.image || watchCard.querySelector('.watch-image.active, .watch-image')?.src || 'images/placeholder.jpg',
                 quantity: 1
             };
             
             // Add to cart functionality
             addToCart(productData);
-        });
+        }
     });
     
     // Handle cart icon click
+    const cartIcon = document.querySelector('.cart-icon');
     if (cartIcon) {
         cartIcon.addEventListener('click', function(e) {
             e.preventDefault();
@@ -3536,6 +3558,11 @@ function initializeCartButtons() {
 
 // Function to add product to cart
 function addToCart(productData) {
+    // Ensure image path is valid
+    if (productData.image && productData.image.indexOf('/') === -1) {
+        productData.image = 'images/' + productData.image;
+    }
+    
     // Get current cart from localStorage
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
@@ -3588,26 +3615,6 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// Animation on scroll initialization
-function initAOS() {
-    // Check if AOS library is loaded
-    if (typeof AOS !== 'undefined') {
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
-    }
-}
-
-// Initialize AOS if available
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof AOS !== 'undefined') {
-        initAOS();
-    }
-});
-
 // Handle "Back to Top" button
 function initBackToTop() {
     const backToTopBtn = document.querySelector('.back-to-top');
@@ -3630,6 +3637,19 @@ function initBackToTop() {
         });
     }
 }
+
+// Ensure all images have proper error handling
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        if (!img.hasAttribute('onerror')) {
+            img.onerror = function() {
+                this.src = 'images/placeholder.jpg';
+                this.onerror = null;
+            };
+        }
+    });
+});
     </script>
 </body>
 </html>
