@@ -3,1622 +3,818 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YTime Luxury - Watch Collection</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    <!-- GSAP and ScrollTrigger -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    
+    <title>YTime - Collection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <style>
-        :root {
-    /* Keeping the same color scheme as requested */
-    --primary: #0a0f1c;
-    --secondary: #141e33;
-    --accent: #4f46e5;
-    --accent-light: #6366f1;
-    --accent-hover: #7e7df9;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --gold: linear-gradient(45deg, #d4af37, #f9f295, #d4af37);
-    --silver: linear-gradient(45deg, #c0c0c0, #e8e8e8, #c0c0c0);
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
-    --text-darker: #64748b;
-    --background: #080b14;
-    --surface: #111827;
-    --surface-light: #1e293b;
-    --card: #0f172a;
-    --card-hover: #1e293b;
-    --border: rgba(255, 255, 255, 0.1);
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.5);
-    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Reset & Basic Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) var(--primary);
-    font-size: 16px;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--background);
-    color: var(--text);
-    line-height: 1.6;
-    overflow-x: hidden;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--primary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-hover);
-}
-
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-}
-
-h1 {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-}
-
-h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
-}
-
-h3 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-}
-
-p {
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-    line-height: 1.7;
-}
-
-a {
-    color: var(--accent-light);
-    text-decoration: none;
-    transition: var(--transition-fast);
-}
-
-a:hover {
-    color: var(--accent-hover);
-}
-
-.container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-main {
-    flex: 1;
-    padding-top: 80px; /* Account for fixed navbar */
-}
-
-/* Navigation */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    padding: 1.25rem 0;
-    background: rgba(8, 11, 20, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-}
-
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.logo img {
-    height: 38px;
-}
-
-.logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: var(--gold);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-    list-style: none;
-}
-
-.nav-link {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 500;
-    position: relative;
-    padding: 0.5rem 0;
-    opacity: 0.85;
-    transition: var(--transition-fast);
-}
-
-.nav-link:hover {
-    opacity: 1;
-    color: var(--accent-light);
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent-light);
-    transition: width 0.3s var(--easing-bounce);
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.cart-icon {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--accent);
-    color: var(--text);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    transition: var(--transition-normal);
-    box-shadow: var(--shadow-glow);
-    cursor: pointer;
-}
-
-.cart-icon:hover {
-    transform: scale(1.1);
-    background: var(--accent-hover);
-}
-
-.cart-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: var(--error);
-    color: white;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 2px solid var(--background);
-}
-
-/* Mobile Menu Button */
-.hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 21px;
-    cursor: pointer;
-    z-index: 1001;
-}
-
-.hamburger span {
-    display: block;
-    height: 3px;
-    width: 100%;
-    background-color: var(--text);
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-
-/* Shop Header */
-.shop-header {
-    padding: 8rem 0 4rem;
-    background: radial-gradient(circle at 70% 50%, var(--secondary) 0%, var(--primary) 50%, var(--background) 100%);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.shop-header-content {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 2;
-}
-
-.shop-title {
-    margin-bottom: 1rem;
-    position: relative;
-    display: inline-block;
-}
-
-.shop-title::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--gold);
-    border-radius: 2px;
-}
-
-.shop-subtitle {
-    color: var(--text-muted);
-    max-width: 600px;
-    margin: 0 auto 2rem;
-}
-
-.shop-bg-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    opacity: 0.07;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Filter Bar */
-.filter-bar {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: -2rem auto 0;
-    position: relative;
-    z-index: 10;
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid var(--border);
-    max-width: 1240px;
-}
-
-.filter-section {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.filter-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--text-muted);
-}
-
-.filter-dropdown {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    color: var(--text);
-    outline: none;
-    font-family: 'Poppins', sans-serif;
-    transition: var(--transition-fast);
-    cursor: pointer;
-    min-width: 120px;
-}
-
-.filter-dropdown:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
-}
-
-.filter-dropdown option {
-    background-color: var(--card);
-}
-
-.price-range {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.price-range input {
-    width: 100px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.5rem;
-    color: var(--text);
-    outline: none;
-    font-family: 'Poppins', sans-serif;
-}
-
-.view-options {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.view-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.view-btn:hover,
-.view-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-}
-
-/* Shop Content */
-.shop-content {
-    padding: 4rem 0;
-}
-
-/* Product Grid */
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.product-card {
-    background: var(--card);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: var(--transition-normal);
-    border: 1px solid var(--border);
-    position: relative;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.6s ease-out forwards;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--accent-light);
-}
-
-.product-image-container {
-    position: relative;
-    padding-top: 100%;
-    overflow: hidden;
-    background: var(--surface-light);
-}
-
-.product-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition-normal);
-}
-
-.product-card:hover .product-image {
-    transform: scale(1.05);
-}
-
-.product-tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: var(--accent);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    z-index: 5;
-}
-
-.product-tag.sale {
-    background: var(--error);
-}
-
-.product-tag.new {
-    background: var(--success);
-}
-
-.product-actions {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    z-index: 5;
-    opacity: 0;
-    transform: translateX(10px);
-    transition: var(--transition-normal);
-}
-
-.product-card:hover .product-actions {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.action-btn {
-    background: var(--surface);
-    color: var(--text);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    border: none;
-    outline: none;
-    box-shadow: var(--shadow-md);
-}
-
-.action-btn:hover {
-    background: var(--accent);
-    color: white;
-    transform: scale(1.1);
-}
-
-.product-info {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.product-category {
-    color: var(--accent-light);
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.075em;
-    margin-bottom: 0.5rem;
-}
-
-.product-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    transition: var(--transition-fast);
-}
-
-.product-card:hover .product-title {
-    color: var(--accent-light);
-}
-
-.product-description {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    flex-grow: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.stars {
-    display: flex;
-    gap: 0.15rem;
-    color: var(--warning);
-}
-
-.review-count {
-    color: var(--text-darker);
-    font-size: 0.8rem;
-}
-
-.product-price-container {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-}
-
-.product-price {
-    font-size: 1.5rem;
-    font-weight: 600;
-    background: var(--gold);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.product-price-old {
-    color: var(--text-darker);
-    text-decoration: line-through;
-    font-size: 1rem;
-}
-
-.product-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    outline: none;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-}
-
-.product-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-/* No Products Message */
-.no-products {
-    text-align: center;
-    padding: 3rem;
-    background: var(--card);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    grid-column: 1 / -1;
-}
-
-.no-products h3 {
-    color: var(--text);
-    margin-bottom: 1rem;
-}
-
-.no-products p {
-    color: var(--text-muted);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 4rem;
-}
-
-.page-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    transition: var(--transition-fast);
-    cursor: pointer;
-}
-
-.page-btn:hover,
-.page-btn.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-
-.page-btn.prev,
-.page-btn.next {
-    width: auto;
-    padding: 0 1rem;
-}
-
-/* Product Detail Section (Missing in original) */
-.product-detail {
-    padding: 4rem 0;
-}
-
-.product-detail-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    background: var(--card);
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-}
-
-.product-detail-images {
-    padding: 2rem;
-}
-
-.product-main-image {
-    width: 100%;
-    height: 400px;
-    object-fit: contain;
-    background: var(--surface-light);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-}
-
-.product-thumbnails {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-}
-
-.product-thumbnail {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    border: 2px solid transparent;
-}
-
-.product-thumbnail:hover,
-.product-thumbnail.active {
-    border-color: var(--accent);
-    transform: scale(1.05);
-}
-
-.product-detail-info {
-    padding: 3rem 2rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.product-detail-title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.product-detail-category {
-    display: inline-block;
-    background: var(--surface-light);
-    color: var(--accent-light);
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.075em;
-}
-
-.product-detail-rating {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.product-detail-price {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    background: var(--gold);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    display: inline-block;
-}
-
-.product-detail-description {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-    line-height: 1.8;
-}
-
-.product-options {
-    margin-bottom: 2rem;
-}
-
-.option-label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.75rem;
-}
-
-.option-buttons {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-}
-
-.option-btn {
-    background: var(--surface-light);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.5rem 1.25rem;
-    color: var(--text);
-    font-family: 'Poppins', sans-serif;
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.option-btn:hover,
-.option-btn.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-
-.quantity-control {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.quantity-btn {
-    background: var(--surface-light);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.quantity-btn:hover {
-    background: var(--accent);
-    color: white;
-}
-
-.quantity-input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    width: 80px;
-    color: var(--text);
-    text-align: center;
-    font-family: 'Poppins', sans-serif;
-}
-
-.product-actions-main {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.add-to-cart-btn {
-    flex: 1;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 1rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.add-to-cart-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-.wishlist-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    width: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.wishlist-btn:hover {
-    background: var(--error);
-    color: white;
-    border-color: var(--error);
-}
-
-.product-meta {
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-}
-
-.meta-item {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.meta-item strong {
-    color: var(--text);
-    min-width: 100px;
-}
-
-/* Footer */
-.footer {
-    background-color: var(--primary);
-    padding: 5rem 0 2rem;
-    position: relative;
-    overflow: hidden;
-    margin-top: auto;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 3rem;
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.footer-logo img {
-    height: 40px;
-}
-
-.footer-about {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.footer-heading {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
-    color: var(--text);
-}
-
-.footer-links {
-    list-style: none;
-}
-
-.footer-links li {
-    margin-bottom: 0.75rem;
-}
-
-.footer-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-links a:hover {
-    color: var(--accent);
-}
-
-.footer-contact-item {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1rem;
-    color: var(--text-muted);
-}
-
-.footer-social {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--surface-light);
-    color: var(--text);
-    transition: all 0.3s;
-}
-
-.social-icon:hover {
-    background: var(--accent);
-    transform: translateY(-5px);
-}
-
-.footer-bottom {
-    text-align: center;
-    padding-top: 3rem;
-    margin-top: 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-muted);
-}
-
-/* Animations */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
-    }
-}
-
-/* Improved Responsive Styles */
-@media (max-width: 1200px) {
-    .product-detail-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .product-detail-images {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-}
-
-@media (max-width: 992px) {
-    .filter-bar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .filter-section {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .view-options {
-        width: 100%;
-        justify-content: flex-end;
-    }
-    
-    .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 0 1.5rem;
-    }
-    
-    .shop-header {
-        padding: 6rem 0 3rem;
-    }
-    
-    /* Hamburger Menu Styles */
-    .hamburger {
-        display: flex;
-    }
-    
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        height: 100vh;
-        background: var(--primary);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.5s ease;
-        z-index: 999;
-        padding: 2rem;
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-    }
-    
-    .nav-links.active {
-        right: 0;
-    }
-    
-    .hamburger.active span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-    
-    .hamburger.active span:nth-child(2) {
-        opacity: 0;
-    }
-    
-    .hamburger.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -8px);
-    }
-    
-    .filter-bar {
-        margin-top: -1.5rem;
-        padding: 1.25rem;
-    }
-    
-    .product-actions-main {
-        flex-direction: column;
-    }
-    
-    .product-detail-info {
-        padding: 2rem 1.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .products-grid {
-        grid-template-columns: 1fr;
-        max-width: 320px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .filter-section {
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-    
-    .filter-title {
-        width: 100%;
-    }
-    
-    .price-range {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-    }
-    
-    .price-range input {
-        width: 100%;
-    }
-    
-    .product-detail-title {
-        font-size: 1.75rem;
-    }
-    
-    .product-options {
-        flex-direction: column;
-    }
-    
-    .option-buttons {
-        justify-content: flex-start;
-    }
-    
-    .pagination {
-        flex-wrap: wrap;
-    }
-    
-    .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-}
-
-/* New Utility Classes for Better Layout */
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 0.75rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
-.mt-8 { margin-top: 2rem; }
-.mt-12 { margin-top: 3rem; }
-.mt-16 { margin-top: 4rem; }
-
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 0.75rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mb-8 { margin-bottom: 2rem; }
-.mb-12 { margin-bottom: 3rem; }
-.mb-16 { margin-bottom: 4rem; }
-
-.p-2 { padding: 0.5rem; }
-.p-4 { padding: 1rem; }
-.p-6 { padding: 1.5rem; }
-.p-8 { padding: 2rem; }
-
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-left { text-align: left; }
-
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.gap-2 { gap: 0.5rem; }
-.gap-4 { gap: 1rem; }
-.gap-6 { gap: 1.5rem; }
-
-.w-full { width: 100%; }
-.max-w-md { max-width: 28rem; }
-.max-w-lg { max-width: 32rem; }
-.max-w-xl { max-width: 36rem; }
-.max-w-2xl { max-width: 42rem; }
-
-/* Dark Mode Enhancement */
-.dark-mode-toggle {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 99;
-    box-shadow: var(--shadow-lg);
-    transition: var(--transition-normal);
-}
-
-.dark-mode-toggle:hover {
-    transform: scale(1.1);
-    background: var(--accent-hover);
-}
-
-/* Quick View Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    z-index: 1100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    background: var(--card);
-    border-radius: 16px;
-    width: 100%;
-    max-width: 900px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    transform: translateY(30px);
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
-}
-
-.modal-overlay.active .modal-content {
-    transform: translateY(0);
-}
-
-.modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--surface);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    z-index: 5;
-}
-
-.modal-close:hover {
-    background: var(--error);
-    color: white;
-    transform: rotate(90deg);
-}
-
-/* Loading Animations */
-.loading-spinner {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(99, 102, 241, 0.2);
-    border-radius: 50%;
-    border-top-color: var(--accent);
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    text-align: center;
-}
-
-.loading-text {
-    margin-top: 1rem;
-    color: var(--text-muted);
-}
-
-/* Product Card Skeleton Loading */
-.skeleton-card {
-    background: var(--card);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    height: 100%;
-    position: relative;
-}
-
-.skeleton-image {
-    width: 100%;
-    padding-top: 100%;
-    background: linear-gradient(110deg, var(--surface) 8%, var(--surface-light) 18%, var(--surface) 33%);
-    background-size: 200% 100%;
-    animation: shine 1.5s infinite linear;
-}
-
-.skeleton-content {
-    padding: 1.5rem;
-}
-
-.skeleton-line {
-    height: 20px;
-    margin-bottom: 1rem;
-    background: linear-gradient(110deg, var(--surface) 8%, var(--surface-light) 18%, var(--surface) 33%);
-    background-size: 200% 100%;
-    animation: shine 1.5s infinite linear;
-    border-radius: 4px;
-}
-
-.skeleton-line:nth-child(2) {
-    width: 60%;
-}
-
-.skeleton-line:nth-child(3) {
-    width: 80%;
-    height: 15px;
-}
-
-.skeleton-line:nth-child(4) {
-    width: 40%;
-}
-
-@keyframes shine {
-    to {
-        background-position-x: -200%;
-    }
-}
-
-/* Cart Drawer */
-.cart-drawer {
-    position: fixed;
-    top: 0;
-    right: -400px;
-    width: 100%;
-    max-width: 400px;
-    height: 100vh;
-    background: var(--card);
-    z-index: 1200;
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
-    transition: right 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    display: flex;
-    flex-direction: column;
-}
-
-.cart-drawer.active {
-    right: 0;
-}
-
-.cart-drawer-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-drawer-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.cart-close {
-    background: var(--surface);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.cart-close:hover {
-    background: var(--error);
-    color: white;
-}
-
-.cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-}
-
-.cart-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    color: var(--text-muted);
-    padding: 2rem;
-}
-
-.cart-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.cart-item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    background: var(--surface-light);
-}
-
-.cart-item-content {
-    flex: 1;
-}
-
-.cart-item-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.cart-item-price {
-    color: var(--accent-light);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.cart-item-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.cart-qty-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    background: var(--surface);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.cart-qty-btn:hover {
-    background: var(--accent);
-}
-
-.cart-item-qty {
-    width: 30px;
-    text-align: center;
-}
-
-.cart-item-remove {
-    margin-left: auto;
-    color: var(--text-muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    padding: 5px;
-}
-
-.cart-item-remove:hover {
-    color: var(--error);
-}
-
-.cart-drawer-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border);
-}
-
-.cart-total {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    font-size: 1.125rem;
-}
-
-.cart-total-label {
-    font-weight: 500;
-}
-
-.cart-total-value {
-    font-weight: 600;
-    color: var(--accent-light);
-}
-
-.checkout-btn {
-    width: 100%;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 1rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.checkout-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #0a1929;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            margin: 3px 0;
+            border-radius: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #d4af37;
+        }
+
+        .nav-icons-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-icon {
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .cart-icon i {
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #d4af37;
+            color: #0a1929;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .auth-button {
+            background-color: #d4af37;
+            color: #0a1929;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .auth-button:hover {
+            background-color: #c4a030;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 70px;
+            display: flex;
+            min-height: calc(100vh - 70px - 400px); /* Adjust for navbar and footer */
+        }
+
+        /* Category Sidebar */
+        .category-sidebar {
+            width: 250px;
+            background-color: #0a1929;
+            height: 100%;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            padding: 30px 0;
+            color: #fff;
+            z-index: 900;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #1e3a5c;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            color: #d4af37;
+            font-size: 22px;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .category-item:hover, .category-item.active {
+            background-color: #13263f;
+            border-left-color: #d4af37;
+        }
+
+        .category-item h3 {
+            margin-bottom: 5px;
+            color: #d4af37;
+        }
+
+        .category-item p {
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+
+        /* Product Grid */
+        .products-container {
+            flex-grow: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .products-header {
+            margin-bottom: 30px;
+        }
+
+        .products-header h1 {
+            color: #0a1929;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .products-count {
+            color: #666;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0a1929;
+        }
+
+        .product-price {
+            font-size: 22px;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .product-rating {
+            margin-bottom: 15px;
+            color: #d4af37;
+        }
+
+        .add-to-cart {
+            background-color: #d4af37;
+            color: #0a1929;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-to-cart i {
+            margin-right: 8px;
+        }
+
+        .add-to-cart:hover {
+            background-color: #c4a030;
+        }
+
+        /* Cart Overlay */
+        .cart-overlay {
+            position: fixed;
+            top: 70px;
+            right: -400px;
+            width: 380px;
+            height: calc(100vh - 70px);
+            background-color: #fff;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-overlay.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            background-color: #0a1929;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-header h2 {
+            font-size: 22px;
+            color: #d4af37;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 0;
+            color: #888;
+        }
+
+        .empty-cart i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .cart-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #0a1929;
+        }
+
+        .cart-item-price {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #ddd;
+            text-align: center;
+            margin: 0 5px;
+        }
+
+        .remove-item {
+            color: #e63946;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .remove-item i {
+            margin-right: 5px;
+        }
+
+        .cart-summary {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            background-color: #d4af37;
+            color: #0a1929;
+            border: none;
+            padding: 15px;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background-color: #c4a030;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #0a1929;
+            color: #fff;
+            padding: 60px 0 20px;
+
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .footer-about {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-icon:hover {
+            background-color: #d4af37;
+        }
+
+        .footer-heading {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #a0a0a0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d4af37;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #a0a0a0;
+        }
+
+        .footer-contact-item i {
+            margin-right: 10px;
+            color: #d4af37;
+        }
+
+        .footer-bottom {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #a0a0a0;
+        }
+
+        /* Product Details Modal */
+        .product-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .modal-body {
+                flex-direction: row;
+            }
+        }
+
+        .modal-image {
+            flex: 1;
+            min-height: 300px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-details {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .modal-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0a1929;
+        }
+
+        .modal-price {
+            font-size: 26px;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .modal-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .modal-specs {
+            margin-bottom: 30px;
+        }
+
+        .spec-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .spec-label {
+            width: 120px;
+            font-weight: bold;
+            color: #0a1929;
+        }
+
+        .spec-value {
+            flex-grow: 1;
+            color: #666;
+        }
+
+        .modal-rating {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stars {
+            color: #d4af37;
+            margin-right: 10px;
+        }
+
+        .rating-count {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .modal-action {
+            margin-top: 20px;
+        }
+
+        .modal-add-cart {
+            background-color: #d4af37;
+            color: #0a1929;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal-add-cart i {
+            margin-right: 10px;
+        }
+
+        .modal-add-cart:hover {
+            background-color: #c4a030;
+        }
+
+        .reviews-section {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+        }
+
+        .review-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-name {
+            font-weight: bold;
+            color: #0a1929;
+        }
+
+        .review-date {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .review-rating {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .review-text {
+            line-height: 1.5;
+            color: #555;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                background-color: #0a1929;
+                width: 100%;
+                flex-direction: column;
+                padding: 20px 0;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .category-sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-top: 70px;
+            }
+
+            .products-container {
+                margin-left: 0;
+            }
+
+            .main-content {
+                flex-direction: column;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .cart-overlay {
+                width: 100%;
+                right: -100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1629,364 +825,120 @@ main {
                 <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
                 <span class="logo-text">YTime</span>
             </div>
-            
+
             <div class="hamburger">
                 <span></span>
                 <span></span>
-                <span></span>
             </div>
-            
+
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="shop.html" class="nav-link active">Collection</a></li>
-                <li><a href="budget.html" class="nav-link">Budget Tool</a></li>
-                <li><a href="services.html" class="nav-link">Services</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="shop.html" class="nav-link">Collection</a></li>
+                <li><a href="service.html" class="nav-link">Services</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
             </ul>
-            
-            <div class="cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
+
+            <div class="nav-icons-container">
+                <div class="cart-icon" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="nav-auth-container">
+                    <button id="authButton" class="auth-button">Sign In</button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Shop Header -->
-    <section class="shop-header" id="shop">
-        <div class="shop-bg-elements"></div>
-        <div class="container">
-            <div class="shop-header-content">
-                <h1 class="shop-title">Luxury Watch Collection</h1>
-                <p class="shop-subtitle">Discover our handpicked selection of premium timepieces that blend exceptional craftsmanship, innovative technology, and timeless design.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filter Bar -->
-    <section class="filter-section">
-        <div class="container">
-            <div class="filter-bar">
-                <div class="filter-section">
-                    <span class="filter-title">Category:</span>
-                    <select class="filter-dropdown" aria-label="Filter by category">
-                        <option value="all">All Categories</option>
-                        <option value="automatic">Automatic</option>
-                        <option value="chronograph">Chronograph</option>
-                        <option value="dress">Dress Watches</option>
-                        <option value="dive">Dive Watches</option>
-                        <option value="smart">Smart Watches</option>
-                    </select>
-                </div>
-                
-                <div class="filter-section">
-                    <span class="filter-title">Brand:</span>
-                    <select class="filter-dropdown" aria-label="Filter by brand">
-                        <option value="all">All Brands</option>
-                        <option value="rolex">Rolex</option>
-                        <option value="omega">Omega</option>
-                        <option value="tag">TAG Heuer</option>
-                        <option value="patek">Patek Philippe</option>
-                        <option value="longines">Longines</option>
-                    </select>
-                </div>
-                
-                <div class="filter-section">
-                    <span class="filter-title">Price:</span>
-                    <div class="price-range">
-                        <input type="number" placeholder="Min" aria-label="Minimum price">
-                        <span>-</span>
-                        <input type="number" placeholder="Max" aria-label="Maximum price">
-                    </div>
-                </div>
-                
-                <div class="filter-section">
-                    <span class="filter-title">View:</span>
-                    <div class="view-options">
-                        <button class="view-btn active" aria-label="Grid view">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button class="view-btn" aria-label="List view">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Shop Content -->
-    <section class="shop-content">
-        <div class="container">
-            <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="casio round 1.jpg" alt="Casio Digital Watch" class="product-image">
-                        <div class="product-tag new">New</div>
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Digital</div>
-                        <h3 class="product-title">Casio</h3>
-                        <p class="product-description">Reliable digital timepiece with multiple functions, water resistance, and durable resin construction.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <span class="review-count">(42)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 3,500</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="g shock 1.jpg" alt="G-Shock Watch" class="product-image">
-                        <div class="product-tag sale">Sale</div>
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Shock Resistant</div>
-                        <h3 class="product-title">G-Shock Casio</h3>
-                        <p class="product-description">Rugged shock-resistant watch with 200m water resistance, world time, and advanced durability features.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <span class="review-count">(37)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 3,500</span>
-                            <span class="product-price-old">KSh 4,200</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="hublot 1.jpg" alt="Hublot Luxury Watch" class="product-image">
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Luxury</div>
-                        <h3 class="product-title">Hublot</h3>
-                        <p class="product-description">Premium Swiss craftsmanship with distinctive porthole design, chronograph functions, and ceramic bezel.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <span class="review-count">(56)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 7,000</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="rolex 1.jpg" alt="Rolex Luxury Watch" class="product-image">
-                        <div class="product-tag new">New</div>
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Luxury</div>
-                        <h3 class="product-title">Rolex</h3>
-                        <p class="product-description">Iconic Swiss timepiece with automatic movement, precise timekeeping, and timeless elegant design.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <span class="review-count">(29)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 10,000</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 5 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="Naviforce 1.jpg" alt="Naviforce Sports Watch" class="product-image">
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Sports</div>
-                        <h3 class="product-title">Naviforce</h3>
-                        <p class="product-description">Military-inspired design with multiple dials, genuine leather strap, and quartz movement functionality.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <span class="review-count">(48)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 5,000</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 6 -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="skemei 1.jpg" alt="Skmei Sports Watch" class="product-image">
-                        <div class="product-tag sale">Sale</div>
-                        <div class="product-actions">
-                            <button class="action-btn" aria-label="Add to wishlist">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Quick view">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="action-btn" aria-label="Compare">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Sports</div>
-                        <h3 class="product-title">Skmei</h3>
-                        <p class="product-description">Versatile sports watch with digital display, countdown timer, alarm functions, and water resistance.</p>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <span class="review-count">(33)</span>
-                        </div>
-                        <div class="product-price-container">
-                            <span class="product-price">KSh 5,000</span>
-                            <span class="product-price-old">KSh 5,800</span>
-                        </div>
-                        <button class="product-btn">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Category Sidebar -->
+        <div class="category-sidebar">
+            <div class="sidebar-header">
+                <h2>Categories</h2>
             </div>
             
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="page-btn prev" aria-label="Previous page">
-                    <i class="fas fa-chevron-left"></i> Prev
-                </button>
-                <button class="page-btn active" aria-current="page">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <button class="page-btn next" aria-label="Next page">
-                    Next <i class="fas fa-chevron-right"></i>
-                </button>
+            <ul class="category-list">
+                <li class="category-item active" data-category="all">
+                    <h3>All Watches</h3>
+                    <p>Our complete collection</p>
+                </li>
+                <li class="category-item" data-category="mens">
+                    <h3>Men's Watches</h3>
+                    <p>Bold, sophisticated timepieces</p>
+                </li>
+                <li class="category-item" data-category="ladies">
+                    <h3>Ladies Watches</h3>
+                    <p>Elegant, stylish designs</p>
+                </li>
+                <li class="category-item" data-category="unisex">
+                    <h3>Unisex Watches</h3>
+                    <p>Versatile for any style</p>
+                </li>
+                <li class="category-item" data-category="couple">
+                    <h3>Couple Sets</h3>
+                    <p>Perfect matching pairs</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Products Container -->
+        <div class="products-container">
+            <div class="products-header">
+                <h1>Our Collection</h1>
+                <p class="products-count">Showing <span id="productCount">12</span> products</p>
+            </div>
+
+            <div class="product-grid" id="productGrid">
+                <!-- Products will be populated by JavaScript -->
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart" id="emptyCart">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Your cart is empty</p>
+            </div>
+            
+            <!-- Cart items will be populated by JavaScript -->
+        </div>
+        
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div class="product-modal" id="productModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-about-section">
+                <div>
                     <div class="footer-logo">
                         <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
                         <span class="logo-text">YTime</span>
@@ -1995,476 +947,666 @@ main {
                         YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
                     </p>
                     <div class="footer-social">
-                        <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-                
-                <div class="footer-links-section">
+
+                <div>
                     <h3 class="footer-heading">Quick Links</h3>
                     <ul class="footer-links">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="shop.html">Collection</a></li>
-                        <li><a href="budget.html">Budget Tool</a></li>
-                        <li><a href="services.html">Services</a></li>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#collection">Collection</a></li>
+                        <li><a href="#services">Services</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
-                
-                <div class="footer-links-section">
+
+                <div>
                     <h3 class="footer-heading">Help & Support</h3>
                     <ul class="footer-links">
-                        <li><a href="faq.html">FAQs</a></li>
-                        <li><a href="shipping.html">Shipping Info</a></li>
-                        <li><a href="returns.html">Returns Policy</a></li>
-                        <li><a href="warranty.html">Warranty</a></li>
-                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                        <li><a href="#">Warranty</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
                     </ul>
                 </div>
-                
-                <div class="footer-contact-section">
+
+                <div>
                     <h3 class="footer-heading">Contact Us</h3>
-                    <address>
-                        <div class="footer-contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Nairobi, Kenya</span>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="fas fa-phone"></i>
-                            <a href="tel:+254117278821">+254 117 278 821</a>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <a href="mailto:info@ytime.co.ke">info@ytime.co.ke</a>
-                        </div>
-                    </address>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Nairobi Kenya</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+254117278821</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@ytime.co.ke</span>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 YTime Luxury. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-
-
-
-    <!-- GSAP Animations -->
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    // Cache DOM selections to improve performance
-    const navbar = document.querySelector('.navbar');
-    const shopHeaderContent = document.querySelector('.shop-header-content');
-    const filterBar = document.querySelector('.filter-bar');
-    const productsGrid = document.querySelector('.products-grid');
-    const productCards = document.querySelectorAll('.product-card');
-    const footer = document.querySelector('.footer');
-    const footerColumns = document.querySelectorAll('.footer-column');
-    const cartCount = document.querySelector('.cart-count');
-    
-    // Initialize GSAP animations if elements exist
-    // Navbar animation
-    if (navbar) {
-        gsap.from(navbar, {
-            y: -100,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-        });
-    }
-    
-    // Header content animation
-    if (shopHeaderContent) {
-        gsap.from(shopHeaderContent, {
-            y: 50,
-            opacity: 0,
-            duration: 1.2,
-            delay: 0.3,
-            ease: 'power3.out'
-        });
-    }
-    
-    // Filter bar animation
-    if (filterBar) {
-        gsap.from(filterBar, {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            delay: 0.5,
-            ease: 'back.out(1.7)'
-        });
-    }
-    
-    // Products animation with stagger
-    if (productsGrid && productCards.length > 0) {
-        gsap.from(productCards, {
-            y: 100,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            delay: 0.7,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: productsGrid,
-                start: 'top bottom-=100',
-                toggleActions: 'play none none none'
-            }
-        });
-    }
-    
-    // Footer animation
-    if (footer && footerColumns.length > 0) {
-        gsap.from(footerColumns, {
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power2.out',
-            scrollTrigger: {
-                trigger: footer,
-                start: 'top bottom-=100',
-                toggleActions: 'play none none none'
-            }
-        });
-    }
-    
-    // Product hover effects using event delegation
-    if (productsGrid) {
-        productsGrid.addEventListener('mouseenter', handleProductHover, true);
-        productsGrid.addEventListener('mouseleave', handleProductHover, true);
-    }
-    
-    // Add click event listeners to product buttons
-    initializeProductButtons();
-    
-    // Show welcome notification when page loads
-    showNotification('welcome', 'Welcome to our store!', 'Discover our latest products and exclusive offers.');
-});
-
-// Handle product hover effects
-function handleProductHover(event) {
-    const card = event.target.closest('.product-card');
-    if (!card) return;
-    
-    const productImage = card.querySelector('.product-image');
-    const productActions = card.querySelector('.product-actions');
-    
-    if (!productImage || !productActions) return;
-    
-    if (event.type === 'mouseenter') {
-        gsap.to(productImage, {
-            scale: 1.05,
-            duration: 0.4,
-            ease: 'power2.out'
-        });
-        
-        gsap.to(productActions, {
-            opacity: 1,
-            x: 0,
-            duration: 0.3,
-            stagger: 0.05,
-            ease: 'back.out(1.7)'
-        });
-    } else {
-        gsap.to(productImage, {
-            scale: 1,
-            duration: 0.4,
-            ease: 'power2.out'
-        });
-        
-        gsap.to(productActions, {
-            opacity: 0,
-            x: 10,
-            duration: 0.3,
-            ease: 'power2.in'
-        });
-    }
-}
-
-// Add to cart animation and notification
-function addToCartAnimation(btn) {
-    if (!btn) return;
-    
-    gsap.to(btn, {
-        scale: 0.95,
-        duration: 0.1,
-        onComplete: function() {
-            gsap.to(btn, {
-                scale: 1,
-                duration: 0.3,
-                ease: 'elastic.out(1.2, 0.4)'
-            });
-        }
-    });
-    
-    // Update cart count with animation
-    const cartCount = document.querySelector('.cart-count');
-    if (cartCount) {
-        try {
-            const currentCount = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = currentCount + 1;
-            
-            gsap.from(cartCount, {
-                scale: 1.5,
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-            
-            // Get product information from card
-            const card = btn.closest('.product-card');
-            const productName = card ? (card.querySelector('.product-title')?.textContent || 'Product') : 'Product';
-            const productPrice = card ? (card.querySelector('.product-price')?.textContent || '') : '';
-            
-            // Show add to cart notification
-            showNotification('success', 'Added to Cart!', `${productName} ${productPrice} has been added to your cart.`);
-        } catch (error) {
-            console.error('Error updating cart count:', error);
-            showNotification('error', 'Error', 'Could not add product to cart.');
-        }
-    }
-    
-    // Trigger custom event for cart update
-    document.dispatchEvent(new CustomEvent('cartUpdated', {
-        detail: { button: btn }
-    }));
-}
-
-// Initialize product buttons with event delegation
-function initializeProductButtons() {
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('product-btn')) {
-            addToCartAnimation(event.target);
-            event.preventDefault(); // Prevent default if button is inside a form
-        }
-    });
-}
-
-// SweetAlert2 Notification System
-function showNotification(type, title, message) {
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-        }
-    });
-    
-    // Configure notification based on type
-    switch(type) {
-        case 'success':
-            Toast.fire({
-                icon: 'success',
-                title: title,
-                text: message,
-                background: '#f0f9eb',
-                iconColor: '#67c23a'
-            });
-            break;
-        case 'error':
-            Toast.fire({
-                icon: 'error',
-                title: title,
-                text: message,
-                background: '#fef0f0',
-                iconColor: '#f56c6c'
-            });
-            break;
-        case 'warning':
-            Toast.fire({
-                icon: 'warning',
-                title: title,
-                text: message,
-                background: '#fdf6ec',
-                iconColor: '#e6a23c'
-            });
-            break;
-        case 'info':
-            Toast.fire({
-                icon: 'info',
-                title: title,
-                text: message,
-                background: '#f4f4f5',
-                iconColor: '#909399'
-            });
-            break;
-        case 'welcome':
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: 'info',
-                confirmButtonText: 'Start Shopping',
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
+        // Sample product data
+        const products = [
+            {
+                id: 1,
+                name: "Royale Classic Gold",
+                category: "mens",
+                price: 1299.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.8,
+                reviews: 124,
+                description: "A sophisticated gold-toned timepiece featuring a classic design with modern functionality. Perfect for formal occasions and everyday elegance.",
+                specs: {
+                    material: "Stainless Steel, Gold Plated",
+                    movement: "Automatic",
+                    waterResistant: "50m",
+                    diameter: "42mm",
+                    strap: "Genuine Leather"
                 },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                }
-            });
-            break;
-        default:
-            Toast.fire({
-                icon: 'question',
-                title: title,
-                text: message
-            });
-    }
-}
+                userReviews: [
+                    { name: "James K.", date: "February 12, 2025", rating: 5, text: "Absolutely love this watch! The craftsmanship is incredible and it looks even better in person." },
+                    { name: "Robert M.", date: "January 30, 2025", rating: 4, text: "Great quality for the price. The gold tone is perfect - not too flashy but definitely noticeable." }
+                ]
+            },
+            {
+                id: 2,
+                name: "Elegance Pearl",
+                category: "ladies",
+                price: 1099.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.9,
+                reviews: 89,
+                description: "A delicate pearl-accented timepiece featuring a mother-of-pearl dial. The perfect blend of sophistication and femininity.",
+                specs: {
+                    material: "Stainless Steel, Pearl Accents",
+                    movement: "Quartz",
+                    waterResistant: "30m",
+                    diameter: "34mm",
+                    strap: "Stainless Steel Bracelet"
+                },
+                userReviews: [
+                    { name: "Sarah L.", date: "March 5, 2025", rating: 5, text: "This watch is absolutely stunning. The pearl accents catch the light beautifully." },
+                    { name: "Michelle T.", date: "February 22, 2025", rating: 5, text: "Purchased this for my anniversary and couldn't be happier. Elegant and timeless." }
+                ]
+            },
+            {
+                id: 3,
+                name: "Chronos Black",
+                category: "mens",
+                price: 1599.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.7,
+                reviews: 156,
+                description: "A bold, masculine chronograph with a striking black dial and stainless steel case. Features multiple sub-dials for enhanced functionality.",
+                specs: {
+                    material: "Stainless Steel",
+                    movement: "Chronograph",
+                    waterResistant: "100m",
+                    diameter: "44mm",
+                    strap: "Stainless Steel"
+                },
+                userReviews: [
+                    { name: "David R.", date: "February 18, 2025", rating: 5, text: "The build quality is exceptional. This watch makes a statement without being overly flashy." },
+                    { name: "John B.", date: "January 25, 2025", rating: 4, text: "Great timepiece. The chronograph functions work perfectly and it looks very professional." }
+                ]
+            },
+            {
+                id: 4,
+                name: "Minimalist Platinum",
+                category: "unisex",
+                price: 899.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.6,
+                reviews: 112,
+                description: "A sleek, minimalist design with a platinum finish. This versatile timepiece suits any style and occasion.",
+                specs: {
+                    material: "Stainless Steel, Platinum Coated",
+                    movement: "Quartz",
+                    waterResistant: "30m",
+                    diameter: "38mm",
+                    strap: "Milanese Mesh"
+                },
+                userReviews: [
+                    { name: "Alex T.", date: "March 1, 2025", rating: 5, text: "Perfect size and weight. I wear it every day and it goes with everything." },
+                    { name: "Jordan K.", date: "February 10, 2025", rating: 4, text: "Clean design and comfortable to wear. Exactly what I was looking for." }
+                ]
+            },
+            {
+                id: 5,
+                name: "Diamond Accent Rose Gold",
+                category: "ladies",
+                price: 1499.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.9,
+                reviews: 78,
+                description: "A luxurious rose gold timepiece with genuine diamond accents. Elegant and sophisticated for special occasions.",
+                specs: {
+                    material: "Rose Gold, Diamond Accents",
+                    movement: "Swiss Quartz",
+                    waterResistant: "30m",
+                    diameter: "32mm",
+                    strap: "Rose Gold Bracelet"
+                },
+                userReviews: [
+                    { name: "Emily W.", date: "February 20, 2025", rating: 5, text: "Absolutely gorgeous watch. The diamond accents catch the light beautifully." },
+                    { name: "Jessica P.", date: "January 15, 2025", rating: 5, text: "Bought this for my wedding and it was perfect. Elegant and timeless." }
+                ]
+            },
+            {
+                id: 6,
+                name: "Classic Couple Set",
+                category: "couple",
+                price: 1899.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.8,
+                reviews: 64,
+                description: "A matching set of classic timepieces for couples. Elegant design with complementary features.",
+                specs: {
+                    material: "Stainless Steel",
+                    movement: "Swiss Quartz",
+                    waterResistant: "50m",
+                    diameter: "42mm & 36mm",
+                    strap: "Genuine Leather"
+                },
+                userReviews: [
+                    { name: "Michael & Lisa", date: "March 5, 2025", rating: 5, text: "Perfect anniversary gift. The watches complement each other beautifully." },
+                    { name: "Thomas & Sarah", date: "February 14, 2025", rating: 5, text: "Excellent quality and beautiful design. We wear them every day." }
+                ]
+            },
+            {
+                id: 7,
+                name: "Sport Diver Blue",
+                category: "mens",
+                price: 1199.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.7,
+                reviews: 92,
+                description: "A professional diver's watch with a striking blue dial and rotating bezel. Functional and stylish for water enthusiasts.",
+                specs: {
+                    material: "Stainless Steel",
+                    movement: "Automatic",
+                    waterResistant: "300m",
+                    diameter: "43mm",
+                    strap: "Steel Bracelet with Diver Extension"
+                },
+                userReviews: [
+                    { name: "Mark S.", date: "February 28, 2025", rating: 5, text: "Taken this diving multiple times and it performs flawlessly. Great watch." },
+                    { name: "Ryan T.", date: "January 20, 2025", rating: 4, text: "Solid construction and looks great. The blue dial really pops in sunlight." }
+                ]
+            },
+            {
+                id: 8,
+                name: "Titanium Chronograph",
+                category: "unisex",
+                price: 1399.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.6,
+                reviews: 87,
+                description: "A lightweight titanium chronograph with precision timing capabilities. Modern design suits any wrist.",
+                specs: {
+                    material: "Titanium",
+                    movement: "Chronograph",
+                    waterResistant: "100m",
+                    diameter: "40mm",
+                    strap: "Titanium Bracelet"
+                },
+                userReviews: [
+                    { name: "Taylor J.", date: "March 10, 2025", rating: 5, text: "Incredibly light but feels premium. The chronograph functions are easy to use." },
+                    { name: "Morgan C.", date: "February 5, 2025", rating: 4, text: "Great unisex design and very comfortable due to the lightweight titanium." }
+                ]
+            },
+            {
+                id: 9,
+                name: "Ruby Accent Evening",
+                category: "ladies",
+                price: 1299.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.8,
+                reviews: 73,
+                description: "An elegant evening timepiece with genuine ruby accents. Perfect for special occasions and formal events.",
+                specs: {
+                    material: "White Gold, Ruby Accents",
+                    movement: "Swiss Quartz",
+                    waterResistant: "30m",
+                    diameter: "30mm",
+                    strap: "Satin"
+                },
+                userReviews: [
+                    { name: "Katherine B.", date: "February 22, 2025", rating: 5, text: "Stunning watch that elevates any evening attire. The ruby accents are beautiful." },
+                    { name: "Amanda L.", date: "January 30, 2025", rating: 5, text: "Wore this to a gala and received many compliments. Elegant and sophisticated." }
+                ]
+            },
+            {
+                id: 10,
+                name: "Modern Couple Set",
+                category: "couple",
+                price: 1699.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.9,
+                reviews: 58,
+                description: "A contemporary matching set with sleek design. Perfect for the modern couple who appreciates minimalist style.",
+                specs: {
+                    material: "Stainless Steel, Sapphire Crystal",
+                    movement: "Automatic",
+                    waterResistant: "50m",
+                    diameter: "41mm & 35mm",
+                    strap: "Stainless Steel Mesh"
+                },
+                userReviews: [
+                    { name: "Daniel & Emma", date: "March 8, 2025", rating: 5, text: "These watches are perfect for our style. Modern yet timeless design." },
+                    { name: "Chris & Jamie", date: "February 20, 2025", rating: 5, text: "Great quality and they look amazing together. Worth every penny." }
+                ]
+            },
+            {
+                id: 11,
+                name: "Vintage Style Brown",
+                category: "mens",
+                price: 1099.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.7,
+                reviews: 96,
+                description: "A vintage-inspired timepiece with a brown leather strap and classic dial. Nostalgic charm with modern reliability.",
+                specs: {
+                    material: "Stainless Steel, Domed Crystal",
+                    movement: "Automatic",
+                    waterResistant: "50m",
+                    diameter: "40mm",
+                    strap: "Aged Leather"
+                },
+                userReviews: [
+                    { name: "William H.", date: "March 2, 2025", rating: 5, text: "This watch has such character. The vintage styling is executed perfectly." },
+                    { name: "George P.", date: "February 10, 2025", rating: 4, text: "Beautiful timepiece that looks like a family heirloom. Very pleased." }
+                ]
+            },
+            {
+                id: 12,
+                name: "Petite Diamond",
+                category: "ladies",
+                price: 1199.99,
+                image: "/api/placeholder/400/400",
+                rating: 4.8,
+                reviews: 82,
+                description: "A delicate timepiece with a small face and diamond markers. Refined elegance for the discerning woman.",
+                specs: {
+                    material: "Stainless Steel, Diamond Markers",
+                    movement: "Swiss Quartz",
+                    waterResistant: "30m",
+                    diameter: "28mm",
+                    strap: "Stainless Steel"
+                },
+                userReviews: [
+                    { name: "Olivia T.", date: "February 26, 2025", rating: 5, text: "Perfect size for my small wrist. Elegant and not too flashy." },
+                    { name: "Sophia R.", date: "January 18, 2025", rating: 5, text: "The diamond markers add just the right amount of sparkle. Love it!" }
+                ]
+            },
+        ];
 
-// Function to handle out of stock products
-function handleOutOfStock(productElement) {
-    if (!productElement) return;
-    
-    const productName = productElement.querySelector('.product-title')?.textContent || 'This product';
-    
-    Swal.fire({
-        title: 'Out of Stock',
-        text: `${productName} is currently out of stock. Would you like to be notified when it's available?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Notify Me',
-        cancelButtonText: 'No, Thanks',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            showNotificationForm(productName);
-        }
-    });
-}
+        // Cart array
+        let cart = [];
 
-// Show notification form for out of stock products
-function showNotificationForm(productName) {
-    Swal.fire({
-        title: 'Get Notified',
-        html: `
-            <p>We'll email you when ${productName} is back in stock.</p>
-            <input id="notification-email" class="swal2-input" placeholder="Your Email Address">
-        `,
-        focusConfirm: false,
-        confirmButtonText: 'Submit',
-        showLoaderOnConfirm: true,
-        preConfirm: () => {
-            const email = document.getElementById('notification-email').value;
-            if (!email || !email.includes('@')) {
-                Swal.showValidationMessage('Please enter a valid email address');
-                return false;
-            }
-            return email;
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed) {
-            showNotification('success', 'Notification Set', `We'll email you at ${result.value} when ${productName} is back in stock.`);
-            // Here you would typically send this information to your backend
-        }
-    });
-}
+        // DOM Elements
+        const productGrid = document.getElementById('productGrid');
+        const productCount = document.getElementById('productCount');
+        const cartIcon = document.getElementById('cartIcon');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const closeCart = document.getElementById('closeCart');
+        const cartItems = document.getElementById('cartItems');
+        const emptyCart = document.getElementById('emptyCart');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const productModal = document.getElementById('productModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalBody = document.getElementById('modalBody');
+        const cartCount = document.querySelector('.cart-count');
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
 
-// Add wishlist notification
-function addToWishlist(productElement) {
-    if (!productElement) return;
-    
-    const productName = productElement.querySelector('.product-title')?.textContent || 'Product';
-    
-    showNotification('success', 'Added to Wishlist', `${productName} has been added to your wishlist.`);
-    
-    // Animate heart icon
-    const wishlistIcon = productElement.querySelector('.wishlist-icon');
-    if (wishlistIcon) {
-        gsap.to(wishlistIcon, {
-            scale: 1.5,
-            duration: 0.2,
-            ease: 'power2.out',
-            onComplete: function() {
-                gsap.to(wishlistIcon, {
-                    scale: 1,
-                    duration: 0.3,
-                    ease: 'elastic.out(1.2, 0.4)'
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts('all');
+            updateCartCount();
+            
+            // Event listeners
+            categoryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    categoryItems.forEach(cat => cat.classList.remove('active'));
+                    item.classList.add('active');
+                    renderProducts(item.dataset.category);
                 });
-                wishlistIcon.classList.add('active');
-            }
+            });
+            
+            cartIcon.addEventListener('click', toggleCart);
+            closeCart.addEventListener('click', toggleCart);
+            closeModal.addEventListener('click', closeProductModal);
+            checkoutBtn.addEventListener('click', proceedToCheckout);
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
         });
-    }
-}
 
-// Debounce function to improve performance for resize handlers
-function debounce(func, wait = 20, immediate = true) {
-    let timeout;
-    return function() {
-        const context = this, args = arguments;
-        const later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-        };
-        const callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-    };
-}
-
-// Optional: Add resize handler for responsive animations
-window.addEventListener('resize', debounce(function() {
-    // Refresh ScrollTrigger on resize for better responsiveness
-    if (window.ScrollTrigger) {
-        ScrollTrigger.refresh();
-    }
-}));
-
-// Add event listeners for wishlist and out of stock buttons
-document.addEventListener('click', function(event) {
-    // Handle wishlist button clicks
-    if (event.target.closest('.wishlist-btn')) {
-        const productCard = event.target.closest('.product-card');
-        addToWishlist(productCard);
-        event.preventDefault();
-    }
-    
-    // Handle out of stock button clicks
-    if (event.target.closest('.out-of-stock-btn')) {
-        const productCard = event.target.closest('.product-card');
-        handleOutOfStock(productCard);
-        event.preventDefault();
-    }
-});
-
-// Show cart summary notification
-function showCartSummary() {
-    Swal.fire({
-        title: 'Your Cart',
-        html: `
-            <div class="cart-summary">
-                <p>You have <strong>${document.querySelector('.cart-count')?.textContent || '0'}</strong> items in your cart.</p>
-                <p>Subtotal: <strong>$XXX.XX</strong></p>
-            </div>
-        `,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Checkout',
-        cancelButtonText: 'Continue Shopping',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#6c757d'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '/checkout'; // Redirect to checkout page
+        // Render products based on category
+        function renderProducts(category) {
+            productGrid.innerHTML = '';
+            let filteredProducts = products;
+            
+            if (category !== 'all') {
+                filteredProducts = products.filter(product => product.category === category);
+            }
+            
+            productCount.textContent = filteredProducts.length;
+            
+            filteredProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-rating">
+                            ${getStarRating(product.rating)}
+                            <span>(${product.reviews})</span>
+                        </div>
+                        <button class="add-to-cart" data-id="${product.id}">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                `;
+                
+                // Open product modal when clicking on product
+                productCard.querySelector('.product-image').addEventListener('click', () => {
+                    openProductModal(product);
+                });
+                
+                productCard.querySelector('.product-name').addEventListener('click', () => {
+                    openProductModal(product);
+                });
+                
+                // Add to cart button
+                productCard.querySelector('.add-to-cart').addEventListener('click', () => {
+                    addToCart(product);
+                    showAddedToCartMessage(product.name);
+                });
+                
+                productGrid.appendChild(productCard);
+            });
         }
-    });
-}
 
-// Add event listener for cart icon click
-document.addEventListener('click', function(event) {
-    if (event.target.closest('.cart-icon')) {
-        showCartSummary();
-        event.preventDefault();
-    }
-});
+        // Generate star rating HTML
+        function getStarRating(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            
+            return stars;
+        }
+
+        // Open product modal
+        function openProductModal(product) {
+            modalBody.innerHTML = `
+                <div class="modal-image">
+                    <img src="${product.image}" alt="${product.name}">
+                </div>
+                <div class="modal-details">
+                    <h2 class="modal-name">${product.name}</h2>
+                    <div class="modal-price">$${product.price.toFixed(2)}</div>
+                    <div class="modal-rating">
+                        <div class="stars">
+                            ${getStarRating(product.rating)}
+                        </div>
+                        <span class="rating-count">${product.reviews} reviews</span>
+                    </div>
+                    <p class="modal-description">${product.description}</p>
+                    
+                    <div class="modal-specs">
+                        <h3>Specifications:</h3>
+                        <div class="spec-item">
+                            <div class="spec-label">Material:</div>
+                            <div class="spec-value">${product.specs.material}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Movement:</div>
+                            <div class="spec-value">${product.specs.movement}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Water Resistant:</div>
+                            <div class="spec-value">${product.specs.waterResistant}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Diameter:</div>
+                            <div class="spec-value">${product.specs.diameter}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Strap:</div>
+                            <div class="spec-value">${product.specs.strap}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-action">
+                        <button class="modal-add-cart" data-id="${product.id}">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                    
+                    <div class="reviews-section">
+                        <h3>Customer Reviews</h3>
+                        ${product.userReviews.map(review => `
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <span class="reviewer-name">${review.name}</span>
+                                    <span class="review-date">${review.date}</span>
+                                </div>
+                                <div class="review-rating">
+                                    ${getStarRating(review.rating)}
+                                </div>
+                                <p class="review-text">${review.text}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener to the Add to Cart button
+            modalBody.querySelector('.modal-add-cart').addEventListener('click', () => {
+                const productToAdd = products.find(p => p.id === product.id);
+                addToCart(productToAdd);
+                showAddedToCartMessage(product.name);
+            });
+            
+            productModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close product modal
+        function closeProductModal() {
+            productModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Toggle cart
+        function toggleCart() {
+            cartOverlay.classList.toggle('active');
+            updateCart();
+        }
+
+        // Add to cart
+        function addToCart(product) {
+            const existingItem = cart.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            updateCartCount();
+        }
+
+        // Update cart UI
+        function updateCart() {
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                cartItems.innerHTML = '';
+            } else {
+                emptyCart.style.display = 'none';
+                
+                let cartHTML = '';
+                let total = 0;
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    
+                    cartHTML += `
+                        <div class="cart-item" data-id="${item.id}">
+                            <div class="cart-item-image">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                                    <input type="text" class="quantity-input" value="${item.quantity}" readOnly>
+                                    <button class="quantity-btn increase" data-id="${item.id}">+</button>
+                                    <button class="remove-item" data-id="${item.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                cartItems.innerHTML = cartHTML;
+                cartTotal.textContent = `$${total.toFixed(2)}`;
+                
+                // Add event listeners to cart item buttons
+                document.querySelectorAll('.decrease').forEach(btn => {
+                    btn.addEventListener('click', () => decreaseQuantity(parseInt(btn.dataset.id)));
+                });
+                
+                document.querySelectorAll('.increase').forEach(btn => {
+                    btn.addEventListener('click', () => increaseQuantity(parseInt(btn.dataset.id)));
+                });
+                
+                document.querySelectorAll('.remove-item').forEach(btn => {
+                    btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.id)));
+                });
+            }
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = count;
+        }
+
+        // Decrease quantity
+        function decreaseQuantity(id) {
+            const item = cart.find(item => item.id === id);
+            
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                removeFromCart(id);
+            }
+            
+            updateCart();
+            updateCartCount();
+        }
+
+        // Increase quantity
+        function increaseQuantity(id) {
+            const item = cart.find(item => item.id === id);
+            item.quantity++;
+            
+            updateCart();
+            updateCartCount();
+        }
+
+        // Remove from cart
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            
+            updateCart();
+            updateCartCount();
+        }
+
+        // Show added to cart message
+        function showAddedToCartMessage(productName) {
+            swal({
+                title: "Added to Cart!",
+                text: `${productName} has been added to your cart.`,
+                icon: "success",
+                button: "Continue Shopping",
+                timer: 2000
+            });
+        }
+
+        // Proceed to checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                swal({
+                    title: "Empty Cart",
+                    text: "Your cart is empty. Add some products first.",
+                    icon: "info",
+                    button: "OK",
+                });
+                return;
+            }
+            
+            // Save cart to localStorage for checkout page
+            localStorage.setItem('ytime_cart', JSON.stringify(cart));
+            
+            // Redirect to checkout page
+            swal({
+                title: "Proceeding to Checkout",
+                text: "You'll be redirected to the checkout page.",
+                icon: "success",
+                buttons: false,
+                timer: 2000
+            }).then(() => {
+                window.location.href = "checkout.html";
+            });
+        }
     </script>
 </body>
 </html>
