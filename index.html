@@ -2553,178 +2553,304 @@ a, button, .watch-card, .service-card, .brand-logo {
 
     <!-- Custom JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Cart functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cart from localStorage or create empty cart
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    updateCartCount();
+
+    // Authentication UI update
     const authButton = document.getElementById('authButton');
+    updateAuthUI();
+
+    // Add click event to all "Add to Cart" buttons
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get product data from button attributes or closest parent
+            const watchCard = this.closest('.watch-card');
+            const productData = {
+                brand: this.dataset.brand || watchCard.querySelector('.watch-brand').textContent,
+                name: this.dataset.name || watchCard.querySelector('.watch-name').textContent,
+                price: this.dataset.price || watchCard.querySelector('.watch-price').textContent,
+                image: this.dataset.image || watchCard.querySelector('.watch-image.active, .watch-image:first-child').src,
+                quantity: 1
+            };
+            
+            // Check if product already exists in cart
+            const existingProductIndex = cart.findIndex(item => 
+                item.brand === productData.brand && item.name === productData.name
+            );
+            
+            if (existingProductIndex !== -1) {
+                // Increment quantity if product exists
+                cart[existingProductIndex].quantity += 1;
+            } else {
+                // Add new product to cart
+                cart.push(productData);
+            }
+            
+            // Save cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Update cart count and show notification
+            updateCartCount();
+            
+            // Show success notification using SweetAlert
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+    });
     
-    // Function to update UI based on authentication state
-    function updateAuthUI() {
-      const userEmail = localStorage.getItem('userEmail');
-      
-      if (userEmail) {
+    // Handle cart icon click - show cart overlay
+    const cartIcon = document.querySelector('.cart-icon');
+    cartIcon.addEventListener('click', function() {
+        showCartOverlay();
+    });
+    
+    // Function to create watch image dots functionality
+    initializeWatchImageGallery();
+    
+    // Initialize Swiper if it exists
+    initializeSwiper();
+});
+
+// Function to update cart count display
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartCount = document.querySelector('.cart-count');
+    
+    if (cartCount) {
+        // Calculate total quantity of all items
+        const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+        cartCount.textContent = totalItems;
+    }
+}
+
+// Function to show cart overlay
+function showCartOverlay() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Create overlay element
+    const overlay = document.createElement('div');
+    overlay.className = 'cart-overlay';
+    
+    // Calculate cart total
+    const cartTotal = cart.reduce((total, item) => {
+        const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
+        return total + (price * item.quantity);
+    }, 0);
+    
+    // Create cart HTML
+    overlay.innerHTML = `
+        <div class="cart-modal">
+            <div class="cart-header">
+                <h2>Your Shopping Cart</h2>
+                <button class="close-cart">&times;</button>
+            </div>
+            <div class="cart-items">
+                ${cart.length === 0 ? 
+                    '<p class="empty-cart">Your cart is empty.</p>' : 
+                    cart.map(item => `
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="${item.image}" alt="${item.name}" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                            </div>
+                            <div class="cart-item-details">
+                                <h3>${item.brand} ${item.name}</h3>
+                                <p class="cart-item-price">${item.price}</p>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn decrease" data-index="${cart.indexOf(item)}">-</button>
+                                    <span>${item.quantity}</span>
+                                    <button class="quantity-btn increase" data-index="${cart.indexOf(item)}">+</button>
+                                </div>
+                            </div>
+                            <button class="remove-item" data-index="${cart.indexOf(item)}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')
+                }
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span>Ksh ${cartTotal.toFixed(2)}</span>
+                </div>
+                ${cart.length === 0 ? '' : 
+                    '<button class="checkout-btn">Proceed to Checkout</button>'
+                }
+            </div>
+        </div>
+    `;
+    
+    // Add overlay to the body
+    document.body.appendChild(overlay);
+    
+    // Prevent scrolling on body
+    document.body.style.overflow = 'hidden';
+    
+    // Add close functionality
+    const closeButton = overlay.querySelector('.close-cart');
+    closeButton.addEventListener('click', function() {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+    });
+    
+    // Close overlay when clicking outside modal
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Add checkout button functionality
+    const checkoutButton = overlay.querySelector('.checkout-btn');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function() {
+            window.location.href = 'checkout.html';
+        });
+    }
+    
+    // Add quantity change functionality
+    const increaseButtons = overlay.querySelectorAll('.quantity-btn.increase');
+    const decreaseButtons = overlay.querySelectorAll('.quantity-btn.decrease');
+    const removeButtons = overlay.querySelectorAll('.remove-item');
+    
+    increaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            cart[index].quantity += 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showCartOverlay(); // Refresh the cart overlay
+        });
+    });
+    
+    decreaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            if (cart[index].quantity > 1) {
+                cart[index].quantity -= 1;
+            } else {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showCartOverlay(); // Refresh the cart overlay
+        });
+    });
+    
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            
+            Swal.fire({
+                title: 'Remove Item?',
+                text: `Are you sure you want to remove ${cart[index].brand} ${cart[index].name} from your cart?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cart.splice(index, 1);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartCount();
+                    showCartOverlay(); // Refresh the cart overlay
+                }
+            });
+        });
+    });
+}
+
+// Function to update UI based on authentication state
+function updateAuthUI() {
+    const authButton = document.getElementById('authButton');
+    if (!authButton) return;
+    
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (userEmail) {
         // User is signed in - Show avatar button
-        const firstLetter = userEmail.charAt(0);
+        const firstLetter = userEmail.charAt(0).toUpperCase();
         
         authButton.className = 'auth-button auth-button-logged-in';
         authButton.innerHTML = `<div class="user-avatar">${firstLetter}</div>`;
         
         // When clicking on avatar, go to user profile or dashboard
         authButton.onclick = function() {
-          localStorage.removeItem('userEmail');
-          localStorage.removeItem('userName');
-          
-          // If using Firebase Auth, sign out there too
-          if (typeof firebase !== 'undefined' && firebase.auth) {
-            firebase.auth().signOut();
-          }
-          
-          // Redirect to login
-          window.location.href = 'login.html';
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            
+            // If using Firebase Auth, sign out there too
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut();
+            }
+            
+            // Show logout notification
+            Swal.fire({
+                title: 'Signed Out',
+                text: 'You have been successfully signed out.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                // Redirect to login
+                window.location.href = 'login.html';
+            });
         };
-      } else {
+    } else {
         // User is not signed in - Show sign in button
         authButton.className = 'auth-button';
         authButton.innerHTML = 'Sign In';
         
         // Redirect to login page when clicking sign in
         authButton.onclick = function() {
-          window.location.href = 'login.html';
+            window.location.href = 'login.html';
         };
-      }
     }
+}
+
+// Function to initialize watch image gallery
+function initializeWatchImageGallery() {
+    const watchCards = document.querySelectorAll('.watch-card');
     
-    // Initial UI update if auth button exists
-    if (authButton) {
-      updateAuthUI();
-    }
-    
-    // Image gallery dot navigation
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach(dot => {
-        dot.addEventListener('click', function() {
-            const container = this.closest('.watch-image-container');
-            const images = container.querySelectorAll('.watch-image');
-            const allDots = container.querySelectorAll('.dot');
-            const index = parseInt(this.getAttribute('data-index'));
-            
-            // Remove active class from all images and dots
-            images.forEach(img => img.classList.remove('active'));
-            allDots.forEach(d => d.classList.remove('active'));
-            
-            // Add active class to current image and dot
-            if (images[index] && allDots[index]) {
+    watchCards.forEach(card => {
+        const dots = card.querySelectorAll('.dot');
+        const images = card.querySelectorAll('.watch-image');
+        
+        dots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                
+                // Hide all images
+                images.forEach(img => img.classList.remove('active'));
+                
+                // Show selected image
                 images[index].classList.add('active');
+                
+                // Update active dot
+                dots.forEach(d => d.classList.remove('active'));
                 this.classList.add('active');
-            }
+            });
         });
     });
+}
 
-    // Mobile Navigation
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-    }
-
-    // Navbar Scroll Effect
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    }
-
-    // Budget Slider Value
-    const budgetSlider = document.getElementById('budget-amount');
-    const budgetValue = document.getElementById('budget-value');
-
-    if (budgetSlider && budgetValue) {
-        budgetSlider.addEventListener('input', () => {
-            const value = parseInt(budgetSlider.value);
-            budgetValue.textContent = `Ksh ${isNaN(value) ? 0 : value.toLocaleString()}`;
-            
-            // Check if SweetAlert is available before using it
-            if (typeof Swal !== 'undefined' && value >= 20000) {
-                Swal.fire({
-                    title: 'High-End Selection',
-                    text: 'You now have access to our premium collection',
-                    icon: 'info',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
-        });
-    }
-
-    // Category Selection
-    const categories = document.querySelectorAll('.budget-category');
-    if (categories.length > 0 && typeof Swal !== 'undefined') {
-        categories.forEach(category => {
-            category.addEventListener('click', () => {
-                categories.forEach(c => c.classList.remove('active'));
-                category.classList.add('active');
-                
-                Swal.fire({
-                    title: 'Category Selected',
-                    text: `You selected the ${category.textContent.trim()} category`,
-                    icon: 'success',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        });
-    }
-
-    // Collection Tabs
-    const tabs = document.querySelectorAll('.collection-tab');
-    if (tabs.length > 0 && typeof Swal !== 'undefined') {
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                Swal.fire({
-                    title: 'Collection Changed',
-                    text: `Viewing ${tab.textContent.trim()} collection`,
-                    icon: 'info',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                
-                // Add filtering logic here
-            });
-        });
-    }
-
-    // Error handling function
-    function handleError(message) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Oops!',
-                text: message || 'Something went wrong',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        } else {
-            console.error(message || 'Something went wrong');
-            alert(message || 'Something went wrong');
-        }
-    }
-
-    // Initialize Swiper with error handling
+// Function to initialize Swiper with error handling
+function initializeSwiper() {
     let swiper;
     if (typeof Swiper !== 'undefined') {
         try {
@@ -2760,16 +2886,16 @@ a, button, .watch-card, .service-card, .brand-logo {
             console.error('Swiper initialization failed:', error);
         }
     }
-
+    
     // Dynamically add swiper slides
     const watches = [
         { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'rolex 1.jpg', tag: 'Limited' },
-        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'hublot 1.jpg', tag: 'Featured' },
+        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000', image: 'hublot 1.jpg', tag: 'Featured' },
         { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'PatekPhilippe-WorldTime-5230G-001-323908-241118-134610.webp', tag: 'New' },
         { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'casio round 1.jpg', tag: 'Limited' },
         { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'Naviforce 1.jpg', tag: 'Featured' }
     ];
-
+    
     const swiperWrapper = document.querySelector('.swiper-wrapper');
     if (swiperWrapper) {
         watches.forEach(watch => {
@@ -2782,8 +2908,8 @@ a, button, .watch-card, .service-card, .brand-logo {
             slide.innerHTML = `
                 <div class="watch-card">
                     <div class="watch-image-container">
-                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
-                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                        ${watch.tag ? `<span class="watch-tag ${watch.tag.toLowerCase()}">${watch.tag}</span>` : ''}
+                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image active" onerror="this.src='placeholder.jpg'; this.onerror=null;">
                     </div>
                     <div class="watch-content">
                         <span class="watch-brand">${watch.brand}</span>
@@ -2802,621 +2928,139 @@ a, button, .watch-card, .service-card, .brand-logo {
             swiperWrapper.appendChild(slide);
         });
         
-        // Enhanced cart functionality - save to local storage and redirect to checkout
-        document.querySelectorAll('.add-to-cart').forEach(button => {
+        // Add event listeners to dynamically added cart buttons
+        const swiperCartButtons = swiperWrapper.querySelectorAll('.add-to-cart');
+        swiperCartButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const brand = this.getAttribute('data-brand');
-                const name = this.getAttribute('data-name');
-                const price = this.getAttribute('data-price');
-                const image = this.getAttribute('data-image');
+                const productData = {
+                    brand: this.dataset.brand,
+                    name: this.dataset.name,
+                    price: this.dataset.price,
+                    image: this.dataset.image,
+                    quantity: 1
+                };
                 
-                // Get existing cart or initialize new one
-                let cart = JSON.parse(localStorage.getItem('shopping-cart')) || [];
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
                 
-                // Check if item already exists in cart
-                const existingItemIndex = cart.findIndex(item => 
-                    item.brand === brand && item.name === name
+                // Check if product already exists in cart
+                const existingProductIndex = cart.findIndex(item => 
+                    item.brand === productData.brand && item.name === productData.name
                 );
                 
-                if (existingItemIndex >= 0) {
-                    // Increment quantity if item exists
-                    cart[existingItemIndex].quantity += 1;
+                if (existingProductIndex !== -1) {
+                    // Increment quantity if product exists
+                    cart[existingProductIndex].quantity += 1;
                 } else {
-                    // Add new item if it doesn't exist
-                    cart.push({
-                        brand,
-                        name,
-                        price,
-                        image,
-                        quantity: 1
-                    });
+                    // Add new product to cart
+                    cart.push(productData);
                 }
                 
-                // Save updated cart to localStorage
-                localStorage.setItem('shopping-cart', JSON.stringify(cart));
+                // Save cart to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
                 
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Added to Cart',
-                        text: `${brand} ${name} (${price}) has been added to your cart`,
-                        icon: 'success',
-                        confirmButtonText: 'Continue Shopping',
-                        showCancelButton: true,
-                        cancelButtonText: 'View Cart'
-                    }).then((result) => {
-                        if (!result.isConfirmed) {
-                            // Redirect to checkout page
-                            window.location.href = 'checkout.html';
-                        }
-                    });
-                } else {
-                    if (confirm(`${brand} ${name} added to cart. View cart now?`)) {
-                        window.location.href = 'checkout.html';
-                    }
-                }
+                // Update cart count and show notification
+                updateCartCount();
+                
+                // Show success notification using SweetAlert
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                    icon: 'success',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
         });
     }
+}
 
-    // Form submission handler
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Simple form validation
-            const email = this.querySelector('input[type="email"]');
-            if (email && !email.value.includes('@')) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Invalid Email',
-                        text: 'Please enter a valid email address',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Please enter a valid email address');
-                }
-                return;
-            }
-            
-            // Success message
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Message Sent!',
-                    text: 'We will get back to you shortly',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                alert('Message sent! We will get back to you shortly.');
-            }
-            
-            // Reset form
-            this.reset();
+// Function to handle mobile navigation
+function initMobileNav() {
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
         });
     }
+    
+    // Close menu when clicking on a link
+    const mobileNavLinks = document.querySelectorAll('.nav-links a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (hamburger.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+    });
+}
 
-    // Newsletter subscription
+// Newsletter subscription form handler
+function initNewsletterForm() {
     const newsletterForm = document.querySelector('.newsletter-form');
+    
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const emailInput = this.querySelector('input[type="email"]');
-            if (emailInput && emailInput.value) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Subscribed!',
-                        text: 'You have been subscribed to our newsletter',
-                        icon: 'success',
-                        confirmButtonText: 'Great!'
-                    });
-                } else {
-                    alert('You have been subscribed to our newsletter');
-                }
-                this.reset();
-            } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Empty Email',
-                        text: 'Please enter your email address',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Please enter your email address');
-                }
-            }
-        });
-    }
-
-    // GSAP Animations - Simplified
-    if (typeof gsap !== 'undefined') {
-        try {
-            // Hero animations
-            const heroTitle = document.querySelector('.hero-content h1');
-            const heroParagraph = document.querySelector('.hero-content p');
-            const heroButton = document.querySelector('.hero-content .btn');
+            const email = emailInput.value.trim();
             
-            if (heroTitle) gsap.from(heroTitle, { opacity: 0, y: 50, duration: 1, delay: 0.2 });
-            if (heroParagraph) gsap.from(heroParagraph, { opacity: 0, y: 30, duration: 1, delay: 0.5 });
-            if (heroButton) gsap.from(heroButton, { opacity: 0, y: 30, duration: 1, delay: 0.8 });
-            
-            // Make sure explore buttons are visible
-            const exploreButtons = document.querySelectorAll('.explore-btn, .btn-explore, .collection-btn');
-            exploreButtons.forEach(button => {
-                button.style.opacity = 1;
-                button.style.visibility = 'visible';
-                button.style.pointerEvents = 'auto';
-            });
-        } catch (error) {
-            console.error('Animation error:', error);
-        }
-    }
-});
-
-// Product filtering functionality
-function filterProducts(category) {
-    const allProducts = document.querySelectorAll('.watch-card');
-    
-    if (allProducts.length === 0) return;
-    
-    if (category === 'all') {
-        allProducts.forEach(product => {
-            product.style.display = 'block';
-        });} else {
-        allProducts.forEach(product => {
-            const productCategory = product.getAttribute('data-category');
-            if (productCategory === category) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
-}
-
-// Add filter buttons event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.filter-button');
-    
-    if (filterButtons.length > 0) {
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const category = this.getAttribute('data-filter');
-                
-                // Update active button
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter products
-                filterProducts(category);
-            });
-        });
-    }
-});
-
-// Search functionality
-const searchInput = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
-
-if (searchInput && searchButton) {
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-}
-
-function performSearch() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const allProducts = document.querySelectorAll('.watch-card');
-    
-    if (searchTerm === '') {
-        // If search is empty, show all products
-        allProducts.forEach(product => {
-            product.style.display = 'block';
-        });
-        return;
-    }
-    
-    let foundResults = false;
-    
-    allProducts.forEach(product => {
-        const brandElement = product.querySelector('.watch-brand');
-        const nameElement = product.querySelector('.watch-name');
-        const descElement = product.querySelector('.watch-description');
-        
-        const brand = brandElement ? brandElement.textContent.toLowerCase() : '';
-        const name = nameElement ? nameElement.textContent.toLowerCase() : '';
-        const description = descElement ? descElement.textContent.toLowerCase() : '';
-        
-        if (brand.includes(searchTerm) || name.includes(searchTerm) || description.includes(searchTerm)) {
-            product.style.display = 'block';
-            foundResults = true;
-        } else {
-            product.style.display = 'none';
-        }
-    });
-    
-    // Show message if no results found
-    const noResultsMessage = document.getElementById('no-results-message');
-    
-    if (noResultsMessage) {
-        if (!foundResults) {
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-        }
-    } else if (!foundResults && typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'No Results',
-            text: `No watches found matching "${searchTerm}"`,
-            icon: 'info',
-            confirmButtonText: 'OK'
-        });
-    }
-}
-
-// Lazy loading for images
-document.addEventListener('DOMContentLoaded', () => {
-    if ('IntersectionObserver' in window) {
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        lazyImages.forEach(img => {
-            imageObserver.observe(img);
-        });
-    } else {
-        // Fallback for browsers that don't support IntersectionObserver
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        
-        function lazyLoad() {
-            lazyImages.forEach(img => {
-                if (img.getBoundingClientRect().top <= window.innerHeight && 
-                    img.getBoundingClientRect().bottom >= 0 &&
-                    getComputedStyle(img).display !== 'none') {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                }
-            });
-        }
-        
-        // Load initially visible images
-        document.addEventListener('DOMContentLoaded', lazyLoad);
-        // Load images during scroll
-        window.addEventListener('scroll', lazyLoad);
-        // Load images on resize
-        window.addEventListener('resize', lazyLoad);
-    }
-});
-
-// Cart Manager
-const CartManager = {
-    getCart: function() {
-        return JSON.parse(localStorage.getItem('shopping-cart')) || [];
-    },
-    
-    saveCart: function(cart) {
-        localStorage.setItem('shopping-cart', JSON.stringify(cart));
-    },
-    
-    addItem: function(item) {
-        const cart = this.getCart();
-        const existingItemIndex = cart.findIndex(cartItem => 
-            cartItem.brand === item.brand && cartItem.name === item.name
-        );
-        
-        if (existingItemIndex >= 0) {
-            cart[existingItemIndex].quantity += 1;
-        } else {
-            cart.push({
-                brand: item.brand,
-                name: item.name,
-                price: item.price,
-                image: item.image,
-                quantity: 1
-            });
-        }
-        
-        this.saveCart(cart);
-        this.updateCartCount();
-    },
-    
-    removeItem: function(index) {
-        const cart = this.getCart();
-        if (index >= 0 && index < cart.length) {
-            cart.splice(index, 1);
-            this.saveCart(cart);
-            this.updateCartCount();
-            return true;
-        }
-        return false;
-    },
-    
-    updateQuantity: function(index, quantity) {
-        const cart = this.getCart();
-        if (index >= 0 && index < cart.length) {
-            cart[index].quantity = Math.max(1, quantity);
-            this.saveCart(cart);
-            return true;
-        }
-        return false;
-    },
-    
-    clearCart: function() {
-        localStorage.removeItem('shopping-cart');
-        this.updateCartCount();
-    },
-    
-    getCartTotal: function() {
-        const cart = this.getCart();
-        return cart.reduce((total, item) => {
-            const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-            return total + (price * item.quantity);
-        }, 0);
-    },
-    
-    updateCartCount: function() {
-        const cart = this.getCart();
-        const count = cart.reduce((total, item) => total + item.quantity, 0);
-        
-        // Update cart count in UI if element exists
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            cartCountElement.textContent = count;
-            cartCountElement.style.display = count > 0 ? 'block' : 'none';
-        }
-    }
-};
-
-// Initialize cart counter on page load
-document.addEventListener('DOMContentLoaded', () => {
-    CartManager.updateCartCount();
-    
-    // Add event listeners for any checkout page elements
-    const checkoutItemsContainer = document.getElementById('checkout-items');
-    if (checkoutItemsContainer) {
-        renderCheckoutItems();
-    }
-    
-    // Force visibility of important buttons
-    const actionButtons = document.querySelectorAll('.btn, .button, .action-button, .add-to-cart');
-    actionButtons.forEach(button => {
-        button.style.opacity = '1';
-        button.style.visibility = 'visible';
-        button.style.display = 'inline-block';
-        button.style.pointerEvents = 'auto';
-    });
-});
-
-// Function to render items in the checkout page
-function renderCheckoutItems() {
-    const checkoutItemsContainer = document.getElementById('checkout-items');
-    if (!checkoutItemsContainer) return;
-    
-    const cart = CartManager.getCart();
-    
-    if (cart.length === 0) {
-        checkoutItemsContainer.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
-        return;
-    }
-    
-    let totalPrice = 0;
-    let itemsHtml = '';
-    
-    cart.forEach((item, index) => {
-        const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-        const itemTotal = itemPrice * item.quantity;
-        totalPrice += itemTotal;
-        
-        itemsHtml += `
-            <div class="checkout-item" data-index="${index}">
-                <div class="checkout-item-image">
-                    <img src="${item.image}" alt="${item.brand} ${item.name}" onerror="this.src='placeholder.jpg'; this.onerror=null;">
-                </div>
-                <div class="checkout-item-details">
-                    <h3>${item.brand} ${item.name}</h3>
-                    <p>Price: ${item.price}</p>
-                    <div class="quantity-control">
-                        <button class="quantity-btn decrease">-</button>
-                        <input type="number" class="quantity-input" value="${item.quantity}" min="1">
-                        <button class="quantity-btn increase">+</button>
-                    </div>
-                </div>
-                <div class="checkout-item-subtotal">
-                    <p>Subtotal: Ksh ${itemTotal.toLocaleString()}</p>
-                    <button class="remove-item">Remove</button>
-                </div>
-            </div>
-        `;
-    });
-    
-    // Add total and checkout button
-    itemsHtml += `
-        <div class="checkout-summary">
-            <div class="checkout-total">
-                <h3>Total: Ksh ${totalPrice.toLocaleString()}</h3>
-            </div>
-            <button id="proceed-checkout" class="checkout-button">Complete Purchase</button>
-        </div>
-    `;
-    
-    checkoutItemsContainer.innerHTML = itemsHtml;
-    
-    // Add event listeners to the checkout items
-    const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
-    const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
-    const quantityInputs = document.querySelectorAll('.quantity-input');
-    const removeButtons = document.querySelectorAll('.remove-item');
-    const checkoutButton = document.getElementById('proceed-checkout');
-    
-    decreaseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemContainer = this.closest('.checkout-item');
-            const index = parseInt(itemContainer.dataset.index);
-            const input = itemContainer.querySelector('.quantity-input');
-            const currentValue = parseInt(input.value);
-            
-            if (currentValue > 1) {
-                input.value = currentValue - 1;
-                CartManager.updateQuantity(index, currentValue - 1);
-                renderCheckoutItems(); // Re-render to update subtotals and total
-            }
-        });
-    });
-    
-    increaseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemContainer = this.closest('.checkout-item');
-            const index = parseInt(itemContainer.dataset.index);
-            const input = itemContainer.querySelector('.quantity-input');
-            const currentValue = parseInt(input.value);
-            
-            input.value = currentValue + 1;
-            CartManager.updateQuantity(index, currentValue + 1);
-            renderCheckoutItems(); // Re-render to update subtotals and total
-        });
-    });
-    
-    quantityInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            const itemContainer = this.closest('.checkout-item');
-            const index = parseInt(itemContainer.dataset.index);
-            const value = parseInt(this.value);
-            
-            if (value < 1) {
-                this.value = 1;
-                CartManager.updateQuantity(index, 1);
-            } else {
-                CartManager.updateQuantity(index, value);
-            }
-            
-            renderCheckoutItems(); // Re-render to update subtotals and total
-        });
-    });
-    
-    removeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemContainer = this.closest('.checkout-item');
-            const index = parseInt(itemContainer.dataset.index);
-            
-            if (typeof Swal !== 'undefined') {
+            if (!email) {
                 Swal.fire({
-                    title: 'Remove Item',
-                    text: 'Are you sure you want to remove this item from your cart?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, remove it',
-                    cancelButtonText: 'No, keep it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        CartManager.removeItem(index);
-                        renderCheckoutItems();
-                    }
-                });
-            } else {
-                if (confirm('Are you sure you want to remove this item from your cart?')) {
-                    CartManager.removeItem(index);
-                    renderCheckoutItems();
-                }
-            }
-        });
-    });
-    
-    if (checkoutButton) {
-        checkoutButton.addEventListener('click', function() {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Order Placed!',
-                    text: 'Thank you for your purchase',
-                    icon: 'success',
+                    title: 'Error!',
+                    text: 'Please enter your email address.',
+                    icon: 'error',
                     confirmButtonText: 'OK'
-                }).then(() => {
-                    CartManager.clearCart();
-                    window.location.href = 'order-confirmation.html';
                 });
-            } else {
-                alert('Thank you for your purchase!');
-                CartManager.clearCart();
-                window.location.href = 'order-confirmation.html';
+                return;
             }
+            
+            // Simple email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                Swal.fire({
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Here you would typically send the email to your server
+            // For now, we'll just simulate success
+            
+            // Store subscription in localStorage for demo purposes
+            const subscribers = JSON.parse(localStorage.getItem('subscribers')) || [];
+            subscribers.push(email);
+            localStorage.setItem('subscribers', JSON.stringify(subscribers));
+            
+            // Reset form
+            emailInput.value = '';
+            
+            // Show success message
+            Swal.fire({
+                title: 'Thank You!',
+                text: 'You have successfully subscribed to our newsletter.',
+                icon: 'success',
+                confirmButtonText: 'Great!'
+            });
         });
     }
 }
 
-// Fix for explore collection buttons
-document.addEventListener('DOMContentLoaded', () => {
-    const exploreButtons = document.querySelectorAll('.explore-collection, .btn-explore, .collection-btn, .explore-btn');
+// Watch card hover effects
+function initWatchCardEffects() {
+    const watchCards = document.querySelectorAll('.watch-card');
     
-    exploreButtons.forEach(button => {
-        // Make sure the button is visible and clickable
-        button.style.opacity = '1';
-        button.style.visibility = 'visible';
-        button.style.display = 'inline-block';
-        button.style.pointerEvents = 'auto';
-        
-        // Add click event if not already added
-        if (!button.hasAttribute('data-event-added')) {
-            button.setAttribute('data-event-added', 'true');
-            
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.getAttribute('href') || '#collection';
-                
-                // Scroll to the target element
-                const targetElement = document.querySelector(target);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    // If no specific target, scroll to collection section
-                    const collectionSection = document.querySelector('#watches, #collection, .watches-section, .collection-section');
-                    if (collectionSection) {
-                        collectionSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            });
-        }
-    });
-});
-
-// Window load event for performance tracking
-window.addEventListener('load', () => {
-    // Make sure performance API is available
-    if (window.performance && window.performance.timing) {
-        const loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        console.log(`Page loaded in ${loadTime}ms`);
-    }
-    
-    // Fix for any buttons or elements that might not be visible
-    setTimeout(() => {
-        const importantElements = document.querySelectorAll('.btn, .button, .action-button, .add-to-cart, .explore-collection, .btn-explore, .collection-btn, .explore-btn');
-        
-        importantElements.forEach(element => {
-            element.style.opacity = '1';
-            element.style.visibility = 'visible';
-            element.style.display = 'inline-block';
-            element.style.pointerEvents = 'auto';
-        });
-    }, 500);
-});
-
-// Shop card hover effects - ensures animation works
-document.addEventListener('DOMContentLoaded', () => {
-    const shopCards = document.querySelectorAll('.watch-card, .shop-card, .product-card');
-    
-    shopCards.forEach(card => {
-        // Add hover effect
+    watchCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.classList.add('hover');
         });
@@ -3425,202 +3069,235 @@ document.addEventListener('DOMContentLoaded', () => {
             this.classList.remove('hover');
         });
     });
-});
+}
 
-// Ensure checkout functionality
-function setupCheckoutPage() {
-    const checkoutForm = document.getElementById('checkout-form');
-    if (!checkoutForm) return;
+// Price filter functionality (for collection page)
+function initPriceFilter() {
+    const priceRange = document.querySelector('.price-range');
     
-    checkoutForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    if (priceRange) {
+        const priceMin = document.querySelector('.price-min');
+        const priceMax = document.querySelector('.price-max');
+        const rangeInputs = priceRange.querySelectorAll('input[type="range"]');
         
-        // Validate form
-        const email = this.querySelector('input[type="email"]');
-        const name = this.querySelector('input[name="name"]');
-        
-        if (email && !email.value.includes('@')) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Invalid Email',
-                    text: 'Please enter a valid email address',
-                    icon: 'warning'
-                });
-            } else {
-                alert('Please enter a valid email address');
-            }
-            return;
-        }
-        
-        if (name && name.value.trim() === '') {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Name Required',
-                    text: 'Please enter your name',
-                    icon: 'warning'
-                });
-            } else {
-                alert('Please enter your name');
-            }
-            return;
-        }
-        
-        // Process checkout
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Order Placed!',
-                text: 'Thank you for your purchase',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                CartManager.clearCart();
-                window.location.href = 'order-confirmation.html';
+        rangeInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const minVal = parseInt(rangeInputs[0].value);
+                const maxVal = parseInt(rangeInputs[1].value);
+                
+                if (maxVal - minVal < 1000) {
+                    if (this === rangeInputs[0]) {
+                        rangeInputs[0].value = maxVal - 1000;
+                    } else {
+                        rangeInputs[1].value = minVal + 1000;
+                    }
+                } else {
+                    priceMin.textContent = `Ksh ${minVal}`;
+                    priceMax.textContent = `Ksh ${maxVal}`;
+                    
+                    // Apply filter to products (if on collection page)
+                    filterProductsByPrice(minVal, maxVal);
+                }
             });
+        });
+    }
+}
+
+// Function to filter products by price
+function filterProductsByPrice(min, max) {
+    const watchCards = document.querySelectorAll('.watch-card');
+    
+    watchCards.forEach(card => {
+        const priceText = card.querySelector('.watch-price').textContent;
+        const price = parseInt(priceText.replace(/[^\d]/g, ''));
+        
+        if (price >= min && price <= max) {
+            card.style.display = 'block';
         } else {
-            alert('Thank you for your purchase!');
-            CartManager.clearCart();
-            window.location.href = 'order-confirmation.html';
+            card.style.display = 'none';
         }
     });
 }
 
-// Initialize checkout page if present
-document.addEventListener('DOMContentLoaded', setupCheckoutPage);
-
-// Add quick view functionality
-document.addEventListener('DOMContentLoaded', () => {
-    const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+// Smooth scroll functionality for anchor links
+function initSmoothScroll() {
+    const anchorLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
     
-    quickViewButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+    anchorLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
             
-            const card = this.closest('.watch-card');
-            const brand = card.querySelector('.watch-brand').textContent;
-            const name = card.querySelector('.watch-name').textContent;
-            const price = card.querySelector('.watch-price').textContent;
-            const description = card.querySelector('.watch-description').textContent;
-            const image = card.querySelector('.watch-image').src;
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
             
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: `${brand} ${name}`,
-                    html: `
-                        <div class="quick-view-modal">
-                            <div class="quick-view-image">
-                                <img src="${image}" alt="${brand} ${name}">
-                            </div>
-                            <div class="quick-view-details">
-                                <p class="quick-view-price">${price}</p>
-                                <p class="quick-view-description">${description}</p>
-                                <div class="quick-view-actions">
-                                    <button class="quick-view-add-to-cart">Add to Cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    cancelButtonText: 'Close',
-                    width: '800px',
-                    didOpen: () => {
-                        const addToCartBtn = document.querySelector('.quick-view-add-to-cart');
-                        if (addToCartBtn) {
-                            addToCartBtn.addEventListener('click', function() {
-                                CartManager.addItem({
-                                    brand,
-                                    name,
-                                    price,
-                                    image
-                                });
-                                
-                                Swal.fire({
-                                    title: 'Added to Cart',
-                                    text: `${brand} ${name} has been added to your cart`,
-                                    icon: 'success',
-                                    confirmButtonText: 'Continue Shopping',
-                                    showCancelButton: true,
-                                    cancelButtonText: 'View Cart'
-                                }).then((result) => {
-                                    if (!result.isConfirmed) {
-                                        window.location.href = 'checkout.html';
-                                    }
-                                });
-                            });
-                        }
-                    }
+            if (targetElement) {
+                // Get header height for offset
+                const headerHeight = document.querySelector('.navbar').offsetHeight;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
                 });
             }
         });
     });
+}
+
+// Call all initialization functions when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cart and authentication
+    updateCartCount();
+    updateAuthUI();
+    
+    // Add all event listeners for cart functionality
+    initializeCartButtons();
+    
+    // Initialize watch image gallery
+    initializeWatchImageGallery();
+    
+    // Initialize Swiper
+    initializeSwiper();
+    
+    // Initialize mobile navigation
+    initMobileNav();
+    
+    // Initialize newsletter form
+    initNewsletterForm();
+    
+    // Initialize watch card effects
+    initWatchCardEffects();
+    
+    // Initialize price filter (if on collection page)
+    initPriceFilter();
+    
+    // Initialize smooth scroll
+    initSmoothScroll();
 });
 
-// Fix for any sliders or carousels not functioning
-document.addEventListener('DOMContentLoaded', () => {
-    // Backup carousel functionality if Swiper isn't working
-    if (typeof Swiper === 'undefined') {
-        const swiperContainer = document.querySelector('.swiper-container');
-        if (swiperContainer) {
-            const slides = swiperContainer.querySelectorAll('.swiper-slide');
-            if (slides.length > 0) {
-                // Create a basic slider
-                let currentSlide = 0;
-                
-                // Show only current slide
-                const showSlide = (index) => {
-                    slides.forEach((slide, i) => {
-                        slide.style.display = i === index ? 'block' : 'none';
-                    });
-                };
-                
-                // Initial display
-                showSlide(currentSlide);
-                
-                // Create prev/next buttons if they don't exist
-                if (!swiperContainer.querySelector('.swiper-button-prev')) {
-                    const prevButton = document.createElement('div');
-                    prevButton.className = 'swiper-button-prev';
-                    prevButton.innerHTML = '❮';
-                    prevButton.style.position = 'absolute';
-                    prevButton.style.left = '10px';
-                    prevButton.style.top = '50%';
-                    prevButton.style.zIndex = '10';
-                    prevButton.style.cursor = 'pointer';
-                    swiperContainer.appendChild(prevButton);
-                    
-                    prevButton.addEventListener('click', () => {
-                        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                        showSlide(currentSlide);
-                    });
-                }
-                
-                if (!swiperContainer.querySelector('.swiper-button-next')) {
-                    const nextButton = document.createElement('div');
-                    nextButton.className = 'swiper-button-next';
-                    nextButton.innerHTML = '❯';
-                    nextButton.style.position = 'absolute';
-                    nextButton.style.right = '10px';
-                    nextButton.style.top = '50%';
-                    nextButton.style.zIndex = '10';
-                    nextButton.style.cursor = 'pointer';
-                    swiperContainer.appendChild(nextButton);
-                    
-                    nextButton.addEventListener('click', () => {
-                        currentSlide = (currentSlide + 1) % slides.length;
-                        showSlide(currentSlide);
-                    });
-                }
-                
-                // Auto slide every 3 seconds
-                setInterval(() => {
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    showSlide(currentSlide);
-                }, 3000);
-            }
-        }
+// Function to initialize cart buttons
+function initializeCartButtons() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const cartIcon = document.querySelector('.cart-icon');
+
+    // Add click event to all "Add to Cart" buttons
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get product data from button attributes or closest parent
+            const watchCard = this.closest('.watch-card');
+            const productData = {
+                brand: this.dataset.brand || watchCard.querySelector('.watch-brand').textContent,
+                name: this.dataset.name || watchCard.querySelector('.watch-name').textContent,
+                price: this.dataset.price || watchCard.querySelector('.watch-price').textContent,
+                image: this.dataset.image || watchCard.querySelector('.watch-image.active, .watch-image:first-child').src,
+                quantity: 1
+            };
+            
+            // Add to cart functionality
+            addToCart(productData);
+        });
+    });
+    
+    // Handle cart icon click
+    if (cartIcon) {
+        cartIcon.addEventListener('click', function() {
+            showCartOverlay();
+        });
+    }
+}
+
+// Function to add product to cart
+function addToCart(productData) {
+    // Get current cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex(item => 
+        item.brand === productData.brand && item.name === productData.name
+    );
+    
+    if (existingProductIndex !== -1) {
+        // Increment quantity if product exists
+        cart[existingProductIndex].quantity += 1;
+    } else {
+        // Add new product to cart
+        cart.push(productData);
+    }
+    
+    // Save cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Update cart count and show notification
+    updateCartCount();
+    
+    // Show success notification using SweetAlert
+    Swal.fire({
+        title: 'Added to Cart!',
+        text: `${productData.brand} ${productData.name} has been added to your cart.`,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+}
+
+// Add scroll effect to navbar
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
     }
 });
+
+// Animation on scroll initialization
+function initAOS() {
+    // Check if AOS library is loaded
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+    }
+}
+
+// Check if AOS library is loaded
+if (typeof AOS !== 'undefined') {
+    window.addEventListener('load', initAOS);
+}
+
+// Handle "Back to Top" button if it exists
+function initBackToTop() {
+    const backToTopBtn = document.querySelector('.back-to-top');
+    
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('active');
+            } else {
+                backToTopBtn.classList.remove('active');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+}
+
+// Initialize Back to Top button if it exists
+document.addEventListener('DOMContentLoaded', initBackToTop);
     </script>
 </body>
 </html>
