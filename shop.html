@@ -1910,614 +1910,605 @@ h1, h2, h3, h4, h5, h6 {
     </footer>
 
     <script>
-        // Sample product data
-        const products = [
-            {
-                id: 1,
-                name: "Royale Classic Gold",
-                category: "mens",
-                price: 1299.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.8,
-                reviews: 124,
-                description: "A sophisticated gold-toned timepiece featuring a classic design with modern functionality. Perfect for formal occasions and everyday elegance.",
-                specs: {
-                    material: "Stainless Steel, Gold Plated",
-                    movement: "Automatic",
-                    waterResistant: "50m",
-                    diameter: "42mm",
-                    strap: "Genuine Leather"
-                },
-                userReviews: [
-                    { name: "James K.", date: "February 12, 2025", rating: 5, text: "Absolutely love this watch! The craftsmanship is incredible and it looks even better in person." },
-                    { name: "Robert M.", date: "January 30, 2025", rating: 4, text: "Great quality for the price. The gold tone is perfect - not too flashy but definitely noticeable." }
-                ]
-            },
-            {
-                id: 2,
-                name: "Elegance Pearl",
-                category: "ladies",
-                price: 1099.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.9,
-                reviews: 89,
-                description: "A delicate pearl-accented timepiece featuring a mother-of-pearl dial. The perfect blend of sophistication and femininity.",
-                specs: {
-                    material: "Stainless Steel, Pearl Accents",
-                    movement: "Quartz",
-                    waterResistant: "30m",
-                    diameter: "34mm",
-                    strap: "Stainless Steel Bracelet"
-                },
-                userReviews: [
-                    { name: "Sarah L.", date: "March 5, 2025", rating: 5, text: "This watch is absolutely stunning. The pearl accents catch the light beautifully." },
-                    { name: "Michelle T.", date: "February 22, 2025", rating: 5, text: "Purchased this for my anniversary and couldn't be happier. Elegant and timeless." }
-                ]
-            },
-            {
-                id: 3,
-                name: "Chronos Black",
-                category: "mens",
-                price: 1599.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.7,
-                reviews: 156,
-                description: "A bold, masculine chronograph with a striking black dial and stainless steel case. Features multiple sub-dials for enhanced functionality.",
-                specs: {
-                    material: "Stainless Steel",
-                    movement: "Chronograph",
-                    waterResistant: "100m",
-                    diameter: "44mm",
-                    strap: "Stainless Steel"
-                },
-                userReviews: [
-                    { name: "David R.", date: "February 18, 2025", rating: 5, text: "The build quality is exceptional. This watch makes a statement without being overly flashy." },
-                    { name: "John B.", date: "January 25, 2025", rating: 4, text: "Great timepiece. The chronograph functions work perfectly and it looks very professional." }
-                ]
-            },
-            {
-                id: 4,
-                name: "Minimalist Platinum",
-                category: "unisex",
-                price: 899.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.6,
-                reviews: 112,
-                description: "A sleek, minimalist design with a platinum finish. This versatile timepiece suits any style and occasion.",
-                specs: {
-                    material: "Stainless Steel, Platinum Coated",
-                    movement: "Quartz",
-                    waterResistant: "30m",
-                    diameter: "38mm",
-                    strap: "Milanese Mesh"
-                },
-                userReviews: [
-                    { name: "Alex T.", date: "March 1, 2025", rating: 5, text: "Perfect size and weight. I wear it every day and it goes with everything." },
-                    { name: "Jordan K.", date: "February 10, 2025", rating: 4, text: "Clean design and comfortable to wear. Exactly what I was looking for." }
-                ]
-            },
-            {
-                id: 5,
-                name: "Diamond Accent Rose Gold",
-                category: "ladies",
-                price: 1499.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.9,
-                reviews: 78,
-                description: "A luxurious rose gold timepiece with genuine diamond accents. Elegant and sophisticated for special occasions.",
-                specs: {
-                    material: "Rose Gold, Diamond Accents",
-                    movement: "Swiss Quartz",
-                    waterResistant: "30m",
-                    diameter: "32mm",
-                    strap: "Rose Gold Bracelet"
-                },
-                userReviews: [
-                    { name: "Emily W.", date: "February 20, 2025", rating: 5, text: "Absolutely gorgeous watch. The diamond accents catch the light beautifully." },
-                    { name: "Jessica P.", date: "January 15, 2025", rating: 5, text: "Bought this for my wedding and it was perfect. Elegant and timeless." }
-                ]
-            },
-            {
-                id: 6,
-                name: "Classic Couple Set",
-                category: "couple",
-                price: 1899.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.8,
-                reviews: 64,
-                description: "A matching set of classic timepieces for couples. Elegant design with complementary features.",
-                specs: {
-                    material: "Stainless Steel",
-                    movement: "Swiss Quartz",
-                    waterResistant: "50m",
-                    diameter: "42mm & 36mm",
-                    strap: "Genuine Leather"
-                },
-                userReviews: [
-                    { name: "Michael & Lisa", date: "March 5, 2025", rating: 5, text: "Perfect anniversary gift. The watches complement each other beautifully." },
-                    { name: "Thomas & Sarah", date: "February 14, 2025", rating: 5, text: "Excellent quality and beautiful design. We wear them every day." }
-                ]
-            },
-            {
-                id: 7,
-                name: "Sport Diver Blue",
-                category: "mens",
-                price: 1199.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.7,
-                reviews: 92,
-                description: "A professional diver's watch with a striking blue dial and rotating bezel. Functional and stylish for water enthusiasts.",
-                specs: {
-                    material: "Stainless Steel",
-                    movement: "Automatic",
-                    waterResistant: "300m",
-                    diameter: "43mm",
-                    strap: "Steel Bracelet with Diver Extension"
-                },
-                userReviews: [
-                    { name: "Mark S.", date: "February 28, 2025", rating: 5, text: "Taken this diving multiple times and it performs flawlessly. Great watch." },
-                    { name: "Ryan T.", date: "January 20, 2025", rating: 4, text: "Solid construction and looks great. The blue dial really pops in sunlight." }
-                ]
-            },
-            {
-                id: 8,
-                name: "Titanium Chronograph",
-                category: "unisex",
-                price: 1399.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.6,
-                reviews: 87,
-                description: "A lightweight titanium chronograph with precision timing capabilities. Modern design suits any wrist.",
-                specs: {
-                    material: "Titanium",
-                    movement: "Chronograph",
-                    waterResistant: "100m",
-                    diameter: "40mm",
-                    strap: "Titanium Bracelet"
-                },
-                userReviews: [
-                    { name: "Taylor J.", date: "March 10, 2025", rating: 5, text: "Incredibly light but feels premium. The chronograph functions are easy to use." },
-                    { name: "Morgan C.", date: "February 5, 2025", rating: 4, text: "Great unisex design and very comfortable due to the lightweight titanium." }
-                ]
-            },
-            {
-                id: 9,
-                name: "Ruby Accent Evening",
-                category: "ladies",
-                price: 1299.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.8,
-                reviews: 73,
-                description: "An elegant evening timepiece with genuine ruby accents. Perfect for special occasions and formal events.",
-                specs: {
-                    material: "White Gold, Ruby Accents",
-                    movement: "Swiss Quartz",
-                    waterResistant: "30m",
-                    diameter: "30mm",
-                    strap: "Satin"
-                },
-                userReviews: [
-                    { name: "Katherine B.", date: "February 22, 2025", rating: 5, text: "Stunning watch that elevates any evening attire. The ruby accents are beautiful." },
-                    { name: "Amanda L.", date: "January 30, 2025", rating: 5, text: "Wore this to a gala and received many compliments. Elegant and sophisticated." }
-                ]
-            },
-            {
-                id: 10,
-                name: "Modern Couple Set",
-                category: "couple",
-                price: 1699.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.9,
-                reviews: 58,
-                description: "A contemporary matching set with sleek design. Perfect for the modern couple who appreciates minimalist style.",
-                specs: {
-                    material: "Stainless Steel, Sapphire Crystal",
-                    movement: "Automatic",
-                    waterResistant: "50m",
-                    diameter: "41mm & 35mm",
-                    strap: "Stainless Steel Mesh"
-                },
-                userReviews: [
-                    { name: "Daniel & Emma", date: "March 8, 2025", rating: 5, text: "These watches are perfect for our style. Modern yet timeless design." },
-                    { name: "Chris & Jamie", date: "February 20, 2025", rating: 5, text: "Great quality and they look amazing together. Worth every penny." }
-                ]
-            },
-            {
-                id: 11,
-                name: "Vintage Style Brown",
-                category: "mens",
-                price: 1099.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.7,
-                reviews: 96,
-                description: "A vintage-inspired timepiece with a brown leather strap and classic dial. Nostalgic charm with modern reliability.",
-                specs: {
-                    material: "Stainless Steel, Domed Crystal",
-                    movement: "Automatic",
-                    waterResistant: "50m",
-                    diameter: "40mm",
-                    strap: "Aged Leather"
-                },
-                userReviews: [
-                    { name: "William H.", date: "March 2, 2025", rating: 5, text: "This watch has such character. The vintage styling is executed perfectly." },
-                    { name: "George P.", date: "February 10, 2025", rating: 4, text: "Beautiful timepiece that looks like a family heirloom. Very pleased." }
-                ]
-            },
-            {
-                id: 12,
-                name: "Petite Diamond",
-                category: "ladies",
-                price: 1199.99,
-                image: "/api/placeholder/400/400",
-                rating: 4.8,
-                reviews: 82,
-                description: "A delicate timepiece with a small face and diamond markers. Refined elegance for the discerning woman.",
-                specs: {
-                    material: "Stainless Steel, Diamond Markers",
-                    movement: "Swiss Quartz",
-                    waterResistant: "30m",
-                    diameter: "28mm",
-                    strap: "Stainless Steel"
-                },
-                userReviews: [
-                    { name: "Olivia T.", date: "February 26, 2025", rating: 5, text: "Perfect size for my small wrist. Elegant and not too flashy." },
-                    { name: "Sophia R.", date: "January 18, 2025", rating: 5, text: "The diamond markers add just the right amount of sparkle. Love it!" }
-                ]
-            },
-        ];
+       // Sample product data
+const products = [
+    {
+        id: 1,
+        name: "Casio",
+        category: "mens",
+        price: 3500,
+        image: "/api/placeholder/400/400",
+        rating: 4.8,
+        reviews: 124,
+        description: "A reliable everyday timepiece with modern functionality. Perfect for casual wear and daily use.",
+        specs: {
+            material: "Stainless Steel",
+            movement: "Quartz",
+            waterResistant: "50m",
+            diameter: "42mm",
+            strap: "Resin"
+        },
+        userReviews: [
+            { name: "James K.", date: "February 12, 2025", rating: 5, text: "Great watch for the price! Reliable and durable as expected from Casio." },
+            { name: "Robert M.", date: "January 30, 2025", rating: 4, text: "Excellent everyday watch. Battery life is impressive." }
+        ]
+    },
+    {
+        id: 2,
+        name: "Hublot",
+        category: "mens",
+        price: 7000,
+        image: "/api/placeholder/400/400",
+        rating: 4.9,
+        reviews: 89,
+        description: "A premium luxury timepiece with bold design and superior craftsmanship. Makes a statement on any wrist.",
+        specs: {
+            material: "Titanium and Ceramic",
+            movement: "Automatic",
+            waterResistant: "100m",
+            diameter: "45mm",
+            strap: "Rubber"
+        },
+        userReviews: [
+            { name: "Sarah L.", date: "March 5, 2025", rating: 5, text: "This watch exceeds expectations. The craftsmanship is incredible." },
+            { name: "Michelle T.", date: "February 22, 2025", rating: 5, text: "A real head-turner. Worth every shilling spent." }
+        ]
+    },
+    {
+        id: 3,
+        name: "Rolex",
+        category: "mens",
+        price: 10000,
+        image: "/api/placeholder/400/400",
+        rating: 4.9,
+        reviews: 156,
+        description: "The ultimate luxury timepiece. Precision engineering with timeless design that serves as both a status symbol and investment.",
+        specs: {
+            material: "904L Stainless Steel",
+            movement: "Automatic",
+            waterResistant: "100m",
+            diameter: "41mm",
+            strap: "Oyster Bracelet"
+        },
+        userReviews: [
+            { name: "David R.", date: "February 18, 2025", rating: 5, text: "The build quality is exceptional. A true masterpiece of watchmaking." },
+            { name: "John B.", date: "January 25, 2025", rating: 5, text: "An heirloom piece that will last generations. Perfect in every way." }
+        ]
+    },
+    {
+        id: 4,
+        name: "Patek Philippe",
+        category: "mens",
+        price: 15000,
+        image: "/api/placeholder/400/400",
+        rating: 5.0,
+        reviews: 112,
+        description: "The pinnacle of Swiss luxury watchmaking. Unparalleled craftsmanship with elegant design for the most discerning collectors.",
+        specs: {
+            material: "18K Rose Gold",
+            movement: "Mechanical Manual Winding",
+            waterResistant: "30m",
+            diameter: "39mm",
+            strap: "Alligator Leather"
+        },
+        userReviews: [
+            { name: "Alex T.", date: "March 1, 2025", rating: 5, text: "The finest timepiece in my collection. Absolute perfection." },
+            { name: "Jordan K.", date: "February 10, 2025", rating: 5, text: "Exquisite craftsmanship. The movement is a work of art." }
+        ]
+    },
+    {
+        id: 5,
+        name: "Casio Couple Set",
+        category: "couple",
+        price: 7000,
+        image: "/api/placeholder/400/400",
+        rating: 4.7,
+        reviews: 78,
+        description: "A matching set of elegant Casio timepieces for couples. Modern functionality with complementary designs.",
+        specs: {
+            material: "Stainless Steel",
+            movement: "Quartz",
+            waterResistant: "50m",
+            diameter: "42mm & 36mm",
+            strap: "Stainless Steel Bracelet"
+        },
+        userReviews: [
+            { name: "Emily & William", date: "February 20, 2025", rating: 5, text: "Perfect gift for anniversaries. We love our matching watches." },
+            { name: "Jessica & Paul", date: "January 15, 2025", rating: 4, text: "Great quality and stylish design. Very happy with our purchase." }
+        ]
+    },
+    {
+        id: 6,
+        name: "Rolex Couple Set",
+        category: "couple",
+        price: 20000,
+        image: "/api/placeholder/400/400",
+        rating: 5.0,
+        reviews: 64,
+        description: "The ultimate luxury couple's gift. Matching Rolex timepieces that represent the pinnacle of watchmaking excellence.",
+        specs: {
+            material: "904L Stainless Steel",
+            movement: "Automatic",
+            waterResistant: "100m",
+            diameter: "41mm & 36mm",
+            strap: "Jubilee Bracelet"
+        },
+        userReviews: [
+            { name: "Michael & Lisa", date: "March 5, 2025", rating: 5, text: "The perfect symbol of our commitment. Absolutely stunning watches." },
+            { name: "Thomas & Sarah", date: "February 14, 2025", rating: 5, text: "Worth every shilling. These will be family heirlooms." }
+        ]
+    },
+    {
+        id: 7,
+        name: "Skmei",
+        category: "unisex",
+        price: 5000,
+        image: "/api/placeholder/400/400",
+        rating: 4.5,
+        reviews: 92,
+        description: "A versatile sports watch with multiple functions. Durable design for active lifestyles at an affordable price.",
+        specs: {
+            material: "ABS Plastic and Stainless Steel",
+            movement: "Digital",
+            waterResistant: "50m",
+            diameter: "45mm",
+            strap: "Silicone"
+        },
+        userReviews: [
+            { name: "Mark S.", date: "February 28, 2025", rating: 4, text: "Great value for money. Has all the features I need for daily use." },
+            { name: "Ryan T.", date: "January 20, 2025", rating: 5, text: "Surprisingly good quality for the price. Very functional." }
+        ]
+    },
+    {
+        id: 8,
+        name: "G-Shock",
+        category: "mens",
+        price: 3500,
+        image: "/api/placeholder/400/400",
+        rating: 4.8,
+        reviews: 87,
+        description: "The ultimate tough watch. Shock resistant with multiple functions for outdoor enthusiasts and active individuals.",
+        specs: {
+            material: "Resin",
+            movement: "Digital",
+            waterResistant: "200m",
+            diameter: "51mm",
+            strap: "Resin"
+        },
+        userReviews: [
+            { name: "Taylor J.", date: "March 10, 2025", rating: 5, text: "Indestructible! Perfect for my active lifestyle." },
+            { name: "Morgan C.", date: "February 5, 2025", rating: 4, text: "Reliable and tough. Has survived everything I've put it through." }
+        ]
+    },
+    {
+        id: 9,
+        name: "Naviforce",
+        category: "mens",
+        price: 5000,
+        image: "/api/placeholder/400/400",
+        rating: 4.6,
+        reviews: 73,
+        description: "A military-inspired timepiece with bold design. Features chronograph functions and rugged construction.",
+        specs: {
+            material: "Stainless Steel",
+            movement: "Quartz",
+            waterResistant: "30m",
+            diameter: "46mm",
+            strap: "Leather"
+        },
+        userReviews: [
+            { name: "Katherine B.", date: "February 22, 2025", rating: 5, text: "Stylish design with great functionality. Excellent value." },
+            { name: "Amanda L.", date: "January 30, 2025", rating: 4, text: "Looks more expensive than it is. Very comfortable to wear." }
+        ]
+    }
+];
 
-        // Cart array
-        let cart = [];
+// Cart array
+let cart = [];
 
-        // DOM Elements
-        const productGrid = document.getElementById('productGrid');
-        const productCount = document.getElementById('productCount');
-        const cartIcon = document.getElementById('cartIcon');
-        const cartOverlay = document.getElementById('cartOverlay');
-        const closeCart = document.getElementById('closeCart');
-        const cartItems = document.getElementById('cartItems');
-        const emptyCart = document.getElementById('emptyCart');
-        const cartTotal = document.getElementById('cartTotal');
-        const checkoutBtn = document.getElementById('checkoutBtn');
-        const categoryItems = document.querySelectorAll('.category-item');
-        const productModal = document.getElementById('productModal');
-        const closeModal = document.getElementById('closeModal');
-        const modalBody = document.getElementById('modalBody');
-        const cartCount = document.querySelector('.cart-count');
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
+// DOM Elements
+const productGrid = document.getElementById('productGrid');
+const productCount = document.getElementById('productCount');
+const cartIcon = document.getElementById('cartIcon');
+const cartOverlay = document.getElementById('cartOverlay');
+const closeCart = document.getElementById('closeCart');
+const cartItems = document.getElementById('cartItems');
+const emptyCart = document.getElementById('emptyCart');
+const cartTotal = document.getElementById('cartTotal');
+const checkoutBtn = document.getElementById('checkoutBtn');
+const categoryItems = document.querySelectorAll('.category-item');
+const productModal = document.getElementById('productModal');
+const closeModal = document.getElementById('closeModal');
+const modalBody = document.getElementById('modalBody');
+const cartCount = document.querySelector('.cart-count');
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderProducts('all');
-            updateCartCount();
-            
-            // Event listeners
-            categoryItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    categoryItems.forEach(cat => cat.classList.remove('active'));
-                    item.classList.add('active');
-                    renderProducts(item.dataset.category);
-                });
-            });
-            
-            cartIcon.addEventListener('click', toggleCart);
-            closeCart.addEventListener('click', toggleCart);
-            closeModal.addEventListener('click', closeProductModal);
-            checkoutBtn.addEventListener('click', proceedToCheckout);
-            hamburger.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    renderProducts('all');
+    updateCartCount();
+    updateAuthUI(); // Add auth UI update
+    
+    // Event listeners
+    categoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            categoryItems.forEach(cat => cat.classList.remove('active'));
+            item.classList.add('active');
+            renderProducts(item.dataset.category);
         });
+    });
+    
+    cartIcon.addEventListener('click', toggleCart);
+    closeCart.addEventListener('click', toggleCart);
+    closeModal.addEventListener('click', closeProductModal);
+    checkoutBtn.addEventListener('click', proceedToCheckout);
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+});
 
-        // Render products based on category
-        function renderProducts(category) {
-            productGrid.innerHTML = '';
-            let filteredProducts = products;
+// Authentication UI update function
+function updateAuthUI() {
+    const authButton = document.getElementById('authButton');
+    if (!authButton) return;
+    
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (userEmail) {
+        // User is signed in - Show avatar button
+        const firstLetter = userEmail.charAt(0).toUpperCase();
+        
+        authButton.className = 'auth-button auth-button-logged-in';
+        authButton.innerHTML = `<div class="user-avatar">${firstLetter}</div>`;
+        
+        // When clicking on avatar, go to user profile or dashboard
+        authButton.onclick = function() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
             
-            if (category !== 'all') {
-                filteredProducts = products.filter(product => product.category === category);
+            // If using Firebase Auth, sign out there too
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut();
             }
             
-            productCount.textContent = filteredProducts.length;
-            
-            filteredProducts.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <div class="product-image">
-                        <img src="${product.image}" alt="${product.name}">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">${product.name}</h3>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
-                        <div class="product-rating">
-                            ${getStarRating(product.rating)}
-                            <span>(${product.reviews})</span>
-                        </div>
-                        <button class="add-to-cart" data-id="${product.id}">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                `;
-                
-                // Open product modal when clicking on product
-                productCard.querySelector('.product-image').addEventListener('click', () => {
-                    openProductModal(product);
+            // Show logout notification
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Signed Out',
+                    text: 'You have been successfully signed out.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Redirect to login
+                    window.location.href = 'login.html';
                 });
-                
-                productCard.querySelector('.product-name').addEventListener('click', () => {
-                    openProductModal(product);
-                });
-                
-                // Add to cart button
-                productCard.querySelector('.add-to-cart').addEventListener('click', () => {
-                    addToCart(product);
-                    showAddedToCartMessage(product.name);
-                });
-                
-                productGrid.appendChild(productCard);
-            });
-        }
+            } else {
+                alert('You have been successfully signed out.');
+                window.location.href = 'login.html';
+            }
+        };
+    } else {
+        // User is not signed in - Show sign in button
+        authButton.className = 'auth-button';
+        authButton.innerHTML = 'Sign In';
+        
+        // Redirect to login page when clicking sign in
+        authButton.onclick = function() {
+            window.location.href = 'login.html';
+        };
+    }
+}
 
-        // Generate star rating HTML
-        function getStarRating(rating) {
-            let stars = '';
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-            
-            for (let i = 0; i < fullStars; i++) {
-                stars += '<i class="fas fa-star"></i>';
-            }
-            
-            if (hasHalfStar) {
-                stars += '<i class="fas fa-star-half-alt"></i>';
-            }
-            
-            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-            for (let i = 0; i < emptyStars; i++) {
-                stars += '<i class="far fa-star"></i>';
-            }
-            
-            return stars;
-        }
-
-        // Open product modal
-        function openProductModal(product) {
-            modalBody.innerHTML = `
-                <div class="modal-image">
-                    <img src="${product.image}" alt="${product.name}">
+// Render products based on category
+function renderProducts(category) {
+    productGrid.innerHTML = '';
+    let filteredProducts = products;
+    
+    if (category !== 'all') {
+        filteredProducts = products.filter(product => product.category === category);
+    }
+    
+    productCount.textContent = filteredProducts.length;
+    
+    filteredProducts.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+            <div class="product-image">
+                <img src="${product.image}" alt="${product.name}">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">${product.name}</h3>
+                <div class="product-price">KSH ${product.price.toLocaleString()}</div>
+                <div class="product-rating">
+                    ${getStarRating(product.rating)}
+                    <span>(${product.reviews})</span>
                 </div>
-                <div class="modal-details">
-                    <h2 class="modal-name">${product.name}</h2>
-                    <div class="modal-price">$${product.price.toFixed(2)}</div>
-                    <div class="modal-rating">
-                        <div class="stars">
-                            ${getStarRating(product.rating)}
+                <button class="add-to-cart" data-id="${product.id}">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+        `;
+        
+        // Open product modal when clicking on product
+        productCard.querySelector('.product-image').addEventListener('click', () => {
+            openProductModal(product);
+        });
+        
+        productCard.querySelector('.product-name').addEventListener('click', () => {
+            openProductModal(product);
+        });
+        
+        // Add to cart button
+        productCard.querySelector('.add-to-cart').addEventListener('click', () => {
+            addToCart(product);
+            showAddedToCartMessage(product.name);
+        });
+        
+        productGrid.appendChild(productCard);
+    });
+}
+
+// Generate star rating HTML
+function getStarRating(rating) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+    }
+    
+    if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+    }
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+    }
+    
+    return stars;
+}
+
+// Open product modal
+function openProductModal(product) {
+    modalBody.innerHTML = `
+        <div class="modal-image">
+            <img src="${product.image}" alt="${product.name}">
+        </div>
+        <div class="modal-details">
+            <h2 class="modal-name">${product.name}</h2>
+            <div class="modal-price">KSH ${product.price.toLocaleString()}</div>
+            <div class="modal-rating">
+                <div class="stars">
+                    ${getStarRating(product.rating)}
+                </div>
+                <span class="rating-count">${product.reviews} reviews</span>
+            </div>
+            <p class="modal-description">${product.description}</p>
+            
+            <div class="modal-specs">
+                <h3>Specifications:</h3>
+                <div class="spec-item">
+                    <div class="spec-label">Material:</div>
+                    <div class="spec-value">${product.specs.material}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Movement:</div>
+                    <div class="spec-value">${product.specs.movement}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Water Resistant:</div>
+                    <div class="spec-value">${product.specs.waterResistant}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Diameter:</div>
+                    <div class="spec-value">${product.specs.diameter}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Strap:</div>
+                    <div class="spec-value">${product.specs.strap}</div>
+                </div>
+            </div>
+            
+            <div class="modal-action">
+                <button class="modal-add-cart" data-id="${product.id}">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+            
+            <div class="reviews-section">
+                <h3>Customer Reviews</h3>
+                ${product.userReviews.map(review => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="reviewer-name">${review.name}</span>
+                            <span class="review-date">${review.date}</span>
                         </div>
-                        <span class="rating-count">${product.reviews} reviews</span>
+                        <div class="review-rating">
+                            ${getStarRating(review.rating)}
+                        </div>
+                        <p class="review-text">${review.text}</p>
                     </div>
-                    <p class="modal-description">${product.description}</p>
-                    
-                    <div class="modal-specs">
-                        <h3>Specifications:</h3>
-                        <div class="spec-item">
-                            <div class="spec-label">Material:</div>
-                            <div class="spec-value">${product.specs.material}</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Movement:</div>
-                            <div class="spec-value">${product.specs.movement}</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Water Resistant:</div>
-                            <div class="spec-value">${product.specs.waterResistant}</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Diameter:</div>
-                            <div class="spec-value">${product.specs.diameter}</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Strap:</div>
-                            <div class="spec-value">${product.specs.strap}</div>
-                        </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Add event listener to the Add to Cart button
+    modalBody.querySelector('.modal-add-cart').addEventListener('click', () => {
+        const productToAdd = products.find(p => p.id === product.id);
+        addToCart(productToAdd);
+        showAddedToCartMessage(product.name);
+    });
+    
+    productModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close product modal
+function closeProductModal() {
+    productModal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Toggle cart
+function toggleCart() {
+    cartOverlay.classList.toggle('active');
+    updateCart();
+}
+
+// Add to cart
+function addToCart(product) {
+    const existingItem = cart.find(item => item.id === product.id);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    }
+    
+    updateCart();
+    updateCartCount();
+}
+
+// Update cart UI
+function updateCart() {
+    if (cart.length === 0) {
+        emptyCart.style.display = 'block';
+        cartItems.innerHTML = '';
+    } else {
+        emptyCart.style.display = 'none';
+        
+        let cartHTML = '';
+        let total = 0;
+        
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            
+            cartHTML += `
+                <div class="cart-item" data-id="${item.id}">
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
                     </div>
-                    
-                    <div class="modal-action">
-                        <button class="modal-add-cart" data-id="${product.id}">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                    
-                    <div class="reviews-section">
-                        <h3>Customer Reviews</h3>
-                        ${product.userReviews.map(review => `
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <span class="reviewer-name">${review.name}</span>
-                                    <span class="review-date">${review.date}</span>
-                                </div>
-                                <div class="review-rating">
-                                    ${getStarRating(review.rating)}
-                                </div>
-                                <p class="review-text">${review.text}</p>
-                            </div>
-                        `).join('')}
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">KSH ${item.price.toLocaleString()}</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                            <input type="text" class="quantity-input" value="${item.quantity}" readOnly>
+                            <button class="quantity-btn increase" data-id="${item.id}">+</button>
+                            <button class="remove-item" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
-            
-            // Add event listener to the Add to Cart button
-            modalBody.querySelector('.modal-add-cart').addEventListener('click', () => {
-                const productToAdd = products.find(p => p.id === product.id);
-                addToCart(productToAdd);
-                showAddedToCartMessage(product.name);
-            });
-            
-            productModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+        });
+        
+        cartItems.innerHTML = cartHTML;
+        cartTotal.textContent = `KSH ${total.toLocaleString()}`;
+        
+        // Add event listeners to cart item buttons
+        document.querySelectorAll('.decrease').forEach(btn => {
+            btn.addEventListener('click', () => decreaseQuantity(parseInt(btn.dataset.id)));
+        });
+        
+        document.querySelectorAll('.increase').forEach(btn => {
+            btn.addEventListener('click', () => increaseQuantity(parseInt(btn.dataset.id)));
+        });
+        
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.id)));
+        });
+    }
+}
 
-        // Close product modal
-        function closeProductModal() {
-            productModal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
+// Update cart count
+function updateCartCount() {
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCount.textContent = count;
+}
 
-        // Toggle cart
-        function toggleCart() {
-            cartOverlay.classList.toggle('active');
-            updateCart();
-        }
+// Decrease quantity
+function decreaseQuantity(id) {
+    const item = cart.find(item => item.id === id);
+    
+    if (item.quantity > 1) {
+        item.quantity--;
+    } else {
+        removeFromCart(id);
+    }
+    
+    updateCart();
+    updateCartCount();
+}
 
-        // Add to cart
-        function addToCart(product) {
-            const existingItem = cart.find(item => item.id === product.id);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: 1
-                });
-            }
-            
-            updateCart();
-            updateCartCount();
-        }
+// Increase quantity
+function increaseQuantity(id) {
+    const item = cart.find(item => item.id === id);
+    item.quantity++;
+    
+    updateCart();
+    updateCartCount();
+}
 
-        // Update cart UI
-        function updateCart() {
-            if (cart.length === 0) {
-                emptyCart.style.display = 'block';
-                cartItems.innerHTML = '';
-            } else {
-                emptyCart.style.display = 'none';
-                
-                let cartHTML = '';
-                let total = 0;
-                
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    total += itemTotal;
-                    
-                    cartHTML += `
-                        <div class="cart-item" data-id="${item.id}">
-                            <div class="cart-item-image">
-                                <img src="${item.image}" alt="${item.name}">
-                            </div>
-                            <div class="cart-item-details">
-                                <div class="cart-item-name">${item.name}</div>
-                                <div class="cart-item-price">$${item.price.toFixed(2)}</div>
-                                <div class="cart-item-quantity">
-                                    <button class="quantity-btn decrease" data-id="${item.id}">-</button>
-                                    <input type="text" class="quantity-input" value="${item.quantity}" readOnly>
-                                    <button class="quantity-btn increase" data-id="${item.id}">+</button>
-                                    <button class="remove-item" data-id="${item.id}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                cartItems.innerHTML = cartHTML;
-                cartTotal.textContent = `$${total.toFixed(2)}`;
-                
-                // Add event listeners to cart item buttons
-                document.querySelectorAll('.decrease').forEach(btn => {
-                    btn.addEventListener('click', () => decreaseQuantity(parseInt(btn.dataset.id)));
-                });
-                
-                document.querySelectorAll('.increase').forEach(btn => {
-                    btn.addEventListener('click', () => increaseQuantity(parseInt(btn.dataset.id)));
-                });
-                
-                document.querySelectorAll('.remove-item').forEach(btn => {
-                    btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.id)));
-                });
-            }
-        }
+// Remove from cart
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    
+    updateCart();
+    updateCartCount();
+}
 
-        // Update cart count
-        function updateCartCount() {
-            const count = cart.reduce((total, item) => total + item.quantity, 0);
-            cartCount.textContent = count;
-        }
+// Show added to cart message
+function showAddedToCartMessage(productName) {
+    swal({
+        title: "Added to Cart!",
+        text: `${productName} has been added to your cart.`,
+        icon: "success",
+        button: "Continue Shopping",
+        timer: 2000
+    });
+}
 
-        // Decrease quantity
-        function decreaseQuantity(id) {
-            const item = cart.find(item => item.id === id);
-            
-            if (item.quantity > 1) {
-                item.quantity--;
-            } else {
-                removeFromCart(id);
-            }
-            
-            updateCart();
-            updateCartCount();
-        }
-
-        // Increase quantity
-        function increaseQuantity(id) {
-            const item = cart.find(item => item.id === id);
-            item.quantity++;
-            
-            updateCart();
-            updateCartCount();
-        }
-
-        // Remove from cart
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.id !== id);
-            
-            updateCart();
-            updateCartCount();
-        }
-
-        // Show added to cart message
-        function showAddedToCartMessage(productName) {
-            swal({
-                title: "Added to Cart!",
-                text: `${productName} has been added to your cart.`,
-                icon: "success",
-                button: "Continue Shopping",
-                timer: 2000
-            });
-        }
-
-        // Proceed to checkout
-        function proceedToCheckout() {
-            if (cart.length === 0) {
-                swal({
-                    title: "Empty Cart",
-                    text: "Your cart is empty. Add some products first.",
-                    icon: "info",
-                    button: "OK",
-                });
-                return;
-            }
-            
-            // Save cart to localStorage for checkout page
-            localStorage.setItem('ytime_cart', JSON.stringify(cart));
-            
-            // Redirect to checkout page
-            swal({
-                title: "Proceeding to Checkout",
-                text: "You'll be redirected to the checkout page.",
-                icon: "success",
-                buttons: false,
-                timer: 2000
-            }).then(() => {
-                window.location.href = "checkout.html";
-            });
-        }
+// Proceed to checkout
+function proceedToCheckout() {
+    if (cart.length === 0) {
+        swal({
+            title: "Empty Cart",
+            text: "Your cart is empty. Add some products first.",
+            icon: "info",
+            button: "OK",
+        });
+        return;
+    }
+    
+    // Save cart to localStorage for checkout page
+    localStorage.setItem('ytime_cart', JSON.stringify(cart));
+    
+    // Redirect to checkout page
+    swal({
+        title: "Proceeding to Checkout",
+        text: "You'll be redirected to the checkout page.",
+        icon: "success",
+        buttons: false,
+        timer: 2000
+    }).then(() => {
+        window.location.href = "checkout.html";
+    });
+}
     </script>
 </body>
 </html>
