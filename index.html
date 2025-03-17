@@ -3042,49 +3042,173 @@ function initializeWatchImageGallery() {
     });
 }
 
-// Function to initialize Swiper with error handling - FIXED VERSION
-function initializeSwiper() {
-    if (typeof Swiper !== 'undefined') {
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Swiper with error handling
+    let swiper;
+    const swiperContainer = document.querySelector('.swiper-container');
+    
+    // Dynamically add swiper slides first
+    const watches = [
+        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'rolex 1.jpg', tag: 'Limited' },
+        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'hublot 1.jpg', tag: 'Featured' },
+        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'PatekPhilippe-WorldTime-5230G-001-323908-241118-134610.webp', tag: 'New' },
+        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'casio round 1.jpg', tag: 'Limited' },
+        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'Naviforce 1.jpg', tag: 'Featured' }
+    ];
+
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    if (swiperWrapper) {
+        watches.forEach(watch => {
+            // Validate image path to prevent broken images
+            const imagePath = watch.image || 'placeholder.jpg';
+            
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            
+            slide.innerHTML = `
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
+                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">${watch.brand}</span>
+                        <h3 class="watch-name">${watch.name}</h3>
+                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">${watch.price}</span>
+                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}" data-image="${imagePath}">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            swiperWrapper.appendChild(slide);
+        });
+    }
+    
+    // Initialize Swiper if available, otherwise use fallback
+    if (typeof Swiper !== 'undefined' && swiperContainer) {
         try {
-            const swiperContainer = document.querySelector('.swiper-container');
-            if (swiperContainer) {
-                // Check if Swiper is already initialized
-                if (swiperContainer.swiper) {
-                    swiperContainer.swiper.destroy(true, true);
-                }
-                
-                // Initialize new Swiper
-                new Swiper('.swiper-container', {
-                    slidesPerView: 1,
-                    spaceBetween: 30,
-                    loop: true,
-                    autoplay: {
-                        delay: 3000,
-                        disableOnInteraction: false,
+            swiper = new Swiper('.swiper-container', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
                     },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    breakpoints: {
-                        640: {
-                            slidesPerView: 2,
-                        },
-                        992: {
-                            slidesPerView: 3,
-                        }
+                    992: {
+                        slidesPerView: 3,
                     }
-                });
-            }
+                }
+            });
         } catch (error) {
             console.error('Swiper initialization failed:', error);
+            initFallbackSlider();
+        }
+    } else if (swiperContainer) {
+        initFallbackSlider();
+    }
+    
+    // Fallback slider function
+    function initFallbackSlider() {
+        const slides = swiperContainer.querySelectorAll('.swiper-slide');
+        if (slides.length > 0) {
+            // Create a basic slider
+            let currentSlide = 0;
+            
+            // Show only current slide
+            const showSlide = (index) => {
+                slides.forEach((slide, i) => {
+                    slide.style.display = i === index ? 'block' : 'none';
+                });
+            };
+            
+            // Initial display
+            showSlide(currentSlide);
+            
+            // Create prev/next buttons if they don't exist
+            if (!swiperContainer.querySelector('.swiper-button-prev')) {
+                const prevButton = document.createElement('div');
+                prevButton.className = 'swiper-button-prev';
+                prevButton.innerHTML = '❮';
+                prevButton.style.position = 'absolute';
+                prevButton.style.left = '10px';
+                prevButton.style.top = '50%';
+                prevButton.style.zIndex = '10';
+                prevButton.style.cursor = 'pointer';
+                swiperContainer.appendChild(prevButton);
+                
+                prevButton.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent page movement
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    showSlide(currentSlide);
+                });
+            }
+            
+            if (!swiperContainer.querySelector('.swiper-button-next')) {
+                const nextButton = document.createElement('div');
+                nextButton.className = 'swiper-button-next';
+                nextButton.innerHTML = '❯';
+                nextButton.style.position = 'absolute';
+                nextButton.style.right = '10px';
+                nextButton.style.top = '50%';
+                nextButton.style.zIndex = '10';
+                nextButton.style.cursor = 'pointer';
+                swiperContainer.appendChild(nextButton);
+                
+                nextButton.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent page movement
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                });
+            }
+            
+            // Auto slide every 3 seconds
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }, 3000);
         }
     }
-}
+    
+    // Image gallery dot navigation
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach(dot => {
+        dot.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent page movement
+            const container = this.closest('.watch-image-container');
+            const images = container.querySelectorAll('.watch-image');
+            const allDots = container.querySelectorAll('.dot');
+            const index = parseInt(this.getAttribute('data-index'));
+            
+            // Remove active class from all images and dots
+            images.forEach(img => img.classList.remove('active'));
+            allDots.forEach(d => d.classList.remove('active'));
+            
+            // Add active class to current image and dot
+            if (images[index] && allDots[index]) {
+                images[index].classList.add('active');
+                this.classList.add('active');
+            }
+        });
+    });
+});
 
 // Function to handle mobile navigation
 function initMobileNav() {
