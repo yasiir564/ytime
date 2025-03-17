@@ -1768,6 +1768,265 @@ a, button, .watch-card, .service-card, .brand-logo {
     font-weight: bold;
   }
 }
+        /* About Us Section */
+.about-section {
+  padding: 6rem 0;
+  background-color: rgba(10, 13, 20, 0.97);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.title-accent {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto 1.5rem;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--gray);
+  font-weight: 400;
+}
+
+.about-content {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.about-image {
+  position: relative;
+}
+
+.image-frame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.image-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.image-frame:hover img {
+  transform: scale(1.05);
+}
+
+.image-accent {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  top: -20px;
+  left: -20px;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.about-text {
+  padding: 1rem 0;
+}
+
+.about-tagline {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+
+.about-description {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--gray);
+  margin-bottom: 2.5rem;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: linear-gradient(145deg, rgba(16, 23, 38, 0.9) 0%, rgba(10, 13, 20, 0.95) 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(30, 58, 138, 0.3);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  border-color: var(--gold);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 1rem;
+  color: var(--gold);
+  background: rgba(30, 58, 138, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.1);
+  background: rgba(30, 58, 138, 0.2);
+  filter: drop-shadow(0 0 5px var(--gold));
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+.about-cta {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.6));
+  color: var(--white);
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(30, 58, 138, 0.4);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.about-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), rgba(30, 58, 138, 0.8));
+  transition: transform 0.5s ease;
+  transform: scaleX(0);
+  transform-origin: right;
+  z-index: -1;
+}
+
+.about-cta:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.about-cta:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 992px) {
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .image-frame {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .about-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 4rem 0;
+  }
+  
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  .about-tagline {
+    font-size: 1.6rem;
+  }
+  
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    flex-direction: row;
+    text-align: left;
+    padding: 1rem;
+  }
+  
+  .stat-icon {
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
+}
        
 
     </style>
@@ -2037,6 +2296,76 @@ a, button, .watch-card, .service-card, .brand-logo {
             <div class="swiper-button-prev"></div>
         </div>
     </div>
+
+    <!-- About Us Section HTML -->
+<section class="about-section">
+  <div class="container">
+    <div class="about-header">
+      <h2 class="section-title">About Us</h2>
+      <div class="title-accent"></div>
+      <p class="section-subtitle">Kenya's Premier Luxury Watch Destination</p>
+    </div>
+    
+    <div class="about-content">
+      <div class="about-image">
+        <div class="image-frame">
+          <img src="/api/placeholder/500/600" alt="Our luxury watch store" />
+          <div class="image-accent"></div>
+        </div>
+      </div>
+      
+      <div class="about-text">
+        <h3 class="about-tagline">Crafting Timeless Experiences Since 2015</h3>
+        <p class="about-description">We are Kenya's leading watch retailer, providing exceptional timepieces that combine craftsmanship, heritage, and innovation. Our curated collection features prestigious brands and exclusive designs for the discerning watch enthusiast.</p>
+        
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">1,000+</span>
+              <span class="stat-label">Watches Sold</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">50,000+</span>
+              <span class="stat-label">Monthly Page Views</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">20+</span>
+              <span class="stat-label">Watch Experts</span>
+            </div>
+          </div>
+        </div>
+        
+        <a href="#" class="about-cta">Discover Our Collection</a>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- Services Section -->
     <section class="services" id="services">
