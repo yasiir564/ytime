@@ -1917,7 +1917,11 @@ const products = [
         name: "Casio",
         category: "mens",
         price: 3500,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.8,
         reviews: 124,
         description: "A reliable everyday timepiece with modern functionality. Perfect for casual wear and daily use.",
@@ -1938,7 +1942,11 @@ const products = [
         name: "Hublot",
         category: "mens",
         price: 7000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.9,
         reviews: 89,
         description: "A premium luxury timepiece with bold design and superior craftsmanship. Makes a statement on any wrist.",
@@ -1959,7 +1967,11 @@ const products = [
         name: "Rolex",
         category: "mens",
         price: 10000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.9,
         reviews: 156,
         description: "The ultimate luxury timepiece. Precision engineering with timeless design that serves as both a status symbol and investment.",
@@ -1980,7 +1992,11 @@ const products = [
         name: "Patek Philippe",
         category: "mens",
         price: 15000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 5.0,
         reviews: 112,
         description: "The pinnacle of Swiss luxury watchmaking. Unparalleled craftsmanship with elegant design for the most discerning collectors.",
@@ -2001,7 +2017,11 @@ const products = [
         name: "Casio Couple Set",
         category: "couple",
         price: 7000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.7,
         reviews: 78,
         description: "A matching set of elegant Casio timepieces for couples. Modern functionality with complementary designs.",
@@ -2022,7 +2042,11 @@ const products = [
         name: "Rolex Couple Set",
         category: "couple",
         price: 20000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 5.0,
         reviews: 64,
         description: "The ultimate luxury couple's gift. Matching Rolex timepieces that represent the pinnacle of watchmaking excellence.",
@@ -2043,7 +2067,11 @@ const products = [
         name: "Skmei",
         category: "unisex",
         price: 5000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.5,
         reviews: 92,
         description: "A versatile sports watch with multiple functions. Durable design for active lifestyles at an affordable price.",
@@ -2064,7 +2092,11 @@ const products = [
         name: "G-Shock",
         category: "mens",
         price: 3500,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.8,
         reviews: 87,
         description: "The ultimate tough watch. Shock resistant with multiple functions for outdoor enthusiasts and active individuals.",
@@ -2085,7 +2117,11 @@ const products = [
         name: "Naviforce",
         category: "mens",
         price: 5000,
-        image: "/api/placeholder/400/400",
+        images: [
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400", 
+            "/api/placeholder/400/400"
+        ],
         rating: 4.6,
         reviews: 73,
         description: "A military-inspired timepiece with bold design. Features chronograph functions and rugged construction.",
@@ -2126,9 +2162,15 @@ const navLinks = document.querySelector('.nav-links');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Load cart from localStorage if it exists
+    const savedCart = localStorage.getItem('ytime_cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+
     renderProducts('all');
     updateCartCount();
-    updateAuthUI(); // Add auth UI update
+    updateAuthUI();
     
     // Event listeners
     categoryItems.forEach(item => {
@@ -2217,7 +2259,7 @@ function renderProducts(category) {
         productCard.className = 'product-card';
         productCard.innerHTML = `
             <div class="product-image">
-                <img src="${product.image}" alt="${product.name}">
+                <img src="${product.images[0]}" alt="${product.name}">
             </div>
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
@@ -2273,11 +2315,24 @@ function getStarRating(rating) {
     return stars;
 }
 
-// Open product modal
+// Open product modal with image swiper
 function openProductModal(product) {
     modalBody.innerHTML = `
-        <div class="modal-image">
-            <img src="${product.image}" alt="${product.name}">
+        <div class="modal-image-container">
+            <div class="swiper-container">
+                <div class="product-swiper">
+                    <div class="swiper-wrapper">
+                        ${product.images.map(img => `
+                            <div class="swiper-slide">
+                                <img src="${img}" alt="${product.name}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
         </div>
         <div class="modal-details">
             <h2 class="modal-name">${product.name}</h2>
@@ -2345,6 +2400,110 @@ function openProductModal(product) {
         showAddedToCartMessage(product.name);
     });
     
+    // Initialize image swiper if Swiper is available
+    if (typeof Swiper !== 'undefined') {
+        setTimeout(() => {
+            new Swiper('.product-swiper', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                autoplay: {
+                    delay: 5000,
+                },
+            });
+        }, 100);
+    } else {
+        // Fallback for manual image navigation if Swiper is not available
+        const images = modalBody.querySelectorAll('.swiper-slide img');
+        const imageContainer = modalBody.querySelector('.swiper-wrapper');
+        let currentImageIndex = 0;
+        
+        // Create simple navigation
+        const navContainer = document.createElement('div');
+        navContainer.className = 'simple-nav';
+        navContainer.innerHTML = `
+            <button class="prev-btn">&lt;</button>
+            <div class="image-indicators">
+                ${Array(images.length).fill().map((_, i) => 
+                    `<span class="indicator ${i === 0 ? 'active' : ''}"></span>`
+                ).join('')}
+            </div>
+            <button class="next-btn">&gt;</button>
+        `;
+        
+        modalBody.querySelector('.swiper-container').appendChild(navContainer);
+        
+        // Add event listeners for navigation
+        navContainer.querySelector('.prev-btn').addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateImageDisplay();
+        });
+        
+        navContainer.querySelector('.next-btn').addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateImageDisplay();
+        });
+        
+        function updateImageDisplay() {
+            imageContainer.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            
+            // Update indicators
+            const indicators = navContainer.querySelectorAll('.indicator');
+            indicators.forEach((ind, i) => {
+                ind.classList.toggle('active', i === currentImageIndex);
+            });
+        }
+        
+        // Add CSS for fallback navigation
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `
+            .swiper-wrapper {
+                display: flex;
+                transition: transform 0.3s ease;
+            }
+            .swiper-slide {
+                flex: 0 0 100%;
+            }
+            .simple-nav {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 10px;
+            }
+            .prev-btn, .next-btn {
+                background: #333;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            .image-indicators {
+                display: flex;
+                margin: 0 10px;
+            }
+            .indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #ccc;
+                margin: 0 5px;
+                cursor: pointer;
+            }
+            .indicator.active {
+                background: #333;
+            }
+        `;
+        document.head.appendChild(styleEl);
+    }
+    
     productModal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -2361,7 +2520,7 @@ function toggleCart() {
     updateCart();
 }
 
-// Add to cart
+// Add to cart and save to localStorage
 function addToCart(product) {
     const existingItem = cart.find(item => item.id === product.id);
     
@@ -2372,13 +2531,19 @@ function addToCart(product) {
             id: product.id,
             name: product.name,
             price: product.price,
-            image: product.image,
+            image: product.images[0],
             quantity: 1
         });
     }
     
     updateCart();
     updateCartCount();
+    saveCartToLocalStorage();
+}
+
+// Save cart to localStorage
+function saveCartToLocalStorage() {
+    localStorage.setItem('ytime_cart', JSON.stringify(cart));
 }
 
 // Update cart UI
@@ -2386,6 +2551,7 @@ function updateCart() {
     if (cart.length === 0) {
         emptyCart.style.display = 'block';
         cartItems.innerHTML = '';
+        cartTotal.textContent = 'KSH 0';
     } else {
         emptyCart.style.display = 'none';
         
@@ -2453,6 +2619,7 @@ function decreaseQuantity(id) {
     
     updateCart();
     updateCartCount();
+    saveCartToLocalStorage();
 }
 
 // Increase quantity
@@ -2462,6 +2629,7 @@ function increaseQuantity(id) {
     
     updateCart();
     updateCartCount();
+    saveCartToLocalStorage();
 }
 
 // Remove from cart
@@ -2470,44 +2638,115 @@ function removeFromCart(id) {
     
     updateCart();
     updateCartCount();
+    saveCartToLocalStorage();
 }
 
 // Show added to cart message
 function showAddedToCartMessage(productName) {
-    swal({
-        title: "Added to Cart!",
-        text: `${productName} has been added to your cart.`,
-        icon: "success",
-        button: "Continue Shopping",
-        timer: 2000
-    });
+    if (typeof swal !== 'undefined') {
+        swal({
+            title: "Added to Cart!",
+            text: `${productName} has been added to your cart.`,
+            icon: "success",
+            button: "Continue Shopping",
+            timer: 2000
+        });
+    } else {
+        const notification = document.createElement('div');
+        notification.className = 'add-to-cart-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-check-circle"></i>
+                <div class="notification-text">
+                    <h3>Added to Cart!</h3>
+                    <p>${productName} has been added to your cart.</p>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Add CSS for notification
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `
+            .add-to-cart-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                z-index: 9999;
+                animation: slideIn 0.3s forwards, fadeOut 0.5s 1.5s forwards;
+            }
+            .notification-content {
+                display: flex;
+                align-items: center;
+            }
+            .notification-content i {
+                font-size: 24px;
+                margin-right: 10px;
+            }
+            .notification-text h3 {
+                margin: 0;
+                font-size: 16px;
+            }
+            .notification-text p {
+                margin: 5px 0 0;
+                font-size: 14px;
+            }
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; visibility: hidden; }
+            }
+        `;
+        document.head.appendChild(styleEl);
+        
+        // Remove notification after 2 seconds
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 2000);
+    }
 }
 
 // Proceed to checkout
 function proceedToCheckout() {
     if (cart.length === 0) {
-        swal({
-            title: "Empty Cart",
-            text: "Your cart is empty. Add some products first.",
-            icon: "info",
-            button: "OK",
-        });
+        if (typeof swal !== 'undefined') {
+            swal({
+                title: "Empty Cart",
+                text: "Your cart is empty. Add some products first.",
+                icon: "info",
+                button: "OK",
+            });
+        } else {
+            alert("Your cart is empty. Add some products first.");
+        }
         return;
     }
     
-    // Save cart to localStorage for checkout page
-    localStorage.setItem('ytime_cart', JSON.stringify(cart));
+    // Save cart to localStorage for checkout page (already handled by saveCartToLocalStorage)
     
     // Redirect to checkout page
-    swal({
-        title: "Proceeding to Checkout",
-        text: "You'll be redirected to the checkout page.",
-        icon: "success",
-        buttons: false,
-        timer: 2000
-    }).then(() => {
+    if (typeof swal !== 'undefined') {
+        swal({
+            title: "Proceeding to Checkout",
+            text: "You'll be redirected to the checkout page.",
+            icon: "success",
+            buttons: false,
+            timer: 2000
+        }).then(() => {
+            window.location.href = "checkout.html";
+        });
+    } else {
         window.location.href = "checkout.html";
-    });
+    }
 }
     </script>
 </body>
