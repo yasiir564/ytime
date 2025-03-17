@@ -2139,10 +2139,6 @@ a, button, .watch-card, .service-card, .brand-logo {
         
         // When clicking on avatar, go to user profile or dashboard
         authButton.onclick = function() {
-          // You can change this to any user profile page you have
-          // window.location.href = 'profile.html';
-          
-          // For now, let's just sign out when clicking on avatar
           localStorage.removeItem('userEmail');
           localStorage.removeItem('userName');
           
@@ -2151,7 +2147,7 @@ a, button, .watch-card, .service-card, .brand-logo {
             firebase.auth().signOut();
           }
           
-          // Refresh page or redirect to login
+          // Redirect to login
           window.location.href = 'login.html';
         };
       } else {
@@ -2166,17 +2162,11 @@ a, button, .watch-card, .service-card, .brand-logo {
       }
     }
     
-    // Initial UI update
-    updateAuthUI();
+    // Initial UI update if auth button exists
+    if (authButton) {
+      updateAuthUI();
+    }
     
-    // Listen for changes to localStorage (for testing purposes)
-    window.addEventListener('storage', function(event) {
-      if (event.key === 'userEmail') {
-        updateAuthUI();
-      }
-    });
-  });
-        document.addEventListener('DOMContentLoaded', function() {
     // Image gallery dot navigation
     const dots = document.querySelectorAll('.dot');
     dots.forEach(dot => {
@@ -2191,7 +2181,6 @@ a, button, .watch-card, .service-card, .brand-logo {
             allDots.forEach(d => d.classList.remove('active'));
             
             // Add active class to current image and dot
-            // Check if index is valid before accessing
             if (images[index] && allDots[index]) {
                 images[index].classList.add('active');
                 this.classList.add('active');
@@ -2229,7 +2218,7 @@ a, button, .watch-card, .service-card, .brand-logo {
     if (budgetSlider && budgetValue) {
         budgetSlider.addEventListener('input', () => {
             const value = parseInt(budgetSlider.value);
-            budgetValue.textContent = `$${isNaN(value) ? 0 : value.toLocaleString()}`;
+            budgetValue.textContent = `Ksh ${isNaN(value) ? 0 : value.toLocaleString()}`;
             
             // Check if SweetAlert is available before using it
             if (typeof Swal !== 'undefined' && value >= 20000) {
@@ -2334,22 +2323,12 @@ a, button, .watch-card, .service-card, .brand-logo {
                         992: {
                             slidesPerView: 3,
                         }
-                    },
-                    on: {
-                        init: function () {
-                            console.log('Swiper initialized successfully');
-                        }
                     }
                 });
-            } else {
-                console.warn('Swiper container not found in the DOM');
             }
         } catch (error) {
             console.error('Swiper initialization failed:', error);
-            handleError('Slider could not be initialized');
         }
-    } else {
-        console.warn('Swiper library not loaded');
     }
 
     // Dynamically add swiper slides
@@ -2382,7 +2361,7 @@ a, button, .watch-card, .service-card, .brand-logo {
                         <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
                         <div class="watch-footer">
                             <span class="watch-price">${watch.price}</span>
-                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}">
+                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}" data-image="${imagePath}">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
                         </div>
@@ -2393,14 +2372,40 @@ a, button, .watch-card, .service-card, .brand-logo {
             swiperWrapper.appendChild(slide);
         });
         
-        // Add event listeners to the dynamically created buttons
-        if (typeof Swal !== 'undefined') {
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const brand = this.getAttribute('data-brand');
-                    const name = this.getAttribute('data-name');
-                    const price = this.getAttribute('data-price');
-                    
+        // Enhanced cart functionality - save to local storage and redirect to checkout
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const brand = this.getAttribute('data-brand');
+                const name = this.getAttribute('data-name');
+                const price = this.getAttribute('data-price');
+                const image = this.getAttribute('data-image');
+                
+                // Get existing cart or initialize new one
+                let cart = JSON.parse(localStorage.getItem('shopping-cart')) || [];
+                
+                // Check if item already exists in cart
+                const existingItemIndex = cart.findIndex(item => 
+                    item.brand === brand && item.name === name
+                );
+                
+                if (existingItemIndex >= 0) {
+                    // Increment quantity if item exists
+                    cart[existingItemIndex].quantity += 1;
+                } else {
+                    // Add new item if it doesn't exist
+                    cart.push({
+                        brand,
+                        name,
+                        price,
+                        image,
+                        quantity: 1
+                    });
+                }
+                
+                // Save updated cart to localStorage
+                localStorage.setItem('shopping-cart', JSON.stringify(cart));
+                
+                if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Added to Cart',
                         text: `${brand} ${name} (${price}) has been added to your cart`,
@@ -2410,21 +2415,17 @@ a, button, .watch-card, .service-card, .brand-logo {
                         cancelButtonText: 'View Cart'
                     }).then((result) => {
                         if (!result.isConfirmed) {
-                            // Logic to view cart goes here
-                            Swal.fire({
-                                title: 'Cart',
-                                text: 'Redirecting to cart...',
-                                icon: 'info',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
+                            // Redirect to checkout page
+                            window.location.href = 'checkout.html';
                         }
                     });
-                });
+                } else {
+                    if (confirm(`${brand} ${name} added to cart. View cart now?`)) {
+                        window.location.href = 'checkout.html';
+                    }
+                }
             });
-        }
-    } else {
-        console.warn('Product display area (swiper-wrapper) not found');
+        });
     }
 
     // Form submission handler
@@ -2498,7 +2499,7 @@ a, button, .watch-card, .service-card, .brand-logo {
         });
     }
 
-    // GSAP Animations
+    // GSAP Animations - Simplified
     if (typeof gsap !== 'undefined') {
         try {
             // Hero animations
@@ -2510,93 +2511,16 @@ a, button, .watch-card, .service-card, .brand-logo {
             if (heroParagraph) gsap.from(heroParagraph, { opacity: 0, y: 30, duration: 1, delay: 0.5 });
             if (heroButton) gsap.from(heroButton, { opacity: 0, y: 30, duration: 1, delay: 0.8 });
             
-            // Check if ScrollTrigger plugin is available
-            if (gsap.registerPlugin && typeof ScrollTrigger !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger);
-                
-                // Section titles
-                gsap.utils.toArray('.section-title').forEach(title => {
-                    gsap.from(title, {
-                        scrollTrigger: {
-                            trigger: title,
-                            start: 'top 80%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 1
-                    });
-                });
-                
-                // Watch cards
-                gsap.utils.toArray('.watch-card').forEach((card, i) => {
-                    gsap.from(card, {
-                        scrollTrigger: {
-                            trigger: card,
-                            start: 'top 85%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 0.8,
-                        delay: i * 0.1
-                    });
-                });
-                
-                // Service cards
-                gsap.utils.toArray('.service-card').forEach((card, i) => {
-                    gsap.from(card, {
-                        scrollTrigger: {
-                            trigger: card,
-                            start: 'top 85%',
-                        },
-                        opacity: 0,
-                        y: 50,
-                        duration: 0.8,
-                        delay: i * 0.1
-                    });
-                });
-            }
-            
-            // Show welcome notification
-            if (typeof Swal !== 'undefined') {
-                setTimeout(() => {
-                    Swal.fire({
-                        title: 'Welcome to Luxury Watches',
-                        text: 'Discover our exclusive collection of premium timepieces',
-                        icon: 'info',
-                        confirmButtonText: 'Start Browsing'
-                    });
-                }, 1000);
-            }
+            // Make sure explore buttons are visible
+            const exploreButtons = document.querySelectorAll('.explore-btn, .btn-explore, .collection-btn');
+            exploreButtons.forEach(button => {
+                button.style.opacity = 1;
+                button.style.visibility = 'visible';
+                button.style.pointerEvents = 'auto';
+            });
         } catch (error) {
             console.error('Animation error:', error);
-            handleError('Animation issue detected');
         }
-    } else {
-        console.warn('GSAP library not loaded');
-    }
-});
-
-// Window load event for performance tracking
-window.addEventListener('load', () => {
-    // Make sure performance API is available
-    if (window.performance && window.performance.timing) {
-        const loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        console.log(`Page loaded in ${loadTime}ms`);
-        
-        // Show notification if page load time is too long
-        if (loadTime > 3000 && typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Slow Connection Detected',
-                text: 'You might experience delays while browsing',
-                icon: 'warning',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        }
-    } else {
-        console.warn('Performance timing API not available');
     }
 });
 
@@ -2609,8 +2533,7 @@ function filterProducts(category) {
     if (category === 'all') {
         allProducts.forEach(product => {
             product.style.display = 'block';
-        });
-    } else {
+        });} else {
         allProducts.forEach(product => {
             const productCategory = product.getAttribute('data-category');
             if (productCategory === category) {
@@ -2705,73 +2628,6 @@ function performSearch() {
     }
 }
 
-// Currency switcher
-const currencySwitcher = document.getElementById('currency-switcher');
-if (currencySwitcher) {
-    currencySwitcher.addEventListener('change', function() {
-        const selectedCurrency = this.value;
-        const priceElements = document.querySelectorAll('.watch-price');
-        
-        // Define conversion rates (in a real app, these would come from an API)
-        const conversionRates = {
-            'KSH': 1,
-            'USD': 0.0088,
-            'EUR': 0.0081,
-            'GBP': 0.0069
-        };
-        
-        priceElements.forEach(priceElement => {
-            const originalPrice = priceElement.getAttribute('data-original-price');
-            let basePrice;
-            
-            // If we haven't stored the original price yet, store it now
-            if (!originalPrice) {
-                const currentPrice = priceElement.textContent.trim();
-                const numericPrice = parseFloat(currentPrice.replace(/[^0-9.]/g, ''));
-                priceElement.setAttribute('data-original-price', numericPrice);
-                basePrice = numericPrice;
-            } else {
-                basePrice = parseFloat(originalPrice);
-            }
-            
-            // Convert to the selected currency
-            const rate = conversionRates[selectedCurrency] || 1;
-            const convertedPrice = basePrice * rate;
-            
-            // Format the price according to currency
-            let formattedPrice;
-            switch(selectedCurrency) {
-                case 'USD':
-                    formattedPrice = `$${convertedPrice.toFixed(2)}`;
-                    break;
-                case 'EUR':
-                    formattedPrice = `€${convertedPrice.toFixed(2)}`;
-                    break;
-                case 'GBP':
-                    formattedPrice = `£${convertedPrice.toFixed(2)}`;
-                    break;
-                default:
-                    formattedPrice = `Ksh ${convertedPrice.toFixed(0)}`;
-            }
-            
-            priceElement.textContent = formattedPrice;
-        });
-        
-        // Notify user of currency change
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Currency Changed',
-                text: `Prices now displayed in ${selectedCurrency}`,
-                icon: 'info',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
-    });
-}
-
 // Lazy loading for images
 document.addEventListener('DOMContentLoaded', () => {
     if ('IntersectionObserver' in window) {
@@ -2815,114 +2671,524 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Add to wish list functionality
-document.addEventListener('DOMContentLoaded', () => {
-    const wishlistButtons = document.querySelectorAll('.add-to-wishlist');
+// Cart Manager
+const CartManager = {
+    getCart: function() {
+        return JSON.parse(localStorage.getItem('shopping-cart')) || [];
+    },
     
-    if (wishlistButtons.length > 0) {
-        wishlistButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-id');
-                const productName = this.getAttribute('data-name');
+    saveCart: function(cart) {
+        localStorage.setItem('shopping-cart', JSON.stringify(cart));
+    },
+    
+    addItem: function(item) {
+        const cart = this.getCart();
+        const existingItemIndex = cart.findIndex(cartItem => 
+            cartItem.brand === item.brand && cartItem.name === item.name
+        );
+        
+        if (existingItemIndex >= 0) {
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            cart.push({
+                brand: item.brand,
+                name: item.name,
+                price: item.price,
+                image: item.image,
+                quantity: 1
+            });
+        }
+        
+        this.saveCart(cart);
+        this.updateCartCount();
+    },
+    
+    removeItem: function(index) {
+        const cart = this.getCart();
+        if (index >= 0 && index < cart.length) {
+            cart.splice(index, 1);
+            this.saveCart(cart);
+            this.updateCartCount();
+            return true;
+        }
+        return false;
+    },
+    
+    updateQuantity: function(index, quantity) {
+        const cart = this.getCart();
+        if (index >= 0 && index < cart.length) {
+            cart[index].quantity = Math.max(1, quantity);
+            this.saveCart(cart);
+            return true;
+        }
+        return false;
+    },
+    
+    clearCart: function() {
+        localStorage.removeItem('shopping-cart');
+        this.updateCartCount();
+    },
+    
+    getCartTotal: function() {
+        const cart = this.getCart();
+        return cart.reduce((total, item) => {
+            const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+            return total + (price * item.quantity);
+        }, 0);
+    },
+    
+    updateCartCount: function() {
+        const cart = this.getCart();
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        
+        // Update cart count in UI if element exists
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            cartCountElement.textContent = count;
+            cartCountElement.style.display = count > 0 ? 'block' : 'none';
+        }
+    }
+};
+
+// Initialize cart counter on page load
+document.addEventListener('DOMContentLoaded', () => {
+    CartManager.updateCartCount();
+    
+    // Add event listeners for any checkout page elements
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+    if (checkoutItemsContainer) {
+        renderCheckoutItems();
+    }
+    
+    // Force visibility of important buttons
+    const actionButtons = document.querySelectorAll('.btn, .button, .action-button, .add-to-cart');
+    actionButtons.forEach(button => {
+        button.style.opacity = '1';
+        button.style.visibility = 'visible';
+        button.style.display = 'inline-block';
+        button.style.pointerEvents = 'auto';
+    });
+});
+
+// Function to render items in the checkout page
+function renderCheckoutItems() {
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+    if (!checkoutItemsContainer) return;
+    
+    const cart = CartManager.getCart();
+    
+    if (cart.length === 0) {
+        checkoutItemsContainer.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
+        return;
+    }
+    
+    let totalPrice = 0;
+    let itemsHtml = '';
+    
+    cart.forEach((item, index) => {
+        const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+        const itemTotal = itemPrice * item.quantity;
+        totalPrice += itemTotal;
+        
+        itemsHtml += `
+            <div class="checkout-item" data-index="${index}">
+                <div class="checkout-item-image">
+                    <img src="${item.image}" alt="${item.brand} ${item.name}" onerror="this.src='placeholder.jpg'; this.onerror=null;">
+                </div>
+                <div class="checkout-item-details">
+                    <h3>${item.brand} ${item.name}</h3>
+                    <p>Price: ${item.price}</p>
+                    <div class="quantity-control">
+                        <button class="quantity-btn decrease">-</button>
+                        <input type="number" class="quantity-input" value="${item.quantity}" min="1">
+                        <button class="quantity-btn increase">+</button>
+                    </div>
+                </div>
+                <div class="checkout-item-subtotal">
+                    <p>Subtotal: Ksh ${itemTotal.toLocaleString()}</p>
+                    <button class="remove-item">Remove</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Add total and checkout button
+    itemsHtml += `
+        <div class="checkout-summary">
+            <div class="checkout-total">
+                <h3>Total: Ksh ${totalPrice.toLocaleString()}</h3>
+            </div>
+            <button id="proceed-checkout" class="checkout-button">Complete Purchase</button>
+        </div>
+    `;
+    
+    checkoutItemsContainer.innerHTML = itemsHtml;
+    
+    // Add event listeners to the checkout items
+    const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
+    const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    const removeButtons = document.querySelectorAll('.remove-item');
+    const checkoutButton = document.getElementById('proceed-checkout');
+    
+    decreaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemContainer = this.closest('.checkout-item');
+            const index = parseInt(itemContainer.dataset.index);
+            const input = itemContainer.querySelector('.quantity-input');
+            const currentValue = parseInt(input.value);
+            
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+                CartManager.updateQuantity(index, currentValue - 1);
+                renderCheckoutItems(); // Re-render to update subtotals and total
+            }
+        });
+    });
+    
+    increaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemContainer = this.closest('.checkout-item');
+            const index = parseInt(itemContainer.dataset.index);
+            const input = itemContainer.querySelector('.quantity-input');
+            const currentValue = parseInt(input.value);
+            
+            input.value = currentValue + 1;
+            CartManager.updateQuantity(index, currentValue + 1);
+            renderCheckoutItems(); // Re-render to update subtotals and total
+        });
+    });
+    
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const itemContainer = this.closest('.checkout-item');
+            const index = parseInt(itemContainer.dataset.index);
+            const value = parseInt(this.value);
+            
+            if (value < 1) {
+                this.value = 1;
+                CartManager.updateQuantity(index, 1);
+            } else {
+                CartManager.updateQuantity(index, value);
+            }
+            
+            renderCheckoutItems(); // Re-render to update subtotals and total
+        });
+    });
+    
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemContainer = this.closest('.checkout-item');
+            const index = parseInt(itemContainer.dataset.index);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Remove Item',
+                    text: 'Are you sure you want to remove this item from your cart?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, remove it',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        CartManager.removeItem(index);
+                        renderCheckoutItems();
+                    }
+                });
+            } else {
+                if (confirm('Are you sure you want to remove this item from your cart?')) {
+                    CartManager.removeItem(index);
+                    renderCheckoutItems();
+                }
+            }
+        });
+    });
+    
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function() {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Order Placed!',
+                    text: 'Thank you for your purchase',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    CartManager.clearCart();
+                    window.location.href = 'order-confirmation.html';
+                });
+            } else {
+                alert('Thank you for your purchase!');
+                CartManager.clearCart();
+                window.location.href = 'order-confirmation.html';
+            }
+        });
+    }
+}
+
+// Fix for explore collection buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const exploreButtons = document.querySelectorAll('.explore-collection, .btn-explore, .collection-btn, .explore-btn');
+    
+    exploreButtons.forEach(button => {
+        // Make sure the button is visible and clickable
+        button.style.opacity = '1';
+        button.style.visibility = 'visible';
+        button.style.display = 'inline-block';
+        button.style.pointerEvents = 'auto';
+        
+        // Add click event if not already added
+        if (!button.hasAttribute('data-event-added')) {
+            button.setAttribute('data-event-added', 'true');
+            
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.getAttribute('href') || '#collection';
                 
-                // Toggle wishlist status
-                this.classList.toggle('in-wishlist');
-                
-                const isInWishlist = this.classList.contains('in-wishlist');
-                
-                // Update icon
-                const icon = this.querySelector('i');
-                if (icon) {
-                    if (isInWishlist) {
-                        icon.className = 'fas fa-heart';
-                    } else {
-                        icon.className = 'far fa-heart';
+                // Scroll to the target element
+                const targetElement = document.querySelector(target);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    // If no specific target, scroll to collection section
+                    const collectionSection = document.querySelector('#watches, #collection, .watches-section, .collection-section');
+                    if (collectionSection) {
+                        collectionSection.scrollIntoView({ behavior: 'smooth' });
                     }
                 }
+            });
+        }
+    });
+});
+
+// Window load event for performance tracking
+window.addEventListener('load', () => {
+    // Make sure performance API is available
+    if (window.performance && window.performance.timing) {
+        const loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+        console.log(`Page loaded in ${loadTime}ms`);
+    }
+    
+    // Fix for any buttons or elements that might not be visible
+    setTimeout(() => {
+        const importantElements = document.querySelectorAll('.btn, .button, .action-button, .add-to-cart, .explore-collection, .btn-explore, .collection-btn, .explore-btn');
+        
+        importantElements.forEach(element => {
+            element.style.opacity = '1';
+            element.style.visibility = 'visible';
+            element.style.display = 'inline-block';
+            element.style.pointerEvents = 'auto';
+        });
+    }, 500);
+});
+
+// Shop card hover effects - ensures animation works
+document.addEventListener('DOMContentLoaded', () => {
+    const shopCards = document.querySelectorAll('.watch-card, .shop-card, .product-card');
+    
+    shopCards.forEach(card => {
+        // Add hover effect
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('hover');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('hover');
+        });
+    });
+});
+
+// Ensure checkout functionality
+function setupCheckoutPage() {
+    const checkoutForm = document.getElementById('checkout-form');
+    if (!checkoutForm) return;
+    
+    checkoutForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate form
+        const email = this.querySelector('input[type="email"]');
+        const name = this.querySelector('input[name="name"]');
+        
+        if (email && !email.value.includes('@')) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address',
+                    icon: 'warning'
+                });
+            } else {
+                alert('Please enter a valid email address');
+            }
+            return;
+        }
+        
+        if (name && name.value.trim() === '') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Name Required',
+                    text: 'Please enter your name',
+                    icon: 'warning'
+                });
+            } else {
+                alert('Please enter your name');
+            }
+            return;
+        }
+        
+        // Process checkout
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Order Placed!',
+                text: 'Thank you for your purchase',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                CartManager.clearCart();
+                window.location.href = 'order-confirmation.html';
+            });
+        } else {
+            alert('Thank you for your purchase!');
+            CartManager.clearCart();
+            window.location.href = 'order-confirmation.html';
+        }
+    });
+}
+
+// Initialize checkout page if present
+document.addEventListener('DOMContentLoaded', setupCheckoutPage);
+
+// Add quick view functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+    
+    quickViewButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const card = this.closest('.watch-card');
+            const brand = card.querySelector('.watch-brand').textContent;
+            const name = card.querySelector('.watch-name').textContent;
+            const price = card.querySelector('.watch-price').textContent;
+            const description = card.querySelector('.watch-description').textContent;
+            const image = card.querySelector('.watch-image').src;
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: `${brand} ${name}`,
+                    html: `
+                        <div class="quick-view-modal">
+                            <div class="quick-view-image">
+                                <img src="${image}" alt="${brand} ${name}">
+                            </div>
+                            <div class="quick-view-details">
+                                <p class="quick-view-price">${price}</p>
+                                <p class="quick-view-description">${description}</p>
+                                <div class="quick-view-actions">
+                                    <button class="quick-view-add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    cancelButtonText: 'Close',
+                    width: '800px',
+                    didOpen: () => {
+                        const addToCartBtn = document.querySelector('.quick-view-add-to-cart');
+                        if (addToCartBtn) {
+                            addToCartBtn.addEventListener('click', function() {
+                                CartManager.addItem({
+                                    brand,
+                                    name,
+                                    price,
+                                    image
+                                });
+                                
+                                Swal.fire({
+                                    title: 'Added to Cart',
+                                    text: `${brand} ${name} has been added to your cart`,
+                                    icon: 'success',
+                                    confirmButtonText: 'Continue Shopping',
+                                    showCancelButton: true,
+                                    cancelButtonText: 'View Cart'
+                                }).then((result) => {
+                                    if (!result.isConfirmed) {
+                                        window.location.href = 'checkout.html';
+                                    }
+                                });
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+});
+
+// Fix for any sliders or carousels not functioning
+document.addEventListener('DOMContentLoaded', () => {
+    // Backup carousel functionality if Swiper isn't working
+    if (typeof Swiper === 'undefined') {
+        const swiperContainer = document.querySelector('.swiper-container');
+        if (swiperContainer) {
+            const slides = swiperContainer.querySelectorAll('.swiper-slide');
+            if (slides.length > 0) {
+                // Create a basic slider
+                let currentSlide = 0;
                 
-                // Show notification
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist',
-                        text: `${productName} has been ${isInWishlist ? 'added to' : 'removed from'} your wishlist`,
-                        icon: isInWishlist ? 'success' : 'info',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000
+                // Show only current slide
+                const showSlide = (index) => {
+                    slides.forEach((slide, i) => {
+                        slide.style.display = i === index ? 'block' : 'none';
+                    });
+                };
+                
+                // Initial display
+                showSlide(currentSlide);
+                
+                // Create prev/next buttons if they don't exist
+                if (!swiperContainer.querySelector('.swiper-button-prev')) {
+                    const prevButton = document.createElement('div');
+                    prevButton.className = 'swiper-button-prev';
+                    prevButton.innerHTML = '❮';
+                    prevButton.style.position = 'absolute';
+                    prevButton.style.left = '10px';
+                    prevButton.style.top = '50%';
+                    prevButton.style.zIndex = '10';
+                    prevButton.style.cursor = 'pointer';
+                    swiperContainer.appendChild(prevButton);
+                    
+                    prevButton.addEventListener('click', () => {
+                        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                        showSlide(currentSlide);
                     });
                 }
                 
-                // In a real app, you would save this to localStorage or send to server
-                saveWishlistToStorage(productId, isInWishlist);
-            });
-        });
-    }
-});
-
-// Helper function to save wishlist to localStorage
-function saveWishlistToStorage(productId, isAdding) {
-    try {
-        // Get current wishlist from localStorage
-        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        
-        if (isAdding) {
-            // Add to wishlist if not already there
-            if (!wishlist.includes(productId)) {
-                wishlist.push(productId);
-            }
-        } else {
-            // Remove from wishlist
-            wishlist = wishlist.filter(id => id !== productId);
-        }
-        
-        // Save back to localStorage
-        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-        
-        // Update wishlist count in UI
-        updateWishlistCount(wishlist.length);
-    } catch (error) {
-        console.error('Error saving wishlist to localStorage:', error);
-    }
-}
-
-// Update wishlist count in UI
-function updateWishlistCount(count) {
-    const wishlistCounter = document.querySelector('.wishlist-count');
-    if (wishlistCounter) {
-        wishlistCounter.textContent = count;
-        
-        // Show/hide based on count
-        if (count > 0) {
-            wishlistCounter.style.display = 'block';
-        } else {
-            wishlistCounter.style.display = 'none';
-        }
-    }
-}
-
-// Load wishlist state on page load
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        
-        // Update UI based on stored wishlist
-        wishlist.forEach(productId => {
-            const button = document.querySelector(`.add-to-wishlist[data-id="${productId}"]`);
-            if (button) {
-                button.classList.add('in-wishlist');
-                
-                const icon = button.querySelector('i');
-                if (icon) {
-                    icon.className = 'fas fa-heart';
+                if (!swiperContainer.querySelector('.swiper-button-next')) {
+                    const nextButton = document.createElement('div');
+                    nextButton.className = 'swiper-button-next';
+                    nextButton.innerHTML = '❯';
+                    nextButton.style.position = 'absolute';
+                    nextButton.style.right = '10px';
+                    nextButton.style.top = '50%';
+                    nextButton.style.zIndex = '10';
+                    nextButton.style.cursor = 'pointer';
+                    swiperContainer.appendChild(nextButton);
+                    
+                    nextButton.addEventListener('click', () => {
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        showSlide(currentSlide);
+                    });
                 }
+                
+                // Auto slide every 3 seconds
+                setInterval(() => {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                }, 3000);
             }
-        });
-        
-        // Update wishlist count
-        updateWishlistCount(wishlist.length);
-    } catch (error) {
-        console.error('Error loading wishlist from localStorage:', error);
+        }
     }
 });
     </script>
