@@ -4,415 +4,1078 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - YTime Luxury</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
-
         :root {
-            --primary-color: #1a1a1a;
-            --accent-color: #3B82F6;
-            --luxury-gold: #D4AF37;
+            --primary-color: #000000;
+            --secondary-color: #0a3d62;
+            --accent-color: #d4af37;
+            --light-color: #f5f5f5;
+            --dark-color: #222;
+            --gray-color: #eaeaea;
             --text-color: #333;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            color: var(--text-color);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
 
-        .luxury-heading {
-            font-family: 'Playfair Display', serif;
-            color: var(--luxury-gold);
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 3px 0;
+            transition: 0.4s;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style-type: none;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-icons-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-icon {
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .cart-icon i {
+            color: white;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            font-size: 12px;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .auth-button {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .auth-button:hover {
+            background-color: #c19b2a;
+        }
+
+        /* Checkout Styles */
+        .checkout-section {
+            padding: 40px 0;
+        }
+
+        .checkout-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--secondary-color);
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .checkout-left, .checkout-right {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-color);
+            color: var(--secondary-color);
+        }
+
+        /* Cart Items */
+        .cart-items {
+            margin-bottom: 30px;
+        }
+
+        .cart-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-color);
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .cart-item-quantity {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .cart-item-remove {
+            color: #e74c3c;
+            cursor: pointer;
+            margin-left: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+
+        /* Customer Info */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        /* Delivery Options */
+        .delivery-options {
+            margin-bottom: 30px;
+        }
+
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delivery-option:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .delivery-option.selected {
+            border-color: var(--secondary-color);
+            background-color: rgba(10, 61, 98, 0.05);
+        }
+
+        .delivery-radio {
+            margin-right: 15px;
+        }
+
+        .delivery-details {
+            flex: 1;
+        }
+
+        .delivery-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .delivery-description {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .delivery-price {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        /* Auth Frame */
+        .auth-frame-container {
+            margin-bottom: 30px;
+        }
+
+        .auth-frame {
+            width: 100%;
+            height: 200px;
+            border: none;
+            background-color: var(--gray-color);
+            border-radius: 4px;
+        }
+
+        /* Auth Alternatives */
+        .auth-alternatives {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .auth-button-social {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-button-social:hover {
+            background-color: #f5f5f5;
+        }
+
+        .auth-button-social i {
+            margin-right: 8px;
+        }
+
+        /* Agreement Section */
+        .agreement {
+            margin-bottom: 20px;
+        }
+
+        .agreement label {
+            display: flex;
+            align-items: center;
+        }
+
+        .agreement input {
+            margin-right: 10px;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .summary-total {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-color);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin-top: 30px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .payment-method.selected {
+            border-color: var(--secondary-color);
+            background-color: rgba(10, 61, 98, 0.05);
+        }
+
+        .payment-radio {
+            margin-right: 15px;
+        }
+
+        .payment-details {
+            flex: 1;
+        }
+
+        .payment-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-title i {
+            margin-right: 8px;
+        }
+
+        .payment-description {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* Checkout Button */
+        .checkout-button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .checkout-button:hover {
+            background-color: #c19b2a;
+        }
+
+        .checkout-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .empty-cart i {
+            font-size: 50px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .empty-cart p {
+            margin-bottom: 30px;
+            color: #777;
+        }
+
+        .continue-shopping {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .continue-shopping:hover {
+            background-color: #0c2a40;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .footer-about {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        .footer-heading {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom:
+            20px;
+            position: relative;
+        }
+
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        .footer-links {
+            list-style-type: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact-item i {
+            width: 25px;
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                flex-direction: column;
+                background-color: var(--primary-color);
+                width: 100%;
+                top: 70px;
+                left: 0;
+                padding: 20px 0;
+                transform: translateY(-150%);
+                transition: transform 0.3s;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .nav-links li {
+                margin: 10px 0;
+            }
+
+            .nav-link {
+                margin: 0;
+                padding: 10px 20px;
+                display: block;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-md p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="Y-Time Luxury.png" alt="YTime Logo" class="h-10 mr-4">
-                <span class="text-xl font-bold text-gray-800">YTime Luxury</span>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <div class="logo">
+                <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
+                <span class="logo-text">YTime</span>
             </div>
-            <div class="flex items-center space-x-6">
-                <a href="index.html" class="nav-link text-gray-800">Home</a>
-                <a href="cart.html" class="nav-link text-gray-800">Cart</a>
+
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="shop.html" class="nav-link">Collection</a></li>
+                <li><a href="service.html" class="nav-link">Services</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="nav-icons-container">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="nav-auth-container">
+                    <button id="authButton" class="auth-button">Sign In</button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Checkout Content -->
-    <div class="container mx-auto pt-32 pb-16 px-4">
-        <h1 class="text-5xl luxury-heading text-center mb-12">Checkout</h1>
-
-        <div class="grid md:grid-cols-3 gap-8">
-            <!-- Checkout Details Column -->
-            <div class="md:col-span-2 space-y-6">
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-3xl luxury-heading mb-6">Shipping Information</h2>
-                    <form id="shipping-form" class="space-y-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="first-name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" id="first-name" name="first-name" required 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="last-name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" id="last-name" name="last-name" required 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="email" name="email" required 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" required 
-                                placeholder="2547XXXXXXXX"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Delivery Address</label>
-                            <textarea id="address" name="address" required 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-3xl luxury-heading mb-6">Delivery Method</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between p-4 border rounded-lg">
-                            <div class="flex items-center">
-                                <input type="radio" id="free-delivery" name="delivery" value="free" checked 
-                                    class="mr-4 text-blue-600 focus:ring-blue-500">
-                                <label for="free-delivery" class="text-gray-800">Free Standard Delivery (5-7 Business Days)</label>
-                            </div>
-                            <span class="text-green-600 font-bold">Free</span>
-                        </div>
-                        <div class="flex items-center justify-between p-4 border rounded-lg">
-                            <div class="flex items-center">
-                                <input type="radio" id="express-delivery" name="delivery" value="express" 
-                                    class="mr-4 text-blue-600 focus:ring-blue-500">
-                                <label for="express-delivery" class="text-gray-800">Express Delivery (2-3 Business Days)</label>
-                            </div>
-                            <span class="text-blue-600 font-bold">KSh 500</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-3xl luxury-heading mb-6">Payment Method</h2>
-                    <div class="space-y-4" id="payment-methods">
-                        <div class="flex items-center justify-between p-4 border rounded-lg">
-                            <div class="flex items-center">
-                                <input type="radio" id="mpesa" name="payment" value="mpesa" checked 
-                                    class="mr-4 text-blue-600 focus:ring-blue-500">
-                                <label for="mpesa" class="text-gray-800 flex items-center">
-                                    M-Pesa Mobile Payment 
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/M-PESA_LOGO-01.png" alt="M-Pesa" class="h-8 ml-4">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <h1 class="checkout-title">Checkout</h1>
+            
+            <div id="emptyCartMessage" class="empty-cart" style="display: none;">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Your cart is empty</h3>
+                <p>Looks like you haven't added any watches to your cart yet.</p>
+                <a href="shop.html" class="continue-shopping">Continue Shopping</a>
             </div>
 
-            <!-- Order Summary Column -->
-            <div class="bg-white rounded-xl shadow-lg p-8 h-fit">
-                <h2 class="text-3xl luxury-heading mb-6">Order Summary</h2>
-                
-                <div id="cart-items-summary" class="space-y-4 mb-6">
-                    <!-- Cart items will be dynamically populated here -->
+            <div id="checkoutContainer" class="checkout-container">
+                <div class="checkout-left">
+                    <div class="cart-items">
+                        <h2 class="section-title">Your Cart</h2>
+                        <div id="cartItemsContainer">
+                            <!-- Cart items will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="customer-info">
+                        <h2 class="section-title">Personal Information</h2>
+                        <div class="form-group">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Mobile Number</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="Enter your mobile number" required>
+                        </div>
+                    </div>
+
+                    <div class="delivery-options">
+                        <h2 class="section-title">Delivery Options</h2>
+                        <div class="delivery-option selected" data-fee="0" data-location="nairobi">
+                            <input type="radio" name="delivery" id="nairobi" class="delivery-radio" checked>
+                            <div class="delivery-details">
+                                <div class="delivery-title">Nairobi County</div>
+                                <div class="delivery-description">Free delivery within Nairobi</div>
+                            </div>
+                            <div class="delivery-price">Free</div>
+                        </div>
+                        <div class="delivery-option" data-fee="300" data-location="kenya">
+                            <input type="radio" name="delivery" id="kenya" class="delivery-radio">
+                            <div class="delivery-details">
+                                <div class="delivery-title">Other Counties in Kenya</div>
+                                <div class="delivery-description">Delivery to any other county in Kenya</div>
+                            </div>
+                            <div class="delivery-price">KES 300</div>
+                        </div>
+                        <div class="delivery-option" data-fee="1000" data-location="eastafrica">
+                            <input type="radio" name="delivery" id="eastafrica" class="delivery-radio">
+                            <div class="delivery-details">
+                                <div class="delivery-title">East Africa Countries</div>
+                                <div class="delivery-description">Delivery to Tanzania, Uganda, Rwanda, Burundi</div>
+                            </div>
+                            <div class="delivery-price">KES 1,000</div>
+                        </div>
+                    </div>
+
+                    <div class="auth-frame-container">
+                        <h2 class="section-title">Login Information</h2>
+                        <div class="auth-alternatives">
+                            <button class="auth-button-social">
+                                <i class="fab fa-google"></i> Login with Google
+                            </button>
+                            <button class="auth-button-social">
+                                <i class="fab fa-apple"></i> Login with Apple
+                            </button>
+                        </div>
+                        <!-- Uncomment this to use iframe for login
+                        <iframe src="login.html" class="auth-frame" title="Login Frame"></iframe>
+                        -->
+                    </div>
+
+                    <div class="agreement">
+                        <label>
+                            <input type="checkbox" id="termsAgreement">
+                            I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="space-y-4 mb-6">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Subtotal</span>
-                        <span id="cart-subtotal" class="font-bold">KSh 0</span>
+                <div class="checkout-right">
+                    <div class="order-summary">
+                        <h2 class="section-title">Order Summary</h2>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="subtotal">KES 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span id="shipping">KES 0</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span id="orderTotal">KES 0</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Shipping</span>
-                        <span id="shipping-cost" class="font-bold text-green-600">Free</span>
-                    </div>
-                    <hr class="border-gray-200">
-                    <div class="flex justify-between text-xl">
-                        <span class="font-bold">Total</span>
-                        <span id="cart-total" class="font-bold text-blue-600">KSh 0</span>
-                    </div>
-                </div>
 
-                <button id="complete-order-btn" class="w-full bg-blue-500 text-white py-3 rounded-full hover:bg-blue-600 transition duration-300 mb-4">
-                    Complete Order
-                </button>
+                    <div class="payment-methods">
+                        <h2 class="section-title">Payment Method</h2>
+                        <div class="payment-method selected" data-method="mpesa">
+                            <input type="radio" name="payment" id="mpesa" class="payment-radio" checked>
+                            <div class="payment-details">
+                                <div class="payment-title"><i class="fas fa-mobile-alt"></i> M-Pesa STK Push</div>
+                                <div class="payment-description">Pay using M-Pesa STK Push (Coming Soon)</div>
+                            </div>
+                        </div>
+                        <div class="payment-method" data-method="whatsapp">
+                            <input type="radio" name="payment" id="whatsapp" class="payment-radio">
+                            <div class="payment-details">
+                                <div class="payment-title"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+                                <div class="payment-description">Continue on WhatsApp to complete your purchase</div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="text-center text-sm text-gray-500">
-                    Secure Checkout | 30-Day Return Policy
+                    <button id="checkoutButton" class="checkout-button" disabled>Complete Purchase</button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Order Tracking Modal -->
-    <div id="order-tracking-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4 text-center">Track Your Order</h2>
-            <div class="mb-4">
-                <label for="order-number" class="block text-sm font-medium text-gray-700 mb-2">Order Number</label>
-                <input type="text" id="order-number" placeholder="Enter your order number" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-            </div>
-            <div id="order-status" class="mt-4 text-center"></div>
-            <button id="track-order-btn" class="w-full bg-blue-500 text-white py-2 rounded-lg mt-4 hover:bg-blue-600">
-                Track Order
-            </button>
-        </div>
-    </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-                <h3 class="text-xl font-bold mb-4">YTime Luxury</h3>
-                <p>Bringing timeless elegance to your wrist</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Quick Links</h4>
-                <ul>
-                    <li><a href="index.html" class="hover:text-blue-500">Home</a></li>
-                    <li><a href="cart.html" class="hover:text-blue-500">Cart</a></li>
-                    <li><a href="#" id="track-order-link" class="hover:text-blue-500">Track Order</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Contact Us</h4>
-                <p>Email: support@ytimeluxury.com</p>
-                <p>Phone: +254 123 456 789</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-4">Follow Us</h4>
-                <div class="flex space-x-4">
-                    <a href="#" class="hover:text-blue-500"><i data-feather="instagram"></i></a>
-                    <a href="#" class="hover:text-blue-500"><i data-feather="facebook"></i></a>
-                    <a href="#" class="hover:text-blue-500"><i data-feather="twitter"></i></a>
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">
+                        <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
+                        <span class="logo-text">YTime</span>
+                    </div>
+                    <p class="footer-about">
+                        YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#collection">Collection</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="footer-heading">Help & Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                        <li><a href="#">Warranty</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="footer-heading">Contact Us</h3>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Nairobi Kenya</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+254117278821</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@ytime.co.ke</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="text-center mt-8">
-            <p>&copy; 2024 YTime Luxury. All Rights Reserved.</p>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 YTime Luxury. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Feather Icons
-        feather.replace();
-
-        // Cart Management
-        const cartItemsSummary = document.getElementById('cart-items-summary');
-        const cartSubtotalElement = document.getElementById('cart-subtotal');
-        const cartTotalElement = document.getElementById('cart-total');
-        const shippingCostElement = document.getElementById('shipping-cost');
-        const completeOrderBtn = document.getElementById('complete-order-btn');
-        
-        // Order Tracking Modal
-        const orderTrackingModal = document.getElementById('order-tracking-modal');
-        const trackOrderLink = document.getElementById('track-order-link');
-        const trackOrderBtn = document.getElementById('track-order-btn');
-        const orderNumberInput = document.getElementById('order-number');
-        const orderStatusElement = document.getElementById('order-status');
-
-        // Delivery Method Radio Buttons
-        const deliveryRadios = document.querySelectorAll('input[name="delivery"]');
-
-        function getCartFromLocalStorage() {
-            return JSON.parse(localStorage.getItem('cart') || '[]');
-        }
-
-        function renderCartSummary() {
-            const cart = getCartFromLocalStorage();
-            cartItemsSummary.innerHTML = '';
-            let subtotal = 0;
-
-            cart.forEach(item => {
-                const cartItemDiv = document.createElement('div');
-                cartItemDiv.classList.add('flex', 'justify-between', 'items-center');
-                cartItemDiv.innerHTML = `
-                    <div class="flex items-center">
-                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg mr-4">
-                        <div>
-                            <p class="font-bold">${item.name}</p>
-                            <p class="text-gray-600 text-sm">${item.brand}</p>
-                        </div>
-                    </div>
-                    <span class="font-bold">KSh ${item.price.toLocaleString()}</span>
-                `;
-                cartItemsSummary.appendChild(cartItemDiv);
-                subtotal += item.price;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile navigation toggle
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
             });
-
-            cartSubtotalElement.textContent = `KSh ${subtotal.toLocaleString()}`;
-            updateTotal();
-        }
-
-        function updateTotal() {
-            const subtotal = parseFloat(cartSubtotalElement.textContent.replace('KSh ', '').replace(',', ''));
-            const expressDelivery = document.getElementById('express-delivery');
-            const deliveryCost = expressDelivery.checked ? 500 : 0;
-
-            const total = subtotal + deliveryCost;
-            cartTotalElement.textContent = `KSh ${total.toLocaleString()}`;
-            shippingCostElement.textContent = deliveryCost === 0 ? 'Free' : `KSh ${deliveryCost}`;
-        }
-
-        // Delivery method event listeners
-        deliveryRadios.forEach(radio => {
-            radio.addEventListener('change', updateTotal);
-        });
-
-        // Complete Order
-        completeOrderBtn.addEventListener('click', async () => {
-            const form = document.getElementById('shipping-form'); // Validate form
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
+            
+            // Get cart data from localStorage
+            function getCartItems() {
+                const cartItems = localStorage.getItem('cartItems');
+                return cartItems ? JSON.parse(cartItems) : [];
             }
-
-            const cart = getCartFromLocalStorage();
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-
-            // Generate Order Number
-            const generateOrderNumber = () => {
-                const timestamp = Date.now().toString();
-                return `YT-${timestamp.slice(-8)}`;
-            };
-
-            const orderNumber = generateOrderNumber();
-
-            // Prepare Order Data
-            const orderData = {
-                orderNumber: orderNumber,
-                items: cart,
-                customerDetails: {
-                    firstName: document.getElementById('first-name').value,
-                    lastName: document.getElementById('last-name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value
-                },
-                deliveryMethod: document.querySelector('input[name="delivery"]:checked').value,
-                paymentMethod: document.querySelector('input[name="payment"]:checked').value,
-                subtotal: parseFloat(cartSubtotalElement.textContent.replace('KSh ', '').replace(',', '')),
-                total: parseFloat(cartTotalElement.textContent.replace('KSh ', '').replace(',', ''))
-            };
-
-            // Save order to local storage for tracking
-            localStorage.setItem(`order-${orderNumber}`, JSON.stringify(orderData));
-            localStorage.setItem('recentOrderNumber', orderNumber);
-
-            // Initiate M-Pesa Payment
-            try {
-                const mpesaResponse = await initiateMpesaPayment(orderData);
+            
+            // Display cart items
+            function displayCartItems() {
+                const cartItemsContainer = document.getElementById('cartItemsContainer');
+                const cartItems = getCartItems();
+                const cartCountElement = document.querySelector('.cart-count');
                 
-                if (mpesaResponse.status === 'success') {
-                    // Clear cart after successful order
-                    localStorage.removeItem('cart');
-                    
-                    // Show order confirmation
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Order Placed Successfully!',
-                        html: `
-                            <p>Your order number is <strong>${orderNumber}</strong></p>
-                            <p>Total Amount: KSh ${orderData.total.toLocaleString()}</p>
-                            <p>We'll send a confirmation to ${orderData.customerDetails.email}</p>
-                        `,
-                        confirmButtonText: 'Track Order'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = `order-tracking.html?order=${orderNumber}`;
-                        }
-                    });
-                } else {
-                    throw new Error(mpesaResponse.message || 'Payment failed');
+                if (cartItems.length === 0) {
+                    document.getElementById('emptyCartMessage').style.display = 'block';
+                    document.getElementById('checkoutContainer').style.display = 'none';
+                    cartCountElement.textContent = '0';
+                    return;
                 }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Order Failed',
-                    text: error.message || 'Unable to process your order. Please try again.'
+                
+                cartCountElement.textContent = cartItems.length;
+                
+                let cartItemsHTML = '';
+                let subtotal = 0;
+                
+                cartItems.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    cartItemsHTML += `
+                        <div class="cart-item" data-id="${item.id}">
+                            <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}" class="cart-item-image">
+                            <div class="cart-item-details">
+                                <h3 class="cart-item-title">${item.name}</h3>
+                                <div class="cart-item-price">KES ${item.price.toLocaleString()}</div>
+                                <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+                            </div>
+                            <button class="cart-item-remove" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                cartItemsContainer.innerHTML = cartItemsHTML;
+                
+                // Update order summary
+                updateOrderSummary(subtotal);
+                
+                // Add event listeners to remove buttons
+                const removeButtons = document.querySelectorAll('.cart-item-remove');
+                removeButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        removeCartItem(index);
+                    });
                 });
             }
-        });
-
-        // Order Tracking Modal Functionality
-        trackOrderLink.addEventListener('click', () => {
-            orderTrackingModal.classList.remove('hidden');
-            orderTrackingModal.classList.add('flex');
-        });
-
-        trackOrderBtn.addEventListener('click', () => {
-            const orderNumber = orderNumberInput.value.trim();
-            const savedOrder = localStorage.getItem(`order-${orderNumber}`);
-
-            if (savedOrder) {
-                const orderData = JSON.parse(savedOrder);
-                const statusHTML = `
-                    <div class="bg-blue-100 p-4 rounded-lg">
-                        <h3 class="font-bold mb-2">Order Status</h3>
-                        <p><strong>Order Number:</strong> ${orderNumber}</p>
-                        <p><strong>Status:</strong> 
-                            <span class="text-green-600">Processing</span>
-                        </p>
-                        <p><strong>Total:</strong> KSh ${orderData.total.toLocaleString()}</p>
-                        <p><strong>Estimated Delivery:</strong> 5-7 Business Days</p>
-                    </div>
-                `;
-                orderStatusElement.innerHTML = statusHTML;
-            } else {
-                orderStatusElement.innerHTML = `
-                    <div class="bg-red-100 p-4 rounded-lg text-red-800">
-                        Order not found. Please check your order number.
-                    </div>
-                `;
+            
+            // Remove item from cart
+            function removeCartItem(index) {
+                const cartItems = getCartItems();
+                cartItems.splice(index, 1);
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                displayCartItems();
             }
-        });
-
-        // Close modal when clicking outside
-        orderTrackingModal.addEventListener('click', (e) => {
-            if (e.target === orderTrackingModal) {
-                orderTrackingModal.classList.remove('flex');
-                orderTrackingModal.classList.add('hidden');
+            
+            // Update order summary
+            function updateOrderSummary(subtotal) {
+                const subtotalElement = document.getElementById('subtotal');
+                const shippingElement = document.getElementById('shipping');
+                const orderTotalElement = document.getElementById('orderTotal');
+                
+                const selectedDelivery = document.querySelector('.delivery-option.selected');
+                const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
+                
+                subtotalElement.textContent = `KES ${subtotal.toLocaleString()}`;
+                shippingElement.textContent = shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`;
+                orderTotalElement.textContent = `KES ${(subtotal + shippingFee).toLocaleString()}`;
             }
-        });
-
-        // M-Pesa Payment Simulation Function
-        async function initiateMpesaPayment(orderData) {
-            // Simulated payment gateway
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        status: 'success',
-                        message: 'Payment processed successfully'
+            
+// Delivery option selection
+                const deliveryOptions = document.querySelectorAll('.delivery-option');
+                deliveryOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        // Remove selected class from all options
+                        deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+                        // Add selected class to clicked option
+                        this.classList.add('selected');
+                        // Check the radio button
+                        const radio = this.querySelector('.delivery-radio');
+                        radio.checked = true;
+                        // Update order summary
+                        const subtotal = calculateSubtotal();
+                        updateOrderSummary(subtotal);
                     });
-                }, 2000);
+                });
+                
+                // Payment method selection
+                const paymentMethods = document.querySelectorAll('.payment-method');
+                paymentMethods.forEach(method => {
+                    method.addEventListener('click', function() {
+                        // Remove selected class from all methods
+                        paymentMethods.forEach(m => m.classList.remove('selected'));
+                        // Add selected class to clicked method
+                        this.classList.add('selected');
+                        // Check the radio button
+                        const radio = this.querySelector('.payment-radio');
+                        radio.checked = true;
+                    });
+                });
+                
+                // Calculate subtotal
+                function calculateSubtotal() {
+                    const cartItems = getCartItems();
+                    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+                }
+                
+                // Validate form
+                function validateForm() {
+                    const fullName = document.getElementById('fullName').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    const termsAgreement = document.getElementById('termsAgreement').checked;
+                    
+                    return fullName !== '' && email !== '' && phone !== '' && termsAgreement;
+                }
+                
+                // Enable/disable checkout button based on validation
+                function updateCheckoutButton() {
+                    const checkoutButton = document.getElementById('checkoutButton');
+                    checkoutButton.disabled = !validateForm();
+                }
+                
+                // Add event listeners to form inputs
+                const formInputs = document.querySelectorAll('.form-input, #termsAgreement');
+                formInputs.forEach(input => {
+                    input.addEventListener('input', updateCheckoutButton);
+                });
+                
+                // Handle checkout button click
+                document.getElementById('checkoutButton').addEventListener('click', function() {
+                    if (!validateForm()) {
+                        alert('Please fill in all required fields and agree to the terms and conditions.');
+                        return;
+                    }
+                    
+                    const selectedPayment = document.querySelector('.payment-method.selected');
+                    const paymentMethod = selectedPayment.getAttribute('data-method');
+                    
+                    if (paymentMethod === 'mpesa') {
+                        alert('M-Pesa STK Push feature is coming soon. Please use WhatsApp payment option for now.');
+                    } else if (paymentMethod === 'whatsapp') {
+                        // Prepare order information
+                        const fullName = document.getElementById('fullName').value.trim();
+                        const email = document.getElementById('email').value.trim();
+                        const phone = document.getElementById('phone').value.trim();
+                        const selectedDelivery = document.querySelector('.delivery-option.selected');
+                        const deliveryLocation = selectedDelivery.getAttribute('data-location');
+                        const cartItems = getCartItems();
+                        const subtotal = calculateSubtotal();
+                        const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
+                        const total = subtotal + shippingFee;
+                        
+                        // Create WhatsApp message
+                        let message = `Hello YTime Luxury, I'd like to place an order.%0A%0A`;
+                        message += `*Customer Information*%0A`;
+                        message += `Name: ${fullName}%0A`;
+                        message += `Email: ${email}%0A`;
+                        message += `Phone: ${phone}%0A%0A`;
+                        
+                        message += `*Order Details*%0A`;
+                        cartItems.forEach((item, index) => {
+                            message += `${index + 1}. ${item.name} - KES ${item.price.toLocaleString()} x ${item.quantity}%0A`;
+                        });
+                        
+                        message += `%0ADelivery: ${deliveryLocation.charAt(0).toUpperCase() + deliveryLocation.slice(1)}%0A`;
+                        message += `Shipping Fee: ${shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`}%0A`;
+                        message += `Subtotal: KES ${subtotal.toLocaleString()}%0A`;
+                        message += `Total: KES ${total.toLocaleString()}%0A%0A`;
+                        
+                        message += `I would like to complete my purchase. Thank you!`;
+                        
+                        // Redirect to WhatsApp
+                        window.location.href = `https://wa.me/254117278821?text=${message}`;
+                    }
+                });
+                
+                // Initialize page
+                displayCartItems();
+                updateCheckoutButton();
             });
-        }
-
-        // Initialize page
-        renderCartSummary();
-    });
     </script>
-
-    <!-- Sweet Alert for better notifications -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
