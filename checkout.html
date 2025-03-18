@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - YTime Luxury</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-color: #000000;
@@ -877,205 +878,529 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile navigation toggle
-            const hamburger = document.querySelector('.hamburger');
-            const navLinks = document.querySelector('.nav-links');
-            
-            hamburger.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
+    // Mobile navigation toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+    
+    // Get cart data from localStorage
+    function getCartItems() {
+        const cartItems = localStorage.getItem('cartItems');
+        return cartItems ? JSON.parse(cartItems) : [];
+    }
+    
+    // Add to cart function (for index.html and shop.html)
+    function setupAddToCartButtons() {
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        
+        if (addToCartButtons.length > 0) {
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const productId = productCard.getAttribute('data-id');
+                    const productName = productCard.querySelector('.product-title').textContent;
+                    const productPrice = parseFloat(productCard.querySelector('.product-price').getAttribute('data-price'));
+                    const productImage = productCard.querySelector('.product-image').src;
+                    
+                    addToCart(productId, productName, productPrice, productImage);
+                });
             });
+        }
+    }
+    
+    // Add item to cart
+    function addToCart(id, name, price, image, quantity = 1) {
+        const cartItems = getCartItems();
+        const existingItemIndex = cartItems.findIndex(item => item.id === id);
+        
+        if (existingItemIndex > -1) {
+            cartItems[existingItemIndex].quantity += quantity;
+        } else {
+            cartItems.push({
+                id,
+                name,
+                price,
+                image,
+                quantity
+            });
+        }
+        
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        updateCartCount();
+        
+        // Show SweetAlert notification
+        Swal.fire({
+            title: 'Added to Cart!',
+            text: `${name} has been added to your cart.`,
+            icon: 'success',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    }
+    
+    // Update cart count in navigation
+    function updateCartCount() {
+        const cartCountElements = document.querySelectorAll('.cart-count');
+        const cartItems = getCartItems();
+        const itemCount = cartItems.length;
+        
+        cartCountElements.forEach(element => {
+            element.textContent = itemCount;
+        });
+    }
+    
+    // Display cart items on cart page
+    function displayCartItems() {
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        if (!cartItemsContainer) return; // Not on cart page
+        
+        const cartItems = getCartItems();
+        const cartCountElement = document.querySelector('.cart-count');
+        const emptyCartMessage = document.getElementById('emptyCartMessage');
+        const checkoutContainer = document.getElementById('checkoutContainer');
+        
+        if (cartItems.length === 0) {
+            if (emptyCartMessage) emptyCartMessage.style.display = 'block';
+            if (checkoutContainer) checkoutContainer.style.display = 'none';
+            if (cartCountElement) cartCountElement.textContent = '0';
+            return;
+        }
+        
+        if (cartCountElement) cartCountElement.textContent = cartItems.length;
+        if (emptyCartMessage) emptyCartMessage.style.display = 'none';
+        if (checkoutContainer) checkoutContainer.style.display = 'block';
+        
+        let cartItemsHTML = '';
+        let subtotal = 0;
+        
+        cartItems.forEach((item, index) => {
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
             
-            // Get cart data from localStorage
-            function getCartItems() {
-                const cartItems = localStorage.getItem('cartItems');
-                return cartItems ? JSON.parse(cartItems) : [];
-            }
-            
-            // Display cart items
-            function displayCartItems() {
-                const cartItemsContainer = document.getElementById('cartItemsContainer');
-                const cartItems = getCartItems();
-                const cartCountElement = document.querySelector('.cart-count');
-                
-                if (cartItems.length === 0) {
-                    document.getElementById('emptyCartMessage').style.display = 'block';
-                    document.getElementById('checkoutContainer').style.display = 'none';
-                    cartCountElement.textContent = '0';
-                    return;
-                }
-                
-                cartCountElement.textContent = cartItems.length;
-                
-                let cartItemsHTML = '';
-                let subtotal = 0;
-                
-                cartItems.forEach((item, index) => {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
-                    
-                    cartItemsHTML += `
-                        <div class="cart-item" data-id="${item.id}">
-                            <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}" class="cart-item-image">
-                            <div class="cart-item-details">
-                                <h3 class="cart-item-title">${item.name}</h3>
-                                <div class="cart-item-price">KES ${item.price.toLocaleString()}</div>
-                                <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
-                            </div>
-                            <button class="cart-item-remove" data-index="${index}">
-                                <i class="fas fa-trash"></i>
-                            </button>
+            cartItemsHTML += `
+                <div class="cart-item" data-id="${item.id}">
+                    <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-title">${item.name}</h3>
+                        <div class="cart-item-price">KES ${item.price.toLocaleString()}</div>
+                        <div class="cart-item-controls">
+                            <button class="quantity-btn decrease" data-index="${index}">-</button>
+                            <span class="cart-item-quantity">${item.quantity}</span>
+                            <button class="quantity-btn increase" data-index="${index}">+</button>
                         </div>
-                    `;
-                });
-                
-                cartItemsContainer.innerHTML = cartItemsHTML;
-                
+                        <div class="cart-item-total">Total: KES ${itemTotal.toLocaleString()}</div>
+                    </div>
+                    <button class="cart-item-remove" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        });
+        
+        cartItemsContainer.innerHTML = cartItemsHTML;
+        
+        // Update order summary
+        updateOrderSummary(subtotal);
+        
+        // Add event listeners to remove buttons
+        const removeButtons = document.querySelectorAll('.cart-item-remove');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                removeCartItem(index);
+            });
+        });
+        
+        // Add event listeners to quantity buttons
+        const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
+        const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
+        
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                updateItemQuantity(index, -1);
+            });
+        });
+        
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                updateItemQuantity(index, 1);
+            });
+        });
+    }
+    
+    // Update item quantity
+    function updateItemQuantity(index, change) {
+        const cartItems = getCartItems();
+        if (!cartItems[index]) return;
+        
+        cartItems[index].quantity += change;
+        
+        if (cartItems[index].quantity < 1) {
+            // Ask for confirmation before removing
+            Swal.fire({
+                title: 'Remove Item?',
+                text: `Do you want to remove ${cartItems[index].name} from your cart?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeCartItem(index);
+                } else {
+                    cartItems[index].quantity = 1;
+                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                    displayCartItems();
+                }
+            });
+        } else {
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            displayCartItems();
+        }
+    }
+    
+    // Remove item from cart
+    function removeCartItem(index) {
+        const cartItems = getCartItems();
+        const removedItem = cartItems[index];
+        
+        cartItems.splice(index, 1);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        displayCartItems();
+        updateCartCount();
+        
+        // Show SweetAlert notification
+        Swal.fire({
+            title: 'Item Removed',
+            text: `${removedItem.name} has been removed from your cart.`,
+            icon: 'info',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    }
+    
+    // Update order summary
+    function updateOrderSummary(subtotal) {
+        const subtotalElement = document.getElementById('subtotal');
+        const shippingElement = document.getElementById('shipping');
+        const orderTotalElement = document.getElementById('orderTotal');
+        
+        if (!subtotalElement || !shippingElement || !orderTotalElement) return;
+        
+        const selectedDelivery = document.querySelector('.delivery-option.selected');
+        if (!selectedDelivery) return;
+        
+        const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
+        
+        subtotalElement.textContent = `KES ${subtotal.toLocaleString()}`;
+        shippingElement.textContent = shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`;
+        orderTotalElement.textContent = `KES ${(subtotal + shippingFee).toLocaleString()}`;
+    }
+    
+    // Calculate subtotal
+    function calculateSubtotal() {
+        const cartItems = getCartItems();
+        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    
+    // Setup delivery option selection
+    function setupDeliveryOptions() {
+        const deliveryOptions = document.querySelectorAll('.delivery-option');
+        if (deliveryOptions.length === 0) return;
+        
+        deliveryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                // Check the radio button
+                const radio = this.querySelector('.delivery-radio');
+                if (radio) radio.checked = true;
                 // Update order summary
+                const subtotal = calculateSubtotal();
                 updateOrderSummary(subtotal);
-                
-                // Add event listeners to remove buttons
-                const removeButtons = document.querySelectorAll('.cart-item-remove');
-                removeButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        removeCartItem(index);
-                    });
+            });
+        });
+    }
+    
+    // Setup payment method selection
+    function setupPaymentMethods() {
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        if (paymentMethods.length === 0) return;
+        
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', function() {
+                // Remove selected class from all methods
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+                // Add selected class to clicked method
+                this.classList.add('selected');
+                // Check the radio button
+                const radio = this.querySelector('.payment-radio');
+                if (radio) radio.checked = true;
+            });
+        });
+    }
+    
+    // Validate form
+    function validateForm() {
+        const fullName = document.getElementById('fullName')?.value.trim();
+        const email = document.getElementById('email')?.value.trim();
+        const phone = document.getElementById('phone')?.value.trim();
+        const termsAgreement = document.getElementById('termsAgreement')?.checked;
+        
+        if (fullName === undefined || email === undefined || phone === undefined || termsAgreement === undefined) {
+            return false;
+        }
+        
+        // Validate phone format for Kenya
+        const phoneRegex = /^(07|01|2547|2541)\d{8}$/;
+        const isPhoneValid = phoneRegex.test(phone.replace(/\s+/g, ''));
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = emailRegex.test(email);
+        
+        return fullName !== '' && isEmailValid && isPhoneValid && termsAgreement;
+    }
+    
+    // Show field validation errors
+    function showValidationErrors() {
+        const fullName = document.getElementById('fullName')?.value.trim();
+        const email = document.getElementById('email')?.value.trim();
+        const phone = document.getElementById('phone')?.value.trim();
+        const termsAgreement = document.getElementById('termsAgreement')?.checked;
+        
+        let errorMessages = [];
+        
+        if (!fullName) {
+            errorMessages.push('Please enter your full name');
+        }
+        
+        if (!email) {
+            errorMessages.push('Please enter your email address');
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorMessages.push('Please enter a valid email address');
+            }
+        }
+        
+        if (!phone) {
+            errorMessages.push('Please enter your phone number');
+        } else {
+            const phoneRegex = /^(07|01|2547|2541)\d{8}$/;
+            if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
+                errorMessages.push('Please enter a valid Kenyan phone number');
+            }
+        }
+        
+        if (!termsAgreement) {
+            errorMessages.push('Please agree to the terms and conditions');
+        }
+        
+        return errorMessages;
+    }
+    
+    // Enable/disable checkout button based on validation
+    function updateCheckoutButton() {
+        const checkoutButton = document.getElementById('checkoutButton');
+        if (!checkoutButton) return;
+        
+        checkoutButton.disabled = !validateForm();
+    }
+    
+    // Setup form validation
+    function setupFormValidation() {
+        const formInputs = document.querySelectorAll('.form-input, #termsAgreement');
+        if (formInputs.length === 0) return;
+        
+        formInputs.forEach(input => {
+            input.addEventListener('input', updateCheckoutButton);
+        });
+    }
+    
+    // Handle checkout process
+    function setupCheckoutProcess() {
+        const checkoutButton = document.getElementById('checkoutButton');
+        if (!checkoutButton) return;
+        
+        checkoutButton.addEventListener('click', function() {
+            if (!validateForm()) {
+                const errorMessages = showValidationErrors();
+                Swal.fire({
+                    title: 'Form Validation Error',
+                    html: errorMessages.join('<br>'),
+                    icon: 'error'
                 });
+                return;
             }
             
-            // Remove item from cart
-            function removeCartItem(index) {
-                const cartItems = getCartItems();
-                cartItems.splice(index, 1);
-                localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                displayCartItems();
+            const selectedPayment = document.querySelector('.payment-method.selected');
+            if (!selectedPayment) {
+                Swal.fire({
+                    title: 'Payment Method Required',
+                    text: 'Please select a payment method to continue.',
+                    icon: 'warning'
+                });
+                return;
             }
             
-            // Update order summary
-            function updateOrderSummary(subtotal) {
-                const subtotalElement = document.getElementById('subtotal');
-                const shippingElement = document.getElementById('shipping');
-                const orderTotalElement = document.getElementById('orderTotal');
-                
+            const paymentMethod = selectedPayment.getAttribute('data-method');
+            
+            if (paymentMethod === 'mpesa') {
+                Swal.fire({
+                    title: 'M-Pesa Coming Soon',
+                    text: 'M-Pesa STK Push feature is coming soon. Please use WhatsApp payment option for now.',
+                    icon: 'info'
+                });
+            } else if (paymentMethod === 'whatsapp') {
+                // Prepare order information
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
                 const selectedDelivery = document.querySelector('.delivery-option.selected');
+                const deliveryLocation = selectedDelivery.getAttribute('data-location');
+                const cartItems = getCartItems();
+                const subtotal = calculateSubtotal();
                 const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
+                const total = subtotal + shippingFee;
                 
-                subtotalElement.textContent = `KES ${subtotal.toLocaleString()}`;
-                shippingElement.textContent = shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`;
-                orderTotalElement.textContent = `KES ${(subtotal + shippingFee).toLocaleString()}`;
-            }
-            
-// Delivery option selection
-                const deliveryOptions = document.querySelectorAll('.delivery-option');
-                deliveryOptions.forEach(option => {
-                    option.addEventListener('click', function() {
-                        // Remove selected class from all options
-                        deliveryOptions.forEach(opt => opt.classList.remove('selected'));
-                        // Add selected class to clicked option
-                        this.classList.add('selected');
-                        // Check the radio button
-                        const radio = this.querySelector('.delivery-radio');
-                        radio.checked = true;
-                        // Update order summary
-                        const subtotal = calculateSubtotal();
-                        updateOrderSummary(subtotal);
-                    });
+                // Create WhatsApp message
+                let message = `Hello YTime Luxury, I'd like to place an order.%0A%0A`;
+                message += `*Customer Information*%0A`;
+                message += `Name: ${fullName}%0A`;
+                message += `Email: ${email}%0A`;
+                message += `Phone: ${phone}%0A%0A`;
+                
+                message += `*Order Details*%0A`;
+                cartItems.forEach((item, index) => {
+                    message += `${index + 1}. ${item.name} - KES ${item.price.toLocaleString()} x ${item.quantity}%0A`;
                 });
                 
-                // Payment method selection
-                const paymentMethods = document.querySelectorAll('.payment-method');
-                paymentMethods.forEach(method => {
-                    method.addEventListener('click', function() {
-                        // Remove selected class from all methods
-                        paymentMethods.forEach(m => m.classList.remove('selected'));
-                        // Add selected class to clicked method
-                        this.classList.add('selected');
-                        // Check the radio button
-                        const radio = this.querySelector('.payment-radio');
-                        radio.checked = true;
-                    });
-                });
+                message += `%0ADelivery: ${deliveryLocation.charAt(0).toUpperCase() + deliveryLocation.slice(1)}%0A`;
+                message += `Shipping Fee: ${shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`}%0A`;
+                message += `Subtotal: KES ${subtotal.toLocaleString()}%0A`;
+                message += `Total: KES ${total.toLocaleString()}%0A%0A`;
                 
-                // Calculate subtotal
-                function calculateSubtotal() {
-                    const cartItems = getCartItems();
-                    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-                }
+                message += `I would like to complete my purchase. Thank you!`;
                 
-                // Validate form
-                function validateForm() {
-                    const fullName = document.getElementById('fullName').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const phone = document.getElementById('phone').value.trim();
-                    const termsAgreement = document.getElementById('termsAgreement').checked;
-                    
-                    return fullName !== '' && email !== '' && phone !== '' && termsAgreement;
-                }
-                
-                // Enable/disable checkout button based on validation
-                function updateCheckoutButton() {
-                    const checkoutButton = document.getElementById('checkoutButton');
-                    checkoutButton.disabled = !validateForm();
-                }
-                
-                // Add event listeners to form inputs
-                const formInputs = document.querySelectorAll('.form-input, #termsAgreement');
-                formInputs.forEach(input => {
-                    input.addEventListener('input', updateCheckoutButton);
-                });
-                
-                // Handle checkout button click
-                document.getElementById('checkoutButton').addEventListener('click', function() {
-                    if (!validateForm()) {
-                        alert('Please fill in all required fields and agree to the terms and conditions.');
-                        return;
-                    }
-                    
-                    const selectedPayment = document.querySelector('.payment-method.selected');
-                    const paymentMethod = selectedPayment.getAttribute('data-method');
-                    
-                    if (paymentMethod === 'mpesa') {
-                        alert('M-Pesa STK Push feature is coming soon. Please use WhatsApp payment option for now.');
-                    } else if (paymentMethod === 'whatsapp') {
-                        // Prepare order information
-                        const fullName = document.getElementById('fullName').value.trim();
-                        const email = document.getElementById('email').value.trim();
-                        const phone = document.getElementById('phone').value.trim();
-                        const selectedDelivery = document.querySelector('.delivery-option.selected');
-                        const deliveryLocation = selectedDelivery.getAttribute('data-location');
-                        const cartItems = getCartItems();
-                        const subtotal = calculateSubtotal();
-                        const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
-                        const total = subtotal + shippingFee;
-                        
-                        // Create WhatsApp message
-                        let message = `Hello YTime Luxury, I'd like to place an order.%0A%0A`;
-                        message += `*Customer Information*%0A`;
-                        message += `Name: ${fullName}%0A`;
-                        message += `Email: ${email}%0A`;
-                        message += `Phone: ${phone}%0A%0A`;
-                        
-                        message += `*Order Details*%0A`;
-                        cartItems.forEach((item, index) => {
-                            message += `${index + 1}. ${item.name} - KES ${item.price.toLocaleString()} x ${item.quantity}%0A`;
-                        });
-                        
-                        message += `%0ADelivery: ${deliveryLocation.charAt(0).toUpperCase() + deliveryLocation.slice(1)}%0A`;
-                        message += `Shipping Fee: ${shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`}%0A`;
-                        message += `Subtotal: KES ${subtotal.toLocaleString()}%0A`;
-                        message += `Total: KES ${total.toLocaleString()}%0A%0A`;
-                        
-                        message += `I would like to complete my purchase. Thank you!`;
-                        
+                // Show confirmation before redirecting
+                Swal.fire({
+                    title: 'Proceed to WhatsApp?',
+                    text: 'You will be redirected to WhatsApp to complete your order.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, proceed',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         // Redirect to WhatsApp
                         window.location.href = `https://wa.me/254117278821?text=${message}`;
+                        
+                        // Clear cart after successful checkout
+                        localStorage.removeItem('cartItems');
                     }
                 });
-                
-                // Initialize page
-                displayCartItems();
-                updateCheckoutButton();
+            }
+        });
+    }
+    
+    // Quick view product (for shop.html)
+    function setupQuickViewButtons() {
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        
+        if (quickViewButtons.length > 0) {
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const productId = productCard.getAttribute('data-id');
+                    const productName = productCard.querySelector('.product-title').textContent;
+                    const productPrice = parseFloat(productCard.querySelector('.product-price').getAttribute('data-price'));
+                    const productImage = productCard.querySelector('.product-image').src;
+                    const productDescription = productCard.getAttribute('data-description') || 'No description available.';
+                    
+                    // Show quick view modal
+                    Swal.fire({
+                        title: productName,
+                        html: `
+                            <div class="quick-view-content">
+                                <div class="quick-view-image">
+                                    <img src="${productImage}" alt="${productName}" style="max-width: 100%; height: auto;">
+                                </div>
+                                <div class="quick-view-details">
+                                    <p class="quick-view-price">KES ${productPrice.toLocaleString()}</p>
+                                    <p class="quick-view-description">${productDescription}</p>
+                                    <div class="quick-view-quantity">
+                                        <label>Quantity:</label>
+                                        <input type="number" id="quickViewQuantity" value="1" min="1" max="10">
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Add to Cart',
+                        cancelButtonText: 'Close',
+                        width: '600px'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const quantity = parseInt(document.getElementById('quickViewQuantity').value) || 1;
+                            addToCart(productId, productName, productPrice, productImage, quantity);
+                        }
+                    });
+                });
             });
+        }
+    }
+    
+    // Initialize cart functionality on all pages
+    function initCart() {
+        updateCartCount();
+        
+        // Features specific to cart page
+        if (document.getElementById('cartItemsContainer')) {
+            displayCartItems();
+            setupDeliveryOptions();
+            setupPaymentMethods();
+            setupFormValidation();
+            setupCheckoutProcess();
+        }
+        
+        // Features specific to shop and home pages
+        setupAddToCartButtons();
+        setupQuickViewButtons();
+    }
+    
+    // Load SweetAlert library dynamically if not already loaded
+    function loadSweetAlert(callback) {
+        if (window.Swal) {
+            callback();
+            return;
+        }
+        
+        const sweetAlertCSS = document.createElement('link');
+        sweetAlertCSS.rel = 'stylesheet';
+        sweetAlertCSS.href = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css';
+        document.head.appendChild(sweetAlertCSS);
+        
+        const sweetAlertScript = document.createElement('script');
+        sweetAlertScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        sweetAlertScript.onload = callback;
+        document.head.appendChild(sweetAlertScript);
+    }
+    
+    // Initialize everything
+    loadSweetAlert(initCart);
+});
     </script>
 </body>
 </html>
