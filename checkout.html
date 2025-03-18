@@ -1754,6 +1754,106 @@ body {
         document.head.appendChild(sweetAlertScript);
     }
     
+    // Checkout form validation
+    function setupCheckoutFormValidation() {
+        const checkoutForm = document.getElementById('checkoutForm');
+        if (!checkoutForm) return;
+        
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('customerName');
+            const email = document.getElementById('customerEmail');
+            const phone = document.getElementById('customerPhone');
+            const address = document.getElementById('customerAddress');
+            
+            let isValid = true;
+            
+            // Simple validation
+            if (!name || !name.value.trim()) {
+                isValid = false;
+                highlightInvalidField(name, 'Please enter your name');
+            }
+            
+            if (!email || !email.value.trim() || !email.value.includes('@')) {
+                isValid = false;
+                highlightInvalidField(email, 'Please enter a valid email');
+            }
+            
+            if (!phone || !phone.value.trim()) {
+                isValid = false;
+                highlightInvalidField(phone, 'Please enter your phone number');
+            }
+            
+            if (!address || !address.value.trim()) {
+                isValid = false;
+                highlightInvalidField(address, 'Please enter your address');
+            }
+            
+            // Get cart data
+            const cartItems = getCartItems();
+            if (!cartItems || cartItems.length === 0) {
+                if (window.Swal) {
+                    Swal.fire({
+                        title: 'Empty Cart',
+                        text: 'Your cart is empty. Please add items before checkout.',
+                        icon: 'error'
+                    });
+                } else {
+                    alert('Your cart is empty. Please add items before checkout.');
+                }
+                return;
+            }
+            
+            // If form is valid, proceed with checkout
+            if (isValid) {
+                // For demo purposes, show success message
+                if (window.Swal) {
+                    Swal.fire({
+                        title: 'Order Placed!',
+                        text: 'Your order has been successfully placed.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Clear cart
+                        localStorage.removeItem('cartItems');
+                        // Redirect to homepage or order confirmation page
+                        window.location.href = 'index.html';
+                    });
+                } else {
+                    alert('Your order has been successfully placed.');
+                    localStorage.removeItem('cartItems');
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+        
+        function highlightInvalidField(field, message) {
+            if (!field) return;
+            
+            field.classList.add('invalid');
+            
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = message;
+            
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                field.parentNode.removeChild(existingError);
+            }
+            
+            field.parentNode.appendChild(errorMessage);
+            
+            field.addEventListener('input', function() {
+                this.classList.remove('invalid');
+                const error = this.parentNode.querySelector('.error-message');
+                if (error) {
+                    this.parentNode.removeChild(error);
+                }
+            });
+        }
+    }
+    
     // Initialize cart functionality on all pages
     function initCart() {
         console.log('Initializing cart functionality');
@@ -1787,6 +1887,7 @@ body {
             displayCartItems();
             setupDeliveryOptions();
             setupPaymentMethods();
+            setupCheckoutFormValidation();
         }
         
         if (isShopPage) {
