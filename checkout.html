@@ -877,7 +877,7 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+       document.addEventListener('DOMContentLoaded', function() {
     // Mobile navigation toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
@@ -894,6 +894,11 @@
         return cartItems ? JSON.parse(cartItems) : [];
     }
     
+    // Save cart data to localStorage
+    function saveCartItems(items) {
+        localStorage.setItem('cartItems', JSON.stringify(items));
+    }
+    
     // Add to cart function (for index.html and shop.html)
     function setupAddToCartButtons() {
         const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -902,10 +907,25 @@
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const productCard = this.closest('.product-card');
+                    if (!productCard) {
+                        console.error('Product card not found');
+                        return;
+                    }
+                    
                     const productId = productCard.getAttribute('data-id');
-                    const productName = productCard.querySelector('.product-title').textContent;
-                    const productPrice = parseFloat(productCard.querySelector('.product-price').getAttribute('data-price'));
-                    const productImage = productCard.querySelector('.product-image').src;
+                    if (!productId) {
+                        console.error('Product ID not found');
+                        return;
+                    }
+                    
+                    const productTitle = productCard.querySelector('.product-title');
+                    const productName = productTitle ? productTitle.textContent : 'Product';
+                    
+                    const priceElement = productCard.querySelector('.product-price');
+                    const productPrice = priceElement ? parseFloat(priceElement.getAttribute('data-price')) : 0;
+                    
+                    const imageElement = productCard.querySelector('.product-image');
+                    const productImage = imageElement ? imageElement.src : '';
                     
                     addToCart(productId, productName, productPrice, productImage);
                 });
@@ -913,9 +933,18 @@
         }
     }
     
-    // Add item to cart
+    // Add item to cart with verification
     function addToCart(id, name, price, image, quantity = 1) {
+        if (!id || !name || isNaN(price)) {
+            console.error('Invalid product data', { id, name, price });
+            return;
+        }
+        
         const cartItems = getCartItems();
+        
+        // Debug logging
+        console.log('Current cart before adding:', cartItems);
+        
         const existingItemIndex = cartItems.findIndex(item => item.id === id);
         
         if (existingItemIndex > -1) {
@@ -930,24 +959,38 @@
             });
         }
         
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        // Debug logging
+        console.log('Updated cart after adding:', cartItems);
+        
+        saveCartItems(cartItems);
         updateCartCount();
         
         // Show SweetAlert notification
-        Swal.fire({
-            title: 'Added to Cart!',
-            text: `${name} has been added to your cart.`,
-            icon: 'success',
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${name} has been added to your cart.`,
+                icon: 'success',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
     }
     
-    // Update cart count in navigation
+    // Update cart count in navigation with verification
     function updateCartCount() {
         const cartCountElements = document.querySelectorAll('.cart-count');
         const cartItems = getCartItems();
+        
+        // Debug logging
+        console.log('Cart items for count update:', cartItems);
+        
+        if (!cartItems || !Array.isArray(cartItems)) {
+            console.error('Invalid cart items format:', cartItems);
+            return;
+        }
+        
         const itemCount = cartItems.length;
         
         cartCountElements.forEach(element => {
@@ -955,20 +998,25 @@
         });
     }
     
-    // Display cart items on cart page
+    // Display cart items on cart page with error handling
     function displayCartItems() {
         const cartItemsContainer = document.getElementById('cartItemsContainer');
         if (!cartItemsContainer) return; // Not on cart page
         
         const cartItems = getCartItems();
+        
+        // Debug logging
+        console.log('Cart items to display:', cartItems);
+        
         const cartCountElement = document.querySelector('.cart-count');
         const emptyCartMessage = document.getElementById('emptyCartMessage');
         const checkoutContainer = document.getElementById('checkoutContainer');
         
-        if (cartItems.length === 0) {
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
             if (emptyCartMessage) emptyCartMessage.style.display = 'block';
             if (checkoutContainer) checkoutContainer.style.display = 'none';
             if (cartCountElement) cartCountElement.textContent = '0';
+            cartItemsContainer.innerHTML = '';
             return;
         }
         
@@ -980,6 +1028,11 @@
         let subtotal = 0;
         
         cartItems.forEach((item, index) => {
+            if (!item || !item.id || !item.name || isNaN(item.price) || isNaN(item.quantity)) {
+                console.error('Invalid cart item:', item);
+                return;
+            }
+            
             const itemTotal = item.price * item.quantity;
             subtotal += itemTotal;
             
@@ -1036,56 +1089,70 @@
         });
     }
     
-    // Update item quantity
+    // Update item quantity with verification
     function updateItemQuantity(index, change) {
         const cartItems = getCartItems();
-        if (!cartItems[index]) return;
+        if (!Array.isArray(cartItems) || !cartItems[index]) {
+            console.error('Invalid cart item at index:', index);
+            return;
+        }
         
         cartItems[index].quantity += change;
         
         if (cartItems[index].quantity < 1) {
             // Ask for confirmation before removing
-            Swal.fire({
-                title: 'Remove Item?',
-                text: `Do you want to remove ${cartItems[index].name} from your cart?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remove it',
-                cancelButtonText: 'No, keep it'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    removeCartItem(index);
-                } else {
-                    cartItems[index].quantity = 1;
-                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                    displayCartItems();
-                }
-            });
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'Remove Item?',
+                    text: `Do you want to remove ${cartItems[index].name} from your cart?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, remove it',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        removeCartItem(index);
+                    } else {
+                        cartItems[index].quantity = 1;
+                        saveCartItems(cartItems);
+                        displayCartItems();
+                    }
+                });
+            } else {
+                removeCartItem(index);
+            }
         } else {
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            saveCartItems(cartItems);
             displayCartItems();
         }
     }
     
-    // Remove item from cart
+    // Remove item from cart with verification
     function removeCartItem(index) {
         const cartItems = getCartItems();
+        if (!Array.isArray(cartItems) || !cartItems[index]) {
+            console.error('Invalid cart item at index:', index);
+            return;
+        }
+        
         const removedItem = cartItems[index];
         
         cartItems.splice(index, 1);
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        saveCartItems(cartItems);
         displayCartItems();
         updateCartCount();
         
         // Show SweetAlert notification
-        Swal.fire({
-            title: 'Item Removed',
-            text: `${removedItem.name} has been removed from your cart.`,
-            icon: 'info',
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Item Removed',
+                text: `${removedItem.name} has been removed from your cart.`,
+                icon: 'info',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
     }
     
     // Update order summary
@@ -1106,10 +1173,21 @@
         orderTotalElement.textContent = `KES ${(subtotal + shippingFee).toLocaleString()}`;
     }
     
-    // Calculate subtotal
+    // Calculate subtotal with verification
     function calculateSubtotal() {
         const cartItems = getCartItems();
-        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        if (!Array.isArray(cartItems)) {
+            console.error('Invalid cart items format:', cartItems);
+            return 0;
+        }
+        
+        return cartItems.reduce((total, item) => {
+            if (!item || isNaN(item.price) || isNaN(item.quantity)) {
+                console.error('Invalid cart item in subtotal calculation:', item);
+                return total;
+            }
+            return total + (item.price * item.quantity);
+        }, 0);
     }
     
     // Setup delivery option selection
@@ -1151,235 +1229,6 @@
         });
     }
     
-    // Validate form
-    function validateForm() {
-        const fullName = document.getElementById('fullName')?.value.trim();
-        const email = document.getElementById('email')?.value.trim();
-        const phone = document.getElementById('phone')?.value.trim();
-        const termsAgreement = document.getElementById('termsAgreement')?.checked;
-        
-        if (fullName === undefined || email === undefined || phone === undefined || termsAgreement === undefined) {
-            return false;
-        }
-        
-        // Validate phone format for Kenya
-        const phoneRegex = /^(07|01|2547|2541)\d{8}$/;
-        const isPhoneValid = phoneRegex.test(phone.replace(/\s+/g, ''));
-        
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const isEmailValid = emailRegex.test(email);
-        
-        return fullName !== '' && isEmailValid && isPhoneValid && termsAgreement;
-    }
-    
-    // Show field validation errors
-    function showValidationErrors() {
-        const fullName = document.getElementById('fullName')?.value.trim();
-        const email = document.getElementById('email')?.value.trim();
-        const phone = document.getElementById('phone')?.value.trim();
-        const termsAgreement = document.getElementById('termsAgreement')?.checked;
-        
-        let errorMessages = [];
-        
-        if (!fullName) {
-            errorMessages.push('Please enter your full name');
-        }
-        
-        if (!email) {
-            errorMessages.push('Please enter your email address');
-        } else {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                errorMessages.push('Please enter a valid email address');
-            }
-        }
-        
-        if (!phone) {
-            errorMessages.push('Please enter your phone number');
-        } else {
-            const phoneRegex = /^(07|01|2547|2541)\d{8}$/;
-            if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
-                errorMessages.push('Please enter a valid Kenyan phone number');
-            }
-        }
-        
-        if (!termsAgreement) {
-            errorMessages.push('Please agree to the terms and conditions');
-        }
-        
-        return errorMessages;
-    }
-    
-    // Enable/disable checkout button based on validation
-    function updateCheckoutButton() {
-        const checkoutButton = document.getElementById('checkoutButton');
-        if (!checkoutButton) return;
-        
-        checkoutButton.disabled = !validateForm();
-    }
-    
-    // Setup form validation
-    function setupFormValidation() {
-        const formInputs = document.querySelectorAll('.form-input, #termsAgreement');
-        if (formInputs.length === 0) return;
-        
-        formInputs.forEach(input => {
-            input.addEventListener('input', updateCheckoutButton);
-        });
-    }
-    
-    // Handle checkout process
-    function setupCheckoutProcess() {
-        const checkoutButton = document.getElementById('checkoutButton');
-        if (!checkoutButton) return;
-        
-        checkoutButton.addEventListener('click', function() {
-            if (!validateForm()) {
-                const errorMessages = showValidationErrors();
-                Swal.fire({
-                    title: 'Form Validation Error',
-                    html: errorMessages.join('<br>'),
-                    icon: 'error'
-                });
-                return;
-            }
-            
-            const selectedPayment = document.querySelector('.payment-method.selected');
-            if (!selectedPayment) {
-                Swal.fire({
-                    title: 'Payment Method Required',
-                    text: 'Please select a payment method to continue.',
-                    icon: 'warning'
-                });
-                return;
-            }
-            
-            const paymentMethod = selectedPayment.getAttribute('data-method');
-            
-            if (paymentMethod === 'mpesa') {
-                Swal.fire({
-                    title: 'M-Pesa Coming Soon',
-                    text: 'M-Pesa STK Push feature is coming soon. Please use WhatsApp payment option for now.',
-                    icon: 'info'
-                });
-            } else if (paymentMethod === 'whatsapp') {
-                // Prepare order information
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const phone = document.getElementById('phone').value.trim();
-                const selectedDelivery = document.querySelector('.delivery-option.selected');
-                const deliveryLocation = selectedDelivery.getAttribute('data-location');
-                const cartItems = getCartItems();
-                const subtotal = calculateSubtotal();
-                const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
-                const total = subtotal + shippingFee;
-                
-                // Create WhatsApp message
-                let message = `Hello YTime Luxury, I'd like to place an order.%0A%0A`;
-                message += `*Customer Information*%0A`;
-                message += `Name: ${fullName}%0A`;
-                message += `Email: ${email}%0A`;
-                message += `Phone: ${phone}%0A%0A`;
-                
-                message += `*Order Details*%0A`;
-                cartItems.forEach((item, index) => {
-                    message += `${index + 1}. ${item.name} - KES ${item.price.toLocaleString()} x ${item.quantity}%0A`;
-                });
-                
-                message += `%0ADelivery: ${deliveryLocation.charAt(0).toUpperCase() + deliveryLocation.slice(1)}%0A`;
-                message += `Shipping Fee: ${shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`}%0A`;
-                message += `Subtotal: KES ${subtotal.toLocaleString()}%0A`;
-                message += `Total: KES ${total.toLocaleString()}%0A%0A`;
-                
-                message += `I would like to complete my purchase. Thank you!`;
-                
-                // Show confirmation before redirecting
-                Swal.fire({
-                    title: 'Proceed to WhatsApp?',
-                    text: 'You will be redirected to WhatsApp to complete your order.',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, proceed',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to WhatsApp
-                        window.location.href = `https://wa.me/254117278821?text=${message}`;
-                        
-                        // Clear cart after successful checkout
-                        localStorage.removeItem('cartItems');
-                    }
-                });
-            }
-        });
-    }
-    
-    // Quick view product (for shop.html)
-    function setupQuickViewButtons() {
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        
-        if (quickViewButtons.length > 0) {
-            quickViewButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productCard = this.closest('.product-card');
-                    const productId = productCard.getAttribute('data-id');
-                    const productName = productCard.querySelector('.product-title').textContent;
-                    const productPrice = parseFloat(productCard.querySelector('.product-price').getAttribute('data-price'));
-                    const productImage = productCard.querySelector('.product-image').src;
-                    const productDescription = productCard.getAttribute('data-description') || 'No description available.';
-                    
-                    // Show quick view modal
-                    Swal.fire({
-                        title: productName,
-                        html: `
-                            <div class="quick-view-content">
-                                <div class="quick-view-image">
-                                    <img src="${productImage}" alt="${productName}" style="max-width: 100%; height: auto;">
-                                </div>
-                                <div class="quick-view-details">
-                                    <p class="quick-view-price">KES ${productPrice.toLocaleString()}</p>
-                                    <p class="quick-view-description">${productDescription}</p>
-                                    <div class="quick-view-quantity">
-                                        <label>Quantity:</label>
-                                        <input type="number" id="quickViewQuantity" value="1" min="1" max="10">
-                                    </div>
-                                </div>
-                            </div>
-                        `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Add to Cart',
-                        cancelButtonText: 'Close',
-                        width: '600px'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const quantity = parseInt(document.getElementById('quickViewQuantity').value) || 1;
-                            addToCart(productId, productName, productPrice, productImage, quantity);
-                        }
-                    });
-                });
-            });
-        }
-    }
-    
-    // Initialize cart functionality on all pages
-    function initCart() {
-        updateCartCount();
-        
-        // Features specific to cart page
-        if (document.getElementById('cartItemsContainer')) {
-            displayCartItems();
-            setupDeliveryOptions();
-            setupPaymentMethods();
-            setupFormValidation();
-            setupCheckoutProcess();
-        }
-        
-        // Features specific to shop and home pages
-        setupAddToCartButtons();
-        setupQuickViewButtons();
-    }
-    
     // Load SweetAlert library dynamically if not already loaded
     function loadSweetAlert(callback) {
         if (window.Swal) {
@@ -1396,6 +1245,108 @@
         sweetAlertScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
         sweetAlertScript.onload = callback;
         document.head.appendChild(sweetAlertScript);
+    }
+    
+    // Initialize cart functionality on all pages
+    function initCart() {
+        try {
+            // Test localStorage availability
+            const testKey = 'localStorage_test';
+            localStorage.setItem(testKey, 'test');
+            localStorage.removeItem(testKey);
+            
+            console.log('localStorage is available');
+            
+            // Verify cart data structure
+            const cartItems = getCartItems();
+            console.log('Initial cart items:', cartItems);
+            
+            // Proceed with initialization
+            updateCartCount();
+            
+            // Features specific to cart page
+            if (document.getElementById('cartItemsContainer')) {
+                displayCartItems();
+                setupDeliveryOptions();
+                setupPaymentMethods();
+            }
+            
+            // Features specific to shop and home pages
+            setupAddToCartButtons();
+            setupQuickViewButtons();
+            
+        } catch (error) {
+            console.error('Error initializing cart:', error);
+            
+            // Display error to user if localStorage is not available
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'Storage Error',
+                    text: 'Unable to access local storage. Please ensure cookies are enabled in your browser.',
+                    icon: 'error'
+                });
+            } else {
+                alert('Unable to access local storage. Please ensure cookies are enabled in your browser.');
+            }
+        }
+    }
+    
+    // Setup quick view buttons
+    function setupQuickViewButtons() {
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        
+        if (quickViewButtons.length > 0) {
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    if (!productCard) return;
+                    
+                    const productId = productCard.getAttribute('data-id');
+                    const productTitle = productCard.querySelector('.product-title');
+                    const productName = productTitle ? productTitle.textContent : 'Product';
+                    
+                    const priceElement = productCard.querySelector('.product-price');
+                    const productPrice = priceElement ? parseFloat(priceElement.getAttribute('data-price')) : 0;
+                    
+                    const imageElement = productCard.querySelector('.product-image');
+                    const productImage = imageElement ? imageElement.src : '';
+                    
+                    const productDescription = productCard.getAttribute('data-description') || 'No description available.';
+                    
+                    // Show quick view modal
+                    if (window.Swal) {
+                        Swal.fire({
+                            title: productName,
+                            html: `
+                                <div class="quick-view-content">
+                                    <div class="quick-view-image">
+                                        <img src="${productImage}" alt="${productName}" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="quick-view-details">
+                                        <p class="quick-view-price">KES ${productPrice.toLocaleString()}</p>
+                                        <p class="quick-view-description">${productDescription}</p>
+                                        <div class="quick-view-quantity">
+                                            <label>Quantity:</label>
+                                            <input type="number" id="quickViewQuantity" value="1" min="1" max="10">
+                                        </div>
+                                    </div>
+                                </div>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Add to Cart',
+                            cancelButtonText: 'Close',
+                            width: '600px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const quantityInput = document.getElementById('quickViewQuantity');
+                                const quantity = quantityInput ? (parseInt(quantityInput.value) || 1) : 1;
+                                addToCart(productId, productName, productPrice, productImage, quantity);
+                            }
+                        });
+                    }
+                });
+            });
+        }
     }
     
     // Initialize everything
