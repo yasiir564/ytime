@@ -1899,188 +1899,278 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
   }
 }
+
+        /* Category Submenu Styles */
+.category-submenu {
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #eaeaea;
+    padding: 0.5rem 0;
+    width: 100%;
+}
+
+.category-submenu .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.category-submenu .category-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: space-between;
+}
+
+.category-submenu .category-item {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.category-submenu .category-item:hover {
+    background-color: #f0f0f0;
+}
+
+.category-submenu .category-item.active {
+    border-bottom-color: #d4af37; /* Gold color for luxury feel */
+    background-color: #f0f0f0;
+}
+
+.category-submenu .category-item h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.category-submenu .category-item p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .category-submenu .category-list {
+        justify-content: center;
+    }
+    
+    .category-submenu .category-item {
+        flex: 0 0 33.333%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-submenu .category-item {
+        flex: 0 0 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .category-submenu .category-item {
+        flex: 0 0 100%;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .category-submenu .category-item:last-child {
+        border-bottom: none;
+    }
+    
+    .category-submenu .category-item.active {
+        border-left: 3px solid #d4af37;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .category-submenu .category-item:last-child.active {
+        border-bottom: none;
+    }
+}
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container navbar-container">
-            <div class="logo">
-                <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
-                <span class="logo-text">YTime</span>
-            </div>
-
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-            </div>
-
-            <ul class="nav-links">
-                <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="shop.html" class="nav-link">Collection</a></li>
-                <li><a href="service.html" class="nav-link">Services</a></li>
-                <li><a href="contact.html" class="nav-link">Contact</a></li>
-            </ul>
-
-            <div class="nav-icons-container">
-                <div class="cart-icon" id="cartIcon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </div>
-                <div class="nav-auth-container">
-                    <button id="authButton" class="auth-button">Sign In</button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Category Sidebar -->
-        <div class="category-sidebar">
-            <div class="sidebar-header">
-                <h2>Categories</h2>
-            </div>
-            
-            <ul class="category-list">
-                <li class="category-item active" data-category="all">
-                    <h3>All Watches</h3>
-                    <p>Our complete collection</p>
-                </li>
-                <li class="category-item" data-category="mens">
-                    <h3>Men's Watches</h3>
-                    <p>Bold, sophisticated timepieces</p>
-                </li>
-                <li class="category-item" data-category="ladies">
-                    <h3>Ladies Watches</h3>
-                    <p>Elegant, stylish designs</p>
-                </li>
-                <li class="category-item" data-category="unisex">
-                    <h3>Unisex Watches</h3>
-                    <p>Versatile for any style</p>
-                </li>
-                <li class="category-item" data-category="couple">
-                    <h3>Couple Sets</h3>
-                    <p>Perfect matching pairs</p>
-                </li>
-            </ul>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container navbar-container">
+        <div class="logo">
+            <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
+            <span class="logo-text">YTime</span>
         </div>
 
-        <!-- Products Container -->
-        <div class="products-container">
-            <div class="products-header">
-                <h1>Our Collection</h1>
-                <p class="products-count">Showing <span id="productCount">12</span> products</p>
-            </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+        </div>
 
-            <div class="product-grid" id="productGrid">
-                <!-- Products will be populated by JavaScript -->
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="shop.html" class="nav-link">Collection</a></li>
+            <li><a href="service.html" class="nav-link">Services</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+
+        <div class="nav-icons-container">
+            <div class="cart-icon" id="cartIcon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </div>
+            <div class="nav-auth-container">
+                <button id="authButton" class="auth-button">Sign In</button>
             </div>
         </div>
     </div>
+</nav>
 
-    <!-- Cart Overlay -->
-    <div class="cart-overlay" id="cartOverlay">
-        <div class="cart-header">
-            <h2>Your Cart</h2>
-            <button class="close-cart" id="closeCart">
-                <i class="fas fa-times"></i>
-            </button>
+<!-- Category Submenu (Horizontal) -->
+<div class="category-submenu">
+    <div class="container">
+        <ul class="category-list">
+            <li class="category-item active" data-category="all">
+                <h3>All Watches</h3>
+                <p>Our complete collection</p>
+            </li>
+            <li class="category-item" data-category="mens">
+                <h3>Men's Watches</h3>
+                <p>Bold, sophisticated timepieces</p>
+            </li>
+            <li class="category-item" data-category="ladies">
+                <h3>Ladies Watches</h3>
+                <p>Elegant, stylish designs</p>
+            </li>
+            <li class="category-item" data-category="unisex">
+                <h3>Unisex Watches</h3>
+                <p>Versatile for any style</p>
+            </li>
+            <li class="category-item" data-category="couple">
+                <h3>Couple Sets</h3>
+                <p>Perfect matching pairs</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Products Container -->
+    <div class="products-container">
+        <div class="products-header">
+            <h1>Our Collection</h1>
+            <p class="products-count">Showing <span id="productCount">12</span> products</p>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" id="cartOverlay">
+    <div class="cart-header">
+        <h2>Your Cart</h2>
+        <button class="close-cart" id="closeCart">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="cart-items" id="cartItems">
+        <div class="empty-cart" id="emptyCart">
+            <i class="fas fa-shopping-basket"></i>
+            <p>Your cart is empty</p>
         </div>
         
-        <div class="cart-items" id="cartItems">
-            <div class="empty-cart" id="emptyCart">
-                <i class="fas fa-shopping-basket"></i>
-                <p>Your cart is empty</p>
-            </div>
-            
-            <!-- Cart items will be populated by JavaScript -->
+        <!-- Cart items will be populated by JavaScript -->
+    </div>
+    
+    <div class="cart-summary">
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
         </div>
-        
-        <div class="cart-summary">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cartTotal">$0.00</span>
-            </div>
-            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="product-modal" id="productModal">
+    <div class="modal-content">
+        <button class="close-modal" id="closeModal">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-body" id="modalBody">
+            <!-- Product details will be populated by JavaScript -->
         </div>
     </div>
+</div>
 
-    <!-- Product Details Modal -->
-    <div class="product-modal" id="productModal">
-        <div class="modal-content">
-            <button class="close-modal" id="closeModal">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-body" id="modalBody">
-                <!-- Product details will be populated by JavaScript -->
+<!-- Footer -->
+<footer class="footer" id="contact">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">
+                    <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
+                    <span class="logo-text">YTime</span>
+                </div>
+                <p class="footer-about">
+                    YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
             </div>
+
+            <div>
+                <h3 class="footer-heading">Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Collection</a></li>
+                    <li><a href="service.html">Services</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="footer-heading">Help & Support</h3>
+                <ul class="footer-links">
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns Policy</a></li>
+                    <li><a href="#">Warranty</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="footer-heading">Contact Us</h3>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Nairobi Kenya</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+254117278821</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@ytime.co.ke</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 YTime Luxury. All rights reserved.</p>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer" id="contact">
-        <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <div class="footer-logo">
-                        <img src="ytime_luxury-removebg-preview.png" alt="YTime Logo">
-                        <span class="logo-text">YTime</span>
-                    </div>
-                    <p class="footer-about">
-                        YTime is a premier destination for luxury timepieces, offering a curated selection of the world's finest watches and exceptional customer service.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="footer-heading">Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#collection">Collection</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="footer-heading">Help & Support</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Shipping Info</a></li>
-                        <li><a href="#">Returns Policy</a></li>
-                        <li><a href="#">Warranty</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="footer-heading">Contact Us</h3>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Nairobi Kenya</span>
-                    </div>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+254117278821</span>
-                    </div>
-                    <div class="footer-contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>info@ytime.co.ke</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 YTime Luxury. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+</footer>
 
     <script>
       // Sample product data
