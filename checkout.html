@@ -1152,12 +1152,31 @@ body {
     </footer>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     // Database configuration
     let db;
     const DB_NAME = 'ytimeShopDB';
     const DB_VERSION = 1;
     const CART_STORE_NAME = 'cart';
+    
+    // Initialize and open the cart display
+    async function initCartDisplay() {
+        try {
+            // Initialize IndexedDB connection
+            await initIndexedDB();
+            
+            // Display cart items
+            await displayCartContents();
+            
+            // Setup event listeners for real-time updates
+            setupCartEventListeners();
+            
+            console.log('Cart display initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize cart display:', error);
+            fallbackToLocalStorage();
+        }
+    }
     
     // Initialize IndexedDB
     function initIndexedDB() {
@@ -1185,49 +1204,14 @@ body {
         });
     }
     
-    // Mobile navigation toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    }
-    
-    // Get cart data from IndexedDB with fallback to localStorage
-    function getCartItems() {
+    // Fetch cart items from IndexedDB
+    function getCartItemsFromDB() {
         return new Promise((resolve, reject) => {
             if (!db) {
-                console.log('IndexedDB not initialized, falling back to localStorage');
-                try {
-                    const cartItemsString = localStorage.getItem('cartItems');
-                    console.log('Raw cart data from localStorage:', cartItemsString);
-                    
-                    if (!cartItemsString) {
-                        console.log('No cart data found in localStorage');
-                        resolve([]);
-                        return;
-                    }
-                    
-                    const cartItems = JSON.parse(cartItemsString);
-                    console.log('Parsed cart items from localStorage:', cartItems);
-                    
-                    if (!Array.isArray(cartItems)) {
-                        console.error('Cart data is not an array:', cartItems);
-                        resolve([]);
-                        return;
-                    }
-                    
-                    resolve(cartItems);
-                } catch (error) {
-                    console.error('Error retrieving cart data from localStorage:', error);
-                    resolve([]);
-                }
+                reject("IndexedDB not initialized");
                 return;
             }
             
-            console.log('Retrieving cart data from IndexedDB');
             try {
                 const transaction = db.transaction(CART_STORE_NAME, 'readonly');
                 const store = transaction.objectStore(CART_STORE_NAME);
@@ -1241,842 +1225,319 @@ body {
                 
                 request.onerror = (event) => {
                     console.error("Error loading cart from IndexedDB:", event.target.error);
-                    // Fallback to localStorage
-                    getCartItemsFromLocalStorage().then(items => resolve(items));
+                    reject(event.target.error);
                 };
             } catch (error) {
                 console.error('Error accessing IndexedDB:', error);
-                // Fallback to localStorage
-                getCartItemsFromLocalStorage().then(items => resolve(items));
+                reject(error);
             }
         });
     }
     
-    // Fallback function to get cart from localStorage
-    function getCartItemsFromLocalStorage() {
-        return new Promise((resolve) => {
-            try {
-                const cartItemsString = localStorage.getItem('cartItems');
-                if (!cartItemsString) {
-                    resolve([]);
-                    return;
-                }
-                
-                const cartItems = JSON.parse(cartItemsString);
-                if (!Array.isArray(cartItems)) {
-                    resolve([]);
-                    return;
-                }
-                
-                resolve(cartItems);
-            } catch (error) {
-                console.error('Error retrieving cart data from localStorage:', error);
-                resolve([]);
-            }
-        });
-    }
-    
-    // Save cart data to IndexedDB with localStorage fallback
-    function saveCartItems(items) {
-        return new Promise((resolve, reject) => {
-            if (!Array.isArray(items)) {
-                console.error('Attempting to save non-array cart data:', items);
-                reject(false);
+    // Fallback to localStorage if IndexedDB fails
+    function fallbackToLocalStorage() {
+        console.log('Falling back to localStorage for cart data');
+        try {
+            const cartItemsString = localStorage.getItem('cartItems');
+            if (!cartItemsString) {
+                displayEmptyCart();
                 return;
             }
             
-            // Validate each item in the cart
-            const validItems = items.filter(item => {
-                if (!item || typeof item !== 'object') return false;
-                if (!item.id || !item.name) return false;
-                if (isNaN(item.price) || isNaN(item.quantity)) return false;
-                return true;
-            });
-            
-            // Save to localStorage as fallback
-            const itemsJson = JSON.stringify(validItems);
-            localStorage.setItem('cartItems', itemsJson);
-            
-            if (!db) {
-                console.log('IndexedDB not initialized, saved to localStorage only');
-                resolve(true);
+            const cartItems = JSON.parse(cartItemsString);
+            if (!Array.isArray(cartItems) || cartItems.length === 0) {
+                displayEmptyCart();
                 return;
             }
             
-            try {
-                console.log('Saving cart items to IndexedDB:', validItems);
-                const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(CART_STORE_NAME);
-                
-                // Clear existing items
-                const clearRequest = store.clear();
-                clearRequest.onsuccess = () => {
-                    console.log('Cleared existing items from IndexedDB');
-                    
-                    // Add all cart items
-                    validItems.forEach(item => {
-                        const addRequest = store.add(item);
-                        addRequest.onerror = (event) => {
-                            console.error('Error adding item to IndexedDB:', event.target.error);
-                        };
-                    });
-                };
-                
-                transaction.oncomplete = () => {
-                    console.log('Cart saved to IndexedDB successfully');
-                    resolve(true);
-                };
-                
-                transaction.onerror = (event) => {
-                    console.error('Error saving cart to IndexedDB:', event.target.error);
-                    resolve(true); // Still consider it a success as we saved to localStorage
-                };
-            } catch (error) {
-                console.error('Error accessing IndexedDB for saving:', error);
-                resolve(true); // Still consider it a success as we saved to localStorage
-            }
-        });
+            renderCartItems(cartItems);
+            
+        } catch (error) {
+            console.error('Error retrieving cart data from localStorage:', error);
+            displayEmptyCart();
+        }
     }
     
-    // Add to cart function (for index.html and shop.html)
-    function setupAddToCartButtons() {
-        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    // Display empty cart message
+    function displayEmptyCart() {
+        const cartContainer = document.getElementById('cartItemsContainer');
+        if (cartContainer) {
+            cartContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+        }
         
-        if (addToCartButtons.length > 0) {
-            console.log('Found', addToCartButtons.length, 'add to cart buttons');
-            
-            addToCartButtons.forEach((button, index) => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevent form submission if button is in a form
-                    
-                    console.log('Add to cart button clicked:', index);
-                    const productCard = this.closest('.product-card');
-                    
-                    if (!productCard) {
-                        console.error('Product card not found');
-                        return;
-                    }
-                    
-                    const productId = productCard.getAttribute('data-id');
-                    if (!productId) {
-                        console.error('Product ID missing for product card');
-                        return;
-                    }
-                    
-                    const titleElement = productCard.querySelector('.product-title');
-                    if (!titleElement) {
-                        console.error('Product title element not found');
-                        return;
-                    }
-                    const productName = titleElement.textContent.trim();
-                    
-                    const priceElement = productCard.querySelector('.product-price');
-                    if (!priceElement) {
-                        console.error('Product price element not found');
-                        return;
-                    }
-                    const priceAttr = priceElement.getAttribute('data-price');
-                    if (!priceAttr) {
-                        console.error('Price attribute missing');
-                        return;
-                    }
-                    const productPrice = parseFloat(priceAttr);
-                    
-                    const imageElement = productCard.querySelector('.product-image');
-                    const productImage = imageElement ? imageElement.src : '';
-                    
-                    console.log('Adding product to cart:', {
-                        id: productId,
-                        name: productName,
-                        price: productPrice,
-                        image: productImage
-                    });
-                    
-                    addToCart(productId, productName, productPrice, productImage);
-                });
-            });
-        } else {
-            console.log('No add to cart buttons found on page');
+        const subtotalElement = document.getElementById('subtotal');
+        const orderTotalElement = document.getElementById('orderTotal');
+        
+        if (subtotalElement) subtotalElement.textContent = 'KES 0';
+        if (orderTotalElement) orderTotalElement.textContent = 'KES 0';
+        
+        // Hide checkout button if it exists
+        const checkoutButton = document.querySelector('.checkout-button');
+        if (checkoutButton) {
+            checkoutButton.style.display = 'none';
         }
     }
     
-    // Add item to cart with validation
-    async function addToCart(id, name, price, image, quantity = 1) {
-        try {
-            if (!id || typeof id !== 'string') {
-                console.error('Invalid product ID:', id);
-                return false;
-            }
-            
-            if (!name || typeof name !== 'string') {
-                console.error('Invalid product name:', name);
-                return false;
-            }
-            
-            if (isNaN(price) || price <= 0) {
-                console.error('Invalid product price:', price);
-                return false;
-            }
-            
-            if (isNaN(quantity) || quantity <= 0) {
-                console.error('Invalid quantity:', quantity);
-                return false;
-            }
-            
-            const cartItems = await getCartItems();
-            const existingItemIndex = cartItems.findIndex(item => item.id === id);
-            
-            if (existingItemIndex > -1) {
-                console.log('Product already in cart. Updating quantity.');
-                cartItems[existingItemIndex].quantity += quantity;
-            } else {
-                console.log('Adding new product to cart.');
-                cartItems.push({
-                    id,
-                    name,
-                    price,
-                    image,
-                    quantity
-                });
-            }
-            
-            const saved = await saveCartItems(cartItems);
-            if (saved) {
-                updateCartCount();
-                
-                // Show notification
-                if (window.Swal) {
-                    Swal.fire({
-                        title: 'Added to Cart!',
-                        text: `${name} has been added to your cart.`,
-                        icon: 'success',
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
-                } else {
-                    alert(`${name} has been added to your cart.`);
-                }
-                
-                return true;
-            }
-            
-            return false;
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-            return false;
-        }
-    }
-    
-    // Update cart count in navigation
-    async function updateCartCount() {
-        try {
-            const cartItems = await getCartItems();
-            const itemCount = cartItems.length;
-            
-            console.log('Updating cart count to:', itemCount);
-            
-            const cartCountElements = document.querySelectorAll('.cart-count');
-            console.log('Found', cartCountElements.length, 'cart count elements');
-            
-            cartCountElements.forEach(element => {
-                element.textContent = itemCount.toString();
-            });
-        } catch (error) {
-            console.error('Error updating cart count:', error);
-        }
-    }
-    
-    // Display cart items on cart page
-    async function displayCartItems() {
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        if (!cartItemsContainer) {
-            console.log('Cart items container not found, not on cart page');
+    // Render cart items in the DOM
+    function renderCartItems(items) {
+        const cartContainer = document.getElementById('cartItemsContainer');
+        if (!cartContainer) {
+            console.error('Cart container not found');
             return;
         }
         
-        console.log('Displaying cart items on cart page');
-        
-        const cartItems = await getCartItems();
-        const cartCountElement = document.querySelector('.cart-count');
-        const emptyCartMessage = document.getElementById('emptyCartMessage');
-        const checkoutContainer = document.getElementById('checkoutContainer');
-        
-        if (!cartItems || cartItems.length === 0) {
-            console.log('Cart is empty, showing empty cart message');
-            
-            if (emptyCartMessage) {
-                emptyCartMessage.style.display = 'block';
-            }
-            
-            if (checkoutContainer) {
-                checkoutContainer.style.display = 'none';
-            }
-            
-            if (cartCountElement) {
-                cartCountElement.textContent = '0';
-            }
-            
-            cartItemsContainer.innerHTML = '';
+        if (items.length === 0) {
+            displayEmptyCart();
             return;
         }
         
-        console.log('Cart has items, rendering cart UI');
-        
-        if (cartCountElement) {
-            cartCountElement.textContent = cartItems.length.toString();
-        }
-        
-        if (emptyCartMessage) {
-            emptyCartMessage.style.display = 'none';
-        }
-        
-        if (checkoutContainer) {
-            checkoutContainer.style.display = 'block';
-        }
-        
-        let cartItemsHTML = '';
+        let cartHTML = '';
         let subtotal = 0;
         
-        cartItems.forEach((item, index) => {
+        items.forEach((item, index) => {
             const itemTotal = item.price * item.quantity;
             subtotal += itemTotal;
             
-            cartItemsHTML += `
+            cartHTML += `
                 <div class="cart-item" data-id="${item.id}">
-                    <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <h3 class="cart-item-title">${item.name}</h3>
+                    <div class="cart-item-image">
+                        <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-name">${item.name}</h3>
                         <div class="cart-item-price">KES ${item.price.toLocaleString()}</div>
-                        <div class="cart-item-controls">
+                        <div class="cart-item-quantity">
                             <button class="quantity-btn decrease" data-index="${index}">-</button>
-                            <span class="cart-item-quantity">${item.quantity}</span>
+                            <span class="quantity-value">${item.quantity}</span>
                             <button class="quantity-btn increase" data-index="${index}">+</button>
                         </div>
-                        <div class="cart-item-total">Total: KES ${itemTotal.toLocaleString()}</div>
                     </div>
-                    <button class="cart-item-remove" data-index="${index}">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="cart-item-total">
+                        <div class="item-total">KES ${itemTotal.toLocaleString()}</div>
+                        <button class="remove-item" data-index="${index}">×</button>
+                    </div>
                 </div>
             `;
         });
         
-        cartItemsContainer.innerHTML = cartItemsHTML;
+        cartContainer.innerHTML = cartHTML;
+        updateCartSummary(subtotal);
         
-        // Update order summary
-        updateOrderSummary(subtotal);
+        // Show checkout button if it exists
+        const checkoutButton = document.querySelector('.checkout-button');
+        if (checkoutButton) {
+            checkoutButton.style.display = 'block';
+        }
+    }
+    
+    // Update cart summary values
+    function updateCartSummary(subtotal) {
+        const subtotalElement = document.getElementById('subtotal');
+        const shippingElement = document.getElementById('shipping');
+        const orderTotalElement = document.getElementById('orderTotal');
         
-        // Add event listeners to remove buttons
-        const removeButtons = document.querySelectorAll('.cart-item-remove');
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.getAttribute('data-index'));
-                removeCartItem(index);
+        if (subtotalElement) {
+            subtotalElement.textContent = `KES ${subtotal.toLocaleString()}`;
+        }
+        
+        // Calculate shipping based on selected option
+        let shippingCost = 0;
+        const selectedShipping = document.querySelector('.delivery-option.selected');
+        if (selectedShipping) {
+            shippingCost = parseInt(selectedShipping.getAttribute('data-fee') || 0);
+        }
+        
+        if (shippingElement) {
+            shippingElement.textContent = shippingCost === 0 ? 'Free' : `KES ${shippingCost.toLocaleString()}`;
+        }
+        
+        if (orderTotalElement) {
+            orderTotalElement.textContent = `KES ${(subtotal + shippingCost).toLocaleString()}`;
+        }
+        
+        // Update item count badge if it exists
+        const cartCountBadge = document.querySelector('.cart-count');
+        if (cartCountBadge) {
+            getCartItemCount().then(count => {
+                cartCountBadge.textContent = count.toString();
             });
+        }
+    }
+    
+    // Get total number of items in cart
+    async function getCartItemCount() {
+        try {
+            const items = await getCartItemsFromDBWithFallback();
+            return items.length;
+        } catch (error) {
+            console.error('Error getting cart item count:', error);
+            return 0;
+        }
+    }
+    
+    // Get cart items with localStorage fallback
+    async function getCartItemsFromDBWithFallback() {
+        try {
+            if (db) {
+                return await getCartItemsFromDB();
+            } else {
+                throw new Error('IndexedDB not available');
+            }
+        } catch (error) {
+            console.log('Falling back to localStorage for cart data');
+            try {
+                const cartItemsString = localStorage.getItem('cartItems');
+                if (!cartItemsString) return [];
+                
+                const cartItems = JSON.parse(cartItemsString);
+                return Array.isArray(cartItems) ? cartItems : [];
+            } catch (localStorageError) {
+                console.error('Error retrieving from localStorage:', localStorageError);
+                return [];
+            }
+        }
+    }
+    
+    // Setup event listeners for cart interactions
+    function setupCartEventListeners() {
+        document.addEventListener('click', async function(event) {
+            // Handle quantity decrease
+            if (event.target.classList.contains('decrease')) {
+                const index = parseInt(event.target.getAttribute('data-index'));
+                await updateQuantity(index, -1);
+            }
+            
+            // Handle quantity increase
+            if (event.target.classList.contains('increase')) {
+                const index = parseInt(event.target.getAttribute('data-index'));
+                await updateQuantity(index, 1);
+            }
+            
+            // Handle item removal
+            if (event.target.classList.contains('remove-item')) {
+                const index = parseInt(event.target.getAttribute('data-index'));
+                await removeItem(index);
+            }
         });
         
-        // Add event listeners to quantity buttons
-        const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
-        const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
-        
-        decreaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.getAttribute('data-index'));
-                updateItemQuantity(index, -1);
-            });
-        });
-        
-        increaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.getAttribute('data-index'));
-                updateItemQuantity(index, 1);
+        // Handle shipping selection changes
+        const deliveryOptions = document.querySelectorAll('.delivery-option');
+        deliveryOptions.forEach(option => {
+            option.addEventListener('click', async function() {
+                deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const items = await getCartItemsFromDBWithFallback();
+                const subtotal = calculateSubtotal(items);
+                updateCartSummary(subtotal);
             });
         });
     }
     
     // Update item quantity
-    async function updateItemQuantity(index, change) {
-        const cartItems = await getCartItems();
-        if (!cartItems[index]) return;
-        
-        cartItems[index].quantity += change;
-        
-        if (cartItems[index].quantity < 1) {
-            // Ask for confirmation before removing
-            if (window.Swal) {
-                Swal.fire({
-                    title: 'Remove Item?',
-                    text: `Do you want to remove ${cartItems[index].name} from your cart?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, remove it',
-                    cancelButtonText: 'No, keep it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        removeCartItem(index);
-                    } else {
-                        cartItems[index].quantity = 1;
-                        saveCartItems(cartItems);
-                        displayCartItems();
-                    }
-                });
+    async function updateQuantity(index, change) {
+        try {
+            const items = await getCartItemsFromDBWithFallback();
+            if (!items[index]) return;
+            
+            items[index].quantity += change;
+            
+            if (items[index].quantity < 1) {
+                // Confirm removal
+                if (confirm(`Remove ${items[index].name} from cart?`)) {
+                    await removeItem(index);
+                } else {
+                    items[index].quantity = 1;
+                    await saveCartItems(items);
+                    await displayCartContents();
+                }
             } else {
-                removeCartItem(index);
+                await saveCartItems(items);
+                await displayCartContents();
             }
-        } else {
-            await saveCartItems(cartItems);
-            displayCartItems();
+        } catch (error) {
+            console.error('Error updating quantity:', error);
         }
     }
     
     // Remove item from cart
-    async function removeCartItem(index) {
-        const cartItems = await getCartItems();
-        if (!cartItems[index]) return;
-        
-        const removedItem = cartItems[index];
-        cartItems.splice(index, 1);
-        
-        await saveCartItems(cartItems);
-        displayCartItems();
-        updateCartCount();
-        
-        // Show notification
-        if (window.Swal) {
-            Swal.fire({
-                title: 'Item Removed',
-                text: `${removedItem.name} has been removed from your cart.`,
-                icon: 'info',
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
-        }
-    }
-    
-    // Update order summary
-    function updateOrderSummary(subtotal) {
-        const subtotalElement = document.getElementById('subtotal');
-        const shippingElement = document.getElementById('shipping');
-        const orderTotalElement = document.getElementById('orderTotal');
-        
-        if (!subtotalElement || !shippingElement || !orderTotalElement) return;
-        
-        const selectedDelivery = document.querySelector('.delivery-option.selected');
-        if (!selectedDelivery) return;
-        
-        const shippingFee = parseInt(selectedDelivery.getAttribute('data-fee')) || 0;
-        
-        subtotalElement.textContent = `KES ${subtotal.toLocaleString()}`;
-        shippingElement.textContent = shippingFee === 0 ? 'Free' : `KES ${shippingFee.toLocaleString()}`;
-        orderTotalElement.textContent = `KES ${(subtotal + shippingFee).toLocaleString()}`;
-    }
-    
-    // Calculate subtotal
-    async function calculateSubtotal() {
-        const cartItems = await getCartItems();
-        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
-    
-    // Setup delivery option selection
-    function setupDeliveryOptions() {
-        const deliveryOptions = document.querySelectorAll('.delivery-option');
-        if (deliveryOptions.length === 0) return;
-        
-        // Ensure at least one delivery option is selected by default
-        let hasSelected = false;
-        deliveryOptions.forEach(option => {
-            if (option.classList.contains('selected')) {
-                hasSelected = true;
-            }
-        });
-        
-        if (!hasSelected && deliveryOptions.length > 0) {
-            deliveryOptions[0].classList.add('selected');
-            const radio = deliveryOptions[0].querySelector('.delivery-radio');
-            if (radio) radio.checked = true;
-        }
-        
-        deliveryOptions.forEach(option => {
-            option.addEventListener('click', async function() {
-                // Remove selected class from all options
-                deliveryOptions.forEach(opt => opt.classList.remove('selected'));
-                // Add selected class to clicked option
-                this.classList.add('selected');
-                // Check the radio button
-                const radio = this.querySelector('.delivery-radio');
-                if (radio) radio.checked = true;
-                // Update order summary
-                const subtotal = await calculateSubtotal();
-                updateOrderSummary(subtotal);
-            });
-        });
-    }
-    
-    // Setup payment method selection
-    function setupPaymentMethods() {
-        const paymentMethods = document.querySelectorAll('.payment-method');
-        if (paymentMethods.length === 0) return;
-        
-        // Ensure at least one payment method is selected by default
-        let hasSelected = false;
-        paymentMethods.forEach(method => {
-            if (method.classList.contains('selected')) {
-                hasSelected = true;
-            }
-        });
-        
-        if (!hasSelected && paymentMethods.length > 0) {
-            paymentMethods[0].classList.add('selected');
-            const radio = paymentMethods[0].querySelector('.payment-radio');
-            if (radio) radio.checked = true;
-        }
-        
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', function() {
-                // Remove selected class from all methods
-                paymentMethods.forEach(m => m.classList.remove('selected'));
-                // Add selected class to clicked method
-                this.classList.add('selected');
-                // Check the radio button
-                const radio = this.querySelector('.payment-radio');
-                if (radio) radio.checked = true;
-            });
-        });
-    }
-    
-    // Setup quick view buttons
-    function setupQuickViewButtons() {
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        
-        if (quickViewButtons.length > 0) {
-            console.log('Found', quickViewButtons.length, 'quick view buttons');
-            
-            quickViewButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const productCard = this.closest('.product-card');
-                    if (!productCard) return;
-                    
-                    const productId = productCard.getAttribute('data-id');
-                    const titleElement = productCard.querySelector('.product-title');
-                    const productName = titleElement ? titleElement.textContent : 'Product';
-                    
-                    const priceElement = productCard.querySelector('.product-price');
-                    const priceAttr = priceElement ? priceElement.getAttribute('data-price') : null;
-                    const productPrice = priceAttr ? parseFloat(priceAttr) : 0;
-                    
-                    const imageElement = productCard.querySelector('.product-image');
-                    const productImage = imageElement ? imageElement.src : '';
-                    
-                    const productDescription = productCard.getAttribute('data-description') || 'No description available.';
-                    
-                    // Show quick view modal
-                    if (window.Swal) {
-                        Swal.fire({
-                            title: productName,
-                            html: `
-                                <div class="quick-view-content">
-                                    <div class="quick-view-image">
-                                        <img src="${productImage}" alt="${productName}" style="max-width: 100%; height: auto;">
-                                    </div>
-                                    <div class="quick-view-details">
-                                        <p class="quick-view-price">KES ${productPrice.toLocaleString()}</p>
-                                        <p class="quick-view-description">${productDescription}</p>
-                                        <div class="quick-view-quantity">
-                                            <label>Quantity:</label>
-                                            <input type="number" id="quickViewQuantity" value="1" min="1" max="10">
-                                        </div>
-                                    </div>
-                                </div>
-                            `,
-                            showCancelButton: true,
-                            confirmButtonText: 'Add to Cart',
-                            cancelButtonText: 'Close',
-                            width: '600px'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const quantityInput = document.getElementById('quickViewQuantity');
-                                const quantity = quantityInput ? (parseInt(quantityInput.value) || 1) : 1;
-                                addToCart(productId, productName, productPrice, productImage, quantity);
-                            }
-                        });
-                    }
-                });
-            });
-        } else {
-            console.log('No quick view buttons found on page');
-        }
-    }
-    
-    // Test IndexedDB functionality
-    function testIndexedDB() {
-        return new Promise((resolve) => {
-            try {
-                const request = indexedDB.open('test_db', 1);
-                
-                request.onerror = () => {
-                    console.error('IndexedDB test failed: Cannot open database');
-                    resolve(false);
-                };
-                
-                request.onsuccess = (event) => {
-                    const db = event.target.result;
-                    db.close();
-                    
-                    // Delete the test database
-                    const deleteRequest = indexedDB.deleteDatabase('test_db');
-                    deleteRequest.onsuccess = () => {
-                        console.log('IndexedDB test passed');
-                        resolve(true);
-                    };
-                    
-                    deleteRequest.onerror = () => {
-                        console.error('IndexedDB test failed: Cannot delete test database');
-                        resolve(false);
-                    };
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    db.createObjectStore('test_store', { keyPath: 'id' });
-                };
-            } catch (error) {
-                console.error('IndexedDB test error:', error);
-                resolve(false);
-            }
-        });
-    }
-    
-    // Fallback: Test localStorage functionality
-    function testLocalStorage() {
+    async function removeItem(index) {
         try {
-            const testKey = '__test_storage__';
-            localStorage.setItem(testKey, 'test');
-            const testValue = localStorage.getItem(testKey);
-            localStorage.removeItem(testKey);
+            const items = await getCartItemsFromDBWithFallback();
+            if (!items[index]) return;
             
-            if (testValue !== 'test') {
-                console.error('localStorage test failed: values don\'t match');
-                return false;
-            }
-            
-            // Try to store and retrieve JSON
-            const testObject = { id: 'test', name: 'Test Product', price: 1000, quantity: 1 };
-            localStorage.setItem(testKey, JSON.stringify(testObject));
-            const retrievedJson = localStorage.getItem(testKey);
-            const retrievedObject = JSON.parse(retrievedJson);
-            localStorage.removeItem(testKey);
-            
-            if (!retrievedObject || retrievedObject.id !== 'test') {
-                console.error('localStorage JSON test failed');
-                return false;
-            }
-            
-            console.log('localStorage tests passed successfully');
-            return true;
+            items.splice(index, 1);
+            await saveCartItems(items);
+            await displayCartContents();
         } catch (error) {
-            console.error('localStorage test error:', error);
-            return false;
+            console.error('Error removing item:', error);
         }
     }
     
-    // Load SweetAlert library dynamically if not already loaded
-    function loadSweetAlert(callback) {
-        if (window.Swal) {
-            callback();
-            return;
-        }
+    // Save cart items to both IndexedDB and localStorage
+    async function saveCartItems(items) {
+        // Save to localStorage as fallback
+        localStorage.setItem('cartItems', JSON.stringify(items));
         
-        const sweetAlertCSS = document.createElement('link');
-        sweetAlertCSS.rel = 'stylesheet';
-        sweetAlertCSS.href = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css';
-        document.head.appendChild(sweetAlertCSS);
+        // Save to IndexedDB if available
+        if (!db) return;
         
-        const sweetAlertScript = document.createElement('script');
-        sweetAlertScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
-        sweetAlertScript.onload = function() {
-            console.log('SweetAlert loaded successfully');
-            callback();
-        };
-        sweetAlertScript.onerror = function() {
-            console.error('Failed to load SweetAlert');
-            callback(); // Continue anyway
-        };
-        document.head.appendChild(sweetAlertScript);
-    }
-    
-    // Checkout form validation
-    function setupCheckoutFormValidation() {
-        const checkoutForm = document.getElementById('checkoutForm');
-        if (!checkoutForm) return;
-        
-        checkoutForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('customerName');
-            const email = document.getElementById('customerEmail');
-            const phone = document.getElementById('customerPhone');
-            const address = document.getElementById('customerAddress');
-            
-            let isValid = true;
-            
-            // Simple validation
-            if (!name || !name.value.trim()) {
-                isValid = false;
-                highlightInvalidField(name, 'Please enter your name');
-            }
-            
-            if (!email || !email.value.trim() || !email.value.includes('@')) {
-                isValid = false;
-                highlightInvalidField(email, 'Please enter a valid email');
-            }
-            
-            if (!phone || !phone.value.trim()) {
-                isValid = false;
-                highlightInvalidField(phone, 'Please enter your phone number');
-            }
-            
-            if (!address || !address.value.trim()) {
-                isValid = false;
-                highlightInvalidField(address, 'Please enter your address');
-            }
-            
-            // Get cart data
-            const cartItems = await getCartItems();
-            if (!cartItems || cartItems.length === 0) {
-                if (window.Swal) {
-                    Swal.fire({
-                        title: 'Empty Cart',
-                        text: 'Your cart is empty. Please add items before checkout.',
-                        icon: 'error'
-                    });
-                } else {
-                    alert('Your cart is empty. Please add items before checkout.');
-                }
-                return;
-            }
-            
-            // If form is valid, proceed with checkout
-            if (isValid) {
-                // For demo purposes, show success message
-                if (window.Swal) {
-                    Swal.fire({
-                        title: 'Order Placed!',
-                        text: 'Your order has been successfully placed.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(async () => {
-                        // Clear cart from IndexedDB
-                        if (db) {
-                            try {
-                                const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
-                                const store = transaction.objectStore(CART_STORE_NAME);
-                                store.clear();
-                            } catch (error) {
-                                console.error('Error clearing IndexedDB cart:', error);
-                            }
-                        }
-                        // Also clear localStorage as fallback
-                        localStorage.removeItem('cartItems');
-                        // Redirect to homepage or order confirmation page
-                        window.location.href = 'index.html';
-                    });
-                } else {
-                    // Clear cart from IndexedDB
-                    if (db) {
-                        try {
-                            const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
-                            const store = transaction.objectStore(CART_STORE_NAME);
-                            store.clear();
-                        } catch (error) {
-                            console.error('Error clearing IndexedDB cart:', error);
-                        }
-                    }
-                    // Also clear localStorage as fallback
-                    localStorage.removeItem('cartItems');
-                    alert('Your order has been successfully placed.');
-                    window.location.href = 'index.html';
-                }
-            }
-        });
-        
-        function highlightInvalidField(field, message) {
-            if (!field) return;
-            
-            field.classList.add('invalid');
-            
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'error-message';
-            errorMessage.textContent = message;
-            
-            const existingError = field.parentNode.querySelector('.error-message');
-            if (existingError) {
-                field.parentNode.removeChild(existingError);
-            }
-            
-            field.parentNode.appendChild(errorMessage);
-            
-            field.addEventListener('input', function() {
-                this.classList.remove('invalid');
-                const error = this.parentNode.querySelector('.error-message');
-                if (error) {
-                    this.parentNode.removeChild(error);
-                }
-            });
-        }
-        // Main initialization
-    async function initApp() {
         try {
-            // Load SweetAlert first
-            loadSweetAlert(async () => {
-                // Test storage capabilities
-                const indexedDBWorks = await testIndexedDB();
-                const localStorageWorks = testLocalStorage();
+            const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
+            const store = transaction.objectStore(CART_STORE_NAME);
+            
+            // Clear existing items
+            await clearObjectStore(store);
+            
+            // Add new items
+            for (const item of items) {
+                store.add(item);
+            }
+            
+            return new Promise((resolve, reject) => {
+                transaction.oncomplete = () => {
+                    console.log('Cart saved to IndexedDB successfully');
+                    resolve();
+                };
                 
-                if (!indexedDBWorks && !localStorageWorks) {
-                    console.error('No storage mechanism available');
-                    if (window.Swal) {
-                        Swal.fire({
-                            title: 'Storage Error',
-                            text: 'Your browser does not support the necessary storage features. Some functionality may be limited.',
-                            icon: 'warning'
-                        });
-                    } else {
-                        alert('Your browser does not support the necessary storage features. Some functionality may be limited.');
-                    }
-                }
-                
-                if (indexedDBWorks) {
-                    // Initialize IndexedDB
-                    await initIndexedDB();
-                }
-                
-                // Setup navigation
-                if (hamburger && navLinks) {
-                    hamburger.addEventListener('click', () => {
-                        navLinks.classList.toggle('active');
-                    });
-                }
-                
-                // Setup e-commerce functionality
-                updateCartCount();
-                setupAddToCartButtons();
-                setupQuickViewButtons();
-                displayCartItems();
-                setupDeliveryOptions();
-                setupPaymentMethods();
-                setupCheckoutFormValidation();
+                transaction.onerror = (event) => {
+                    console.error('Error saving cart to IndexedDB:', event.target.error);
+                    reject(event.target.error);
+                };
             });
         } catch (error) {
-            console.error('Error initializing app:', error);
+            console.error('Error accessing IndexedDB for saving:', error);
+            throw error;
         }
     }
     
-    // Initialize the application
-    initApp();
+    // Clear all items from object store
+    function clearObjectStore(store) {
+        return new Promise((resolve, reject) => {
+            const request = store.clear();
+            request.onsuccess = () => resolve();
+            request.onerror = (event) => reject(event.target.error);
+        });
+    }
+    
+    // Calculate subtotal from items
+    function calculateSubtotal(items) {
+        return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    
+    // Display cart contents
+    async function displayCartContents() {
+        try {
+            const items = await getCartItemsFromDBWithFallback();
+            renderCartItems(items);
+        } catch (error) {
+            console.error('Error displaying cart contents:', error);
+            fallbackToLocalStorage();
+        }
+    }
+    
+    // Initialize the cart display
+    initCartDisplay();
 });
     </script>
 </body>
