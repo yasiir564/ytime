@@ -2871,166 +2871,260 @@ a, button, .watch-card, .service-card, .brand-logo {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
     <script>
-// Initialize IndexedDB
-let db;
+// IndexedDB Setup and Helper Functions
 const DB_NAME = 'ytimeShopDB';
+const STORE_NAME = 'cart';
 const DB_VERSION = 1;
-const CART_STORE_NAME = 'cart';
 
 // Open database connection
-function openDatabase() {
+function openDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
         
-        request.onerror = (event) => {
-            console.error("Database error:", event.target.error);
-            reject("Couldn't open database");
+        request.onerror = event => {
+            console.error('IndexedDB error:', event.target.error);
+            reject(event.target.error);
         };
         
-        request.onsuccess = (event) => {
-            db = event.target.result;
-            resolve(db);
+        request.onsuccess = event => {
+            resolve(event.target.result);
         };
         
-        request.onupgradeneeded = (event) => {
+        request.onupgradeneeded = event => {
             const db = event.target.result;
             
-            // Create object store for cart if it doesn't exist
-            if (!db.objectStoreNames.contains(CART_STORE_NAME)) {
-                db.createObjectStore(CART_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            // Create the cart object store if it doesn't exist
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                // Create indexes for faster querying
+                store.createIndex('brand_name', ['brand', 'name'], { unique: true });
             }
         };
     });
 }
 
-// Get cart data from IndexedDB
-function getCart() {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            reject("Database not initialized");
-            return;
-        }
-        
-        const transaction = db.transaction(CART_STORE_NAME, 'readonly');
-        const store = transaction.objectStore(CART_STORE_NAME);
-        const request = store.getAll();
-        
-        request.onsuccess = () => {
-            resolve(request.result || []);
-        };
-        
-        request.onerror = (event) => {
-            console.error("Error getting cart:", event.target.error);
-            reject("Couldn't get cart data");
-        };
-    });
+// Get all items from cart
+async function getCart() {
+    try {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(STORE_NAME, 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    } catch (error) {
+        console.error('Error getting cart:', error);
+        return [];
+    }
 }
 
-// Save cart data to IndexedDB
-function saveCart(cart) {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            reject("Database not initialized");
-            return;
-        }
+// Add item to cart
+async function addItemToCart(productData) {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const index = store.index('brand_name');
         
-        const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(CART_STORE_NAME);
+        // Check if product already exists
+        const getRequest = index.get([productData.brand, productData.name]);
         
-        // Clear existing cart data
-        store.clear().onsuccess = () => {
-            // Add all items to cart
-            let promises = [];
-            cart.forEach(item => {
-                promises.push(new Promise((resolveItem) => {
-                    const request = store.add(item);
-                    request.onsuccess = () => resolveItem();
-                    request.onerror = () => resolveItem();
-                }));
-            });
+        return new Promise((resolve, reject) => {
+            getRequest.onsuccess = () => {
+                const existingItem = getRequest.result;
+                
+                if (existingItem) {
+                    // Increment quantity if item exists
+                    existingItem.quantity += 1;
+                    store.put(existingItem);
+                    resolve(existingItem);
+                } else {
+                    // Add new item
+                    store.add(productData);
+                    resolve(productData);
+                }
+            };
             
-            Promise.all(promises).then(() => resolve());
-        };
+            getRequest.onerror = () => reject(getRequest.error);
+            
+            transaction.oncomplete = () => {
+                // Update UI after transaction completes
+                updateCartCount();
+            };
+        });
+    } catch (error) {
+        console.error('Error adding item to cart:', error);
+        return null;
+    }
+}
+
+// Update item quantity in cart
+async function updateCartItemQuantity(id, quantity) {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
         
-        transaction.onerror = (event) => {
-            console.error("Error saving cart:", event.target.error);
-            reject("Couldn't save cart data");
-        };
-    });
+        return new Promise((resolve, reject) => {
+            const getRequest = store.get(id);
+            
+            getRequest.onsuccess = () => {
+                const item = getRequest.result;
+                if (item) {
+                    item.quantity = quantity;
+                    const updateRequest = store.put(item);
+                    
+                    updateRequest.onsuccess = () => resolve(true);
+                    updateRequest.onerror = () => reject(updateRequest.error);
+                } else {
+                    reject(new Error('Item not found'));
+                }
+            };
+            
+            getRequest.onerror = () => reject(getRequest.error);
+            
+            transaction.oncomplete = () => {
+                updateCartCount();
+            };
+        });
+    } catch (error) {
+        console.error('Error updating cart item:', error);
+        return false;
+    }
+}
+
+// Remove item from cart
+async function removeCartItem(id) {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        
+        return new Promise((resolve, reject) => {
+            const request = store.delete(id);
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+            
+            transaction.oncomplete = () => {
+                updateCartCount();
+            };
+        });
+    } catch (error) {
+        console.error('Error removing cart item:', error);
+        return false;
+    }
+}
+
+// Clear the entire cart
+async function clearCart() {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        
+        return new Promise((resolve, reject) => {
+            const request = store.clear();
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+            
+            transaction.oncomplete = () => {
+                updateCartCount();
+            };
+        });
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+        return false;
+    }
 }
 
 // Update cart count in UI
-function updateCartCount() {
-    getCart().then(cart => {
+async function updateCartCount() {
+    try {
+        const cart = await getCart();
         const cartCountElement = document.querySelector('.cart-count');
+        
         if (cartCountElement) {
             const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
             cartCountElement.textContent = totalItems;
-            cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
+            
+            if (totalItems > 0) {
+                cartCountElement.style.display = 'flex';
+            } else {
+                cartCountElement.style.display = 'none';
+            }
         }
-    }).catch(error => console.error(error));
+    } catch (error) {
+        console.error('Error updating cart count:', error);
+    }
 }
 
-// Show cart overlay
-function showCartOverlay() {
-    getCart().then(cart => {
+// Function to show cart overlay
+async function showCartOverlay() {
+    try {
+        const cart = await getCart();
+        
         // Create overlay element
         const overlay = document.createElement('div');
         overlay.className = 'cart-overlay';
         
         // Calculate cart total
-        const cartTotal = cart.reduce((total, item) => {
+        const subtotal = cart.reduce((total, item) => {
             const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
             return total + (price * item.quantity);
         }, 0);
         
-        // Create cart HTML
-        let cartItemsHTML = '';
-        if (cart.length === 0) {
-            cartItemsHTML = '<div class="empty-cart"><p>Your cart is empty</p></div>';
-        } else {
-            cart.forEach((item, index) => {
-                const itemTotal = parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity;
-                
-                cartItemsHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-image">
-                            <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.jpg'">
-                        </div>
-                        <div class="cart-item-details">
-                            <h3>${item.brand} ${item.name}</h3>
-                            <p class="cart-item-price">${item.price}</p>
-                        </div>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-btn decrease" data-index="${index}">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn increase" data-index="${index}">+</button>
-                        </div>
-                        <div class="cart-item-subtotal">
-                            <p>Ksh ${itemTotal.toFixed(2)}</p>
-                        </div>
-                        <button class="remove-item" data-index="${index}">×</button>
-                    </div>
-                `;
-            });
-        }
-        
+        // Cart content HTML
         overlay.innerHTML = `
             <div class="cart-modal">
-                <div class="cart-modal-header">
-                    <h2>Your Cart</h2>
-                    <button class="close-cart">×</button>
+                <div class="cart-header">
+                    <h2>Your Shopping Cart</h2>
+                    <button class="close-cart">&times;</button>
                 </div>
-                <div class="cart-modal-body">
-                    ${cartItemsHTML}
+                <div class="cart-items">
+                    ${cart.length === 0 ? 
+                        '<div class="empty-cart"><p>Your cart is empty</p><a href="shop.html" class="btn">Continue Shopping</a></div>' : 
+                        cart.map((item, index) => {
+                            const itemTotal = parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity;
+                            return `
+                                <div class="cart-item">
+                                    <div class="item-image">
+                                        <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.jpg'">
+                                    </div>
+                                    <div class="item-details">
+                                        <h3>${item.brand} ${item.name}</h3>
+                                        <p class="item-price">${item.price}</p>
+                                    </div>
+                                    <div class="item-quantity">
+                                        <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                                        <span class="quantity">${item.quantity}</span>
+                                        <button class="quantity-btn increase" data-id="${item.id}">+</button>
+                                    </div>
+                                    <div class="item-total">
+                                        <p>Ksh ${itemTotal.toFixed(2)}</p>
+                                    </div>
+                                    <button class="remove-item" data-id="${item.id}">&times;</button>
+                                </div>
+                            `;
+                        }).join('')
+                    }
                 </div>
-                <div class="cart-modal-footer">
-                    <div class="cart-total">
-                        <span>Total:</span>
-                        <span>Ksh ${cartTotal.toFixed(2)}</span>
+                ${cart.length > 0 ? `
+                    <div class="cart-footer">
+                        <div class="cart-subtotal">
+                            <span>Subtotal:</span>
+                            <span>Ksh ${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="cart-actions">
+                            <a href="shop.html" class="continue-shopping">Continue Shopping</a>
+                            <button class="checkout-btn">Proceed to Checkout</button>
+                        </div>
                     </div>
-                    ${cart.length > 0 ? '<button class="checkout-btn">Proceed to Checkout</button>' : ''}
-                </div>
+                ` : ''}
             </div>
         `;
         
@@ -3069,74 +3163,71 @@ function showCartOverlay() {
         const removeButtons = overlay.querySelectorAll('.remove-item');
         
         increaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.dataset.index);
-                cart[index].quantity += 1;
-                
-                saveCart(cart).then(() => {
-                    updateCartCount();
+            button.addEventListener('click', async function() {
+                const id = parseInt(this.dataset.id);
+                // Find the item in the cart
+                const item = cart.find(item => item.id === id);
+                if (item) {
+                    await updateCartItemQuantity(id, item.quantity + 1);
                     showCartOverlay(); // Refresh the cart overlay
-                });
+                }
             });
         });
         
         decreaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.dataset.index);
-                if (cart[index].quantity > 1) {
-                    cart[index].quantity -= 1;
-                } else {
-                    cart.splice(index, 1);
-                }
-                
-                saveCart(cart).then(() => {
-                    updateCartCount();
+            button.addEventListener('click', async function() {
+                const id = parseInt(this.dataset.id);
+                // Find the item in the cart
+                const item = cart.find(item => item.id === id);
+                if (item) {
+                    if (item.quantity > 1) {
+                        await updateCartItemQuantity(id, item.quantity - 1);
+                    } else {
+                        await removeCartItem(id);
+                    }
                     showCartOverlay(); // Refresh the cart overlay
-                });
+                }
             });
         });
         
         removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const index = parseInt(this.dataset.index);
+            button.addEventListener('click', async function() {
+                const id = parseInt(this.dataset.id);
+                const item = cart.find(item => item.id === id);
                 
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Remove Item?',
-                        text: `Are you sure you want to remove ${cart[index].brand} ${cart[index].name} from your cart?`,
+                        text: `Are you sure you want to remove ${item.brand} ${item.name} from your cart?`,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Yes, remove it',
                         cancelButtonText: 'Cancel'
-                    }).then((result) => {
+                    }).then(async (result) => {
                         if (result.isConfirmed) {
-                            cart.splice(index, 1);
-                            
-                            saveCart(cart).then(() => {
-                                updateCartCount();
-                                showCartOverlay(); // Refresh the cart overlay
-                            });
+                            await removeCartItem(id);
+                            showCartOverlay(); // Refresh the cart overlay
                         }
                     });
                 } else {
                     // Fallback if SweetAlert is not available
-                    if (confirm(`Are you sure you want to remove ${cart[index].brand} ${cart[index].name} from your cart?`)) {
-                        cart.splice(index, 1);
-                        
-                        saveCart(cart).then(() => {
-                            updateCartCount();
-                            showCartOverlay(); // Refresh the cart overlay
-                        });
+                    if (confirm(`Are you sure you want to remove ${item.brand} ${item.name} from your cart?`)) {
+                        await removeCartItem(id);
+                        showCartOverlay(); // Refresh the cart overlay
                     }
                 }
             });
         });
-    }).catch(error => console.error(error));
+    } catch (error) {
+        console.error('Error showing cart overlay:', error);
+    }
 }
 
 // Function to initialize the checkout page
-function initializeCheckoutPage() {
-    getCart().then(cart => {
+async function initializeCheckoutPage() {
+    try {
+        // Get cart from IndexedDB
+        const cart = await getCart();
         const checkoutItemsContainer = document.getElementById('checkout-items');
         const checkoutSummaryContainer = document.getElementById('checkout-summary');
         
@@ -3162,7 +3253,7 @@ function initializeCheckoutPage() {
         
         // Render checkout items
         let itemsHTML = '';
-        cart.forEach((item, index) => {
+        cart.forEach((item) => {
             const itemTotal = parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity;
             
             itemsHTML += `
@@ -3209,7 +3300,7 @@ function initializeCheckoutPage() {
         // Add event listener to the checkout form
         const checkoutForm = document.getElementById('checkout-form');
         if (checkoutForm) {
-            checkoutForm.addEventListener('submit', function(e) {
+            checkoutForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Process the order here
@@ -3221,129 +3312,56 @@ function initializeCheckoutPage() {
                         text: 'Your order has been placed successfully.',
                         icon: 'success',
                         confirmButtonText: 'OK'
-                    }).then(() => {
+                    }).then(async () => {
                         // Clear cart and redirect to home page
-                        db.transaction(CART_STORE_NAME, 'readwrite')
-                            .objectStore(CART_STORE_NAME)
-                            .clear()
-                            .onsuccess = () => {
-                                window.location.href = 'index.html';
-                            };
+                        await clearCart();
+                        window.location.href = 'index.html';
                     });
                 } else {
                     alert('Your order has been placed successfully.');
-                    db.transaction(CART_STORE_NAME, 'readwrite')
-                        .objectStore(CART_STORE_NAME)
-                        .clear()
-                        .onsuccess = () => {
-                            window.location.href = 'index.html';
-                        };
+                    await clearCart();
+                    window.location.href = 'index.html';
                 }
             });
         }
-    }).catch(error => console.error(error));
-}
-
-// Function to update UI based on authentication state
-function updateAuthUI() {
-    const authButton = document.getElementById('authButton');
-    if (!authButton) return;
-    
-    const userEmail = localStorage.getItem('userEmail');
-    
-    if (userEmail) {
-        // User is signed in - Show avatar button
-        const firstLetter = userEmail.charAt(0).toUpperCase();
-        
-        authButton.className = 'auth-button auth-button-logged-in';
-        authButton.innerHTML = `<div class="user-avatar">${firstLetter}</div>`;
-        
-        // When clicking on avatar, go to user profile or dashboard
-        authButton.onclick = function() {
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userName');
-            
-            // If using Firebase Auth, sign out there too
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                firebase.auth().signOut();
-            }
-            
-            // Show logout notification
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Signed Out',
-                    text: 'You have been successfully signed out.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Redirect to login
-                    window.location.href = 'login.html';
-                });
-            } else {
-                alert('You have been successfully signed out.');
-                window.location.href = 'login.html';
-            }
-        };
-    } else {
-        // User is not signed in - Show sign in button
-        authButton.className = 'auth-button';
-        authButton.innerHTML = 'Sign In';
-        
-        // Redirect to login page when clicking sign in
-        authButton.onclick = function() {
-            window.location.href = 'login.html';
-        };
+    } catch (error) {
+        console.error('Error initializing checkout page:', error);
     }
 }
 
 // Function to add product to cart
-function addToCart(productData) {
+async function addToCart(productData) {
     // Ensure image path is valid
     if (productData.image && productData.image.indexOf('/') === -1) {
         productData.image = 'images/' + productData.image;
     }
     
-    // Generate unique ID for the product
-    const productId = `${productData.brand}-${productData.name}`.toLowerCase().replace(/\s+/g, '-');
+    // Generate a unique identifier for the item based on brand and name
+    // This is handled by the IndexedDB index
     
-    // Get current cart from IndexedDB
-    getCart().then(cart => {
-        // Check if product already exists in cart
-        const existingProductIndex = cart.findIndex(item => 
-            item.brand === productData.brand && item.name === productData.name
-        );
+    try {
+        // Add to IndexedDB
+        await addItemToCart(productData);
         
-        if (existingProductIndex !== -1) {
-            // Increment quantity if product exists
-            cart[existingProductIndex].quantity += 1;
+        // Show success notification
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
         } else {
-            // Add new product to cart
-            cart.push(productData);
+            alert(`${productData.brand} ${productData.name} has been added to your cart.`);
         }
-        
-        // Save cart to IndexedDB
-        saveCart(cart).then(() => {
-            // Update cart count and show notification
-            updateCartCount();
-            
-            // Show success notification
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Added to Cart!',
-                    text: `${productData.brand} ${productData.name} has been added to your cart.`,
-                    icon: 'success',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            } else {
-                alert(`${productData.brand} ${productData.name} has been added to your cart.`);
-            }
-        });
-    }).catch(error => console.error(error));
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        alert('Failed to add product to cart. Please try again.');
+    }
 }
 
 // Function to initialize cart buttons
@@ -3380,275 +3398,18 @@ function initializeCartButtons() {
     }
 }
 
-// Function to initialize watch image gallery
-function initializeWatchImageGallery() {
-    const watchCards = document.querySelectorAll('.watch-card');
-    
-    watchCards.forEach(card => {
-        const dots = card.querySelectorAll('.dot');
-        const images = card.querySelectorAll('.watch-image');
-        
-        if (dots.length > 0 && images.length > 0) {
-            // Ensure first image is always visible initially
-            if (images[0]) {
-                images[0].classList.add('active');
-            }
-            if (dots[0]) {
-                dots[0].classList.add('active');
-            }
-            
-            dots.forEach(dot => {
-                dot.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const index = parseInt(this.dataset.index);
-                    
-                    // Hide all images
-                    images.forEach(img => img.classList.remove('active'));
-                    
-                    // Show selected image
-                    if (images[index]) {
-                        images[index].classList.add('active');
-                    }
-                    
-                    // Update active dot
-                    dots.forEach(d => d.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-        }
-    });
-}
-
-// Function to initialize Swiper slider
-function initializeSwiper() {
-    // Initialize Swiper with error handling
-    const swiperContainer = document.querySelector('.swiper-container');
-    
-    if (!swiperContainer) return;
-    
-    // Dynamically add swiper slides
-    const watches = [
-        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'images/rolex1.jpg', tag: 'Limited' },
-        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'images/hublot1.jpg', tag: 'Featured' },
-        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'images/patekphilippe1.jpg', tag: 'New' },
-        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'images/casio1.jpg', tag: 'Limited' },
-        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'images/naviforce1.jpg', tag: 'Featured' }
-    ];
-
-    const swiperWrapper = document.querySelector('.swiper-wrapper');
-    if (swiperWrapper) {
-        // Clear any existing slides
-        swiperWrapper.innerHTML = '';
-        
-        watches.forEach(watch => {
-            // Ensure we have a valid image path
-            const imagePath = watch.image || 'images/placeholder.jpg';
-            
-            const slide = document.createElement('div');
-            slide.className = 'swiper-slide';
-            
-            slide.innerHTML = `
-                <div class="watch-card">
-                    <div class="watch-image-container">
-                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
-                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image active" onerror="this.src='images/placeholder.jpg';">
-                    </div>
-                    <div class="watch-content">
-                        <span class="watch-brand">${watch.brand}</span>
-                        <h3 class="watch-name">${watch.name}</h3>
-                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
-                        <div class="watch-footer">
-                            <span class="watch-price">${watch.price}</span>
-                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}" data-image="${imagePath}">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            swiperWrapper.appendChild(slide);
-        });
-    }
-    
-    // Initialize Swiper if available, otherwise use fallback
-    if (typeof Swiper !== 'undefined' && swiperContainer) {
-        try {
-            new Swiper('.swiper-container', {
-                slidesPerView: 1,
-                spaceBetween: 30,
-                loop: true,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                    },
-                    992: {
-                        slidesPerView: 3,
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Swiper initialization failed:', error);
-            initFallbackSlider();
-        }
-    } else if (swiperContainer) {
-        initFallbackSlider();
-    }
-}
-
-// Fallback slider function
-function initFallbackSlider() {
-    const swiperContainer = document.querySelector('.swiper-container');
-    if (!swiperContainer) return;
-    
-    const slides = swiperContainer.querySelectorAll('.swiper-slide');
-    if (slides.length > 0) {
-        // Create a basic slider
-        let currentSlide = 0;
-        
-        // Show only current slide
-        const showSlide = (index) => {
-            slides.forEach((slide, i) => {
-                slide.style.display = i === index ? 'block' : 'none';
-            });
-        };
-        
-        // Initial display
-        showSlide(currentSlide);
-        
-        // Create prev/next buttons if they don't exist
-        if (!swiperContainer.querySelector('.swiper-button-prev')) {
-            const prevButton = document.createElement('div');
-            prevButton.className = 'swiper-button-prev';
-            prevButton.innerHTML = '❮';
-            prevButton.style.position = 'absolute';
-            prevButton.style.left = '10px';
-            prevButton.style.top = '50%';
-            prevButton.style.zIndex = '10';
-            prevButton.style.cursor = 'pointer';
-            swiperContainer.appendChild(prevButton);
-            
-            prevButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                showSlide(currentSlide);
-            });
-        }
-        
-        if (!swiperContainer.querySelector('.swiper-button-next')) {
-            const nextButton = document.createElement('div');
-            nextButton.className = 'swiper-button-next';
-            nextButton.innerHTML = '❯';
-            nextButton.style.position = 'absolute';
-            nextButton.style.right = '10px';
-            nextButton.style.top = '50%';
-            nextButton.style.zIndex = '10';
-            nextButton.style.cursor = 'pointer';
-            swiperContainer.appendChild(nextButton);
-            
-            nextButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                currentSlide = (currentSlide + 1) % slides.length;
-                showSlide(currentSlide);
-            });
-        }
-        
-        // Auto slide every 3 seconds
-        setInterval(function() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }, 3000);
-    }
-}
-
-// Function to handle mobile navigation
-function initMobileNav() {
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (hamburger && navLinks) {
-        // Remove any existing event listeners
-        const newHamburger = hamburger.cloneNode(true);
-        hamburger.parentNode.replaceChild(newHamburger, hamburger);
-        
-        // Add event listener to new element
-        newHamburger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-        
-        // Add click event outside to close menu
-        document.addEventListener('click', function(e) {
-            if (!navLinks.contains(e.target) && !newHamburger.contains(e.target) && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                newHamburger.classList.remove('active');
-            }
-        });
-    }
-    
-    // Close menu when clicking on a link
-    const mobileNavLinks = document.querySelectorAll('.nav-links a');
-    mobileNavLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const hamburger = document.querySelector('.hamburger');
-            if (hamburger && hamburger.classList.contains('active')) {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-            }
-        });
-    });
-}
-
-// Initialize all functions on document ready
+// Initialize cart count when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize IndexedDB first
-    openDatabase().then(() => {
-        // Update cart count from IndexedDB
-        updateCartCount();
-        
-        // Initialize page-specific functions
-        if (document.getElementById('checkout-items')) {
-            initializeCheckoutPage();
-        }
-        
-        initializeCartButtons();
-        initializeWatchImageGallery();
-        initializeSwiper();
-        initMobileNav();
-        updateAuthUI();
-        
-        // Ensure all images have proper error handling
-        const images = document.querySelectorAll('img');
-        images.forEach(img => {
-            if (!img.hasAttribute('onerror')) {
-                img.onerror = function() {
-                    this.src = 'images/placeholder.jpg';
-                    this.onerror = null;
-                };
-            }
-        });
-    }).catch(error => {
-        console.error("Database initialization failed:", error);
-        alert("Failed to initialize database. Please try again or use a different browser.");
-    });
+    // Initialize IndexedDB and update cart count
+    updateCartCount();
+    
+    // Initialize cart functionality
+    initializeCartButtons();
+    
+    // Check if we're on the checkout page
+    if (document.getElementById('checkout-items')) {
+        initializeCheckoutPage();
+    }
 });
     </script>
 </body>
