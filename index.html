@@ -2935,18 +2935,21 @@ function initCartDatabase() {
         const request = indexedDB.open("ytimeshop.DB", 1);
         
         // Handle database upgrade needed (first time or version change)
-        request.onupgradeneeded = function(event) {
-            const db = event.target.result;
-            
-            // Create object store for cart if it doesn't exist
-            if (!db.objectStoreNames.contains('cart')) {
-                // Use an auto-incrementing key for cart items
-                const cartStore = db.createObjectStore('cart', { keyPath: 'id', autoIncrement: true });
-                
-                // Create indexes for quick lookups
-                cartStore.createIndex('brand_name', ['brand', 'name'], { unique: true });
-            }
-        };
+request.onupgradeneeded = function(event) {
+    const db = event.target.result;
+    
+    // Create object store for cart if it doesn't exist
+    if (!db.objectStoreNames.contains('cart')) {
+        // Use an auto-incrementing key for cart items
+        const cartStore = db.createObjectStore('cart', { keyPath: 'id', autoIncrement: true });
+        
+        // Create indexes for quick lookups
+        cartStore.createIndex('brand_name', ['brand', 'name'], { unique: true });
+        
+        // Create index for price lookup
+        cartStore.createIndex('price', 'price', { unique: false });
+    }
+};
         
         request.onerror = function(event) {
             console.error("Database error:", event.target.error);
@@ -3019,6 +3022,11 @@ function saveCartToDB(cart) {
                 }
                 
                 cart.forEach((item, index) => {
+                    // Ensure price is included in the item object
+                    if (!item.price && item.price !== 0) {
+                        console.warn(`No price found for item: ${item.brand} ${item.name}`);
+                    }
+                    
                     const addRequest = cartStore.add(item);
                     
                     addRequest.onsuccess = function() {
