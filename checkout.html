@@ -1152,20 +1152,18 @@ body {
     </footer>
 
     <script>
-   document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Database configuration
-    let db, secondDb;
-    const DB_NAME = 'ytimeShopDB';
-    const SECOND_DB_NAME = 'YtimeShopDB'; // The second database with capital Y
     const DB_VERSION = 1;
     const CART_STORE_NAME = 'cart';
     const PRODUCT_STORE_NAME = 'products';
+    let allDatabases = [];
     
     // Initialize and open the cart display
     async function initCartDisplay() {
         try {
-            // Initialize IndexedDB connections for both databases
-            await initIndexedDB();
+            // Find and initialize all relevant IndexedDB databases
+            await findAllDatabases();
             
             // Display cart items
             await displayCartContents();
@@ -1173,7 +1171,7 @@ body {
             // Setup event listeners for real-time updates
             setupCartEventListeners();
             
-            // Fetch and display products from both databases
+            // Fetch and display products from all databases
             await fetchAndDisplayAllProducts();
             
             console.log('Cart display and products initialized successfully');
@@ -1183,20 +1181,51 @@ body {
         }
     }
     
-    // Initialize IndexedDB connections to both databases
-    async function initIndexedDB() {
+    // Find all databases in IndexedDB
+    async function findAllDatabases() {
         try {
-            // Connect to first database (lowercase)
-            db = await connectToDatabase(DB_NAME, DB_VERSION);
-            console.log(`Connected to database: ${DB_NAME}`);
+            // Get all database names using indexedDB.databases() if available
+            if (indexedDB.databases) {
+                const databases = await indexedDB.databases();
+                console.log('Found IndexedDB databases:', databases);
+                
+                // Connect to each database
+                for (const dbInfo of databases) {
+                    try {
+                        const db = await connectToDatabase(dbInfo.name, DB_VERSION);
+                        if (db) {
+                            allDatabases.push({
+                                name: dbInfo.name,
+                                instance: db
+                            });
+                        }
+                    } catch (err) {
+                        console.warn(`Failed to connect to database ${dbInfo.name}:`, err);
+                    }
+                }
+            } else {
+                // Fallback for browsers that don't support indexedDB.databases()
+                // Try to connect to known database names
+                const knownDBNames = ['ytimeShopDB', 'YtimeShopDB'];
+                for (const dbName of knownDBNames) {
+                    try {
+                        const db = await connectToDatabase(dbName, DB_VERSION);
+                        if (db) {
+                            allDatabases.push({
+                                name: dbName,
+                                instance: db
+                            });
+                        }
+                    } catch (err) {
+                        console.warn(`Failed to connect to database ${dbName}:`, err);
+                    }
+                }
+            }
             
-            // Connect to second database (uppercase)
-            secondDb = await connectToDatabase(SECOND_DB_NAME, DB_VERSION);
-            console.log(`Connected to database: ${SECOND_DB_NAME}`);
-            
-            return true;
+            console.log(`Connected to ${allDatabases.length} databases`);
+            return allDatabases.length > 0;
         } catch (error) {
-            console.error('Error initializing databases:', error);
+            console.error('Error finding databases:', error);
             throw error;
         }
     }
@@ -1232,31 +1261,62 @@ body {
         });
     }
     
-    // Fetch cart items from IndexedDB (original function, unchanged)
-    function getCartItemsFromDB() {
+    // Get cart items from all connected databases
+    async function getAllCartItems() {
+        const allCartItems = [];
+        const cartItemsMap = new Map(); // Use a map to avoid duplicates
+        
+        if (allDatabases.length === 0) {
+            console.warn("No IndexedDB databases available");
+            return [];
+        }
+        
+        // Get cart items from each database
+        for (const db of allDatabases) {
+            try {
+                if (!db.instance || !db.instance.objectStoreNames.contains(CART_STORE_NAME)) {
+                    continue;
+                }
+                
+                const items = await getCartItemsFromDB(db.instance, db.name);
+                // Add items to map to avoid duplicates (based on item id)
+                items.forEach(item => {
+                    cartItemsMap.set(item.id, item);
+                });
+            } catch (error) {
+                console.error(`Error getting cart items from ${db.name}:`, error);
+            }
+        }
+        
+        // Convert map values to array
+        return Array.from(cartItemsMap.values());
+    }
+    
+    // Fetch cart items from a specific database
+    function getCartItemsFromDB(database, dbName) {
         return new Promise((resolve, reject) => {
-            if (!db) {
-                reject("IndexedDB not initialized");
+            if (!database) {
+                reject(`Database ${dbName} not initialized`);
                 return;
             }
             
             try {
-                const transaction = db.transaction(CART_STORE_NAME, 'readonly');
+                const transaction = database.transaction(CART_STORE_NAME, 'readonly');
                 const store = transaction.objectStore(CART_STORE_NAME);
                 const request = store.getAll();
                 
                 request.onsuccess = () => {
                     const items = request.result;
-                    console.log('Retrieved cart items from IndexedDB:', items);
+                    console.log(`Retrieved ${items.length} cart items from ${dbName}:`, items);
                     resolve(items);
                 };
                 
                 request.onerror = (event) => {
-                    console.error("Error loading cart from IndexedDB:", event.target.error);
+                    console.error(`Error loading cart from ${dbName}:`, event.target.error);
                     reject(event.target.error);
                 };
             } catch (error) {
-                console.error('Error accessing IndexedDB:', error);
+                console.error(`Error accessing cart in ${dbName}:`, error);
                 reject(error);
             }
         });
@@ -1265,20 +1325,13 @@ body {
     // Fetch products from a specific database
     function getProductsFromDB(database, dbName) {
         return new Promise((resolve, reject) => {
-            if (!database) {
-                console.log(`Database ${dbName} not available`);
+            if (!database || !database.objectStoreNames.contains(PRODUCT_STORE_NAME)) {
+                console.log(`Product store not found in ${dbName}`);
                 resolve([]);
                 return;
             }
             
             try {
-                // Check if product store exists in this database
-                if (!database.objectStoreNames.contains(PRODUCT_STORE_NAME)) {
-                    console.log(`Product store not found in ${dbName}`);
-                    resolve([]);
-                    return;
-                }
-                
                 const transaction = database.transaction(PRODUCT_STORE_NAME, 'readonly');
                 const store = transaction.objectStore(PRODUCT_STORE_NAME);
                 const request = store.getAll();
@@ -1300,32 +1353,31 @@ body {
         });
     }
     
-    // Fetch products from both databases and merge them
+    // Fetch products from all databases and merge them
     async function fetchAndDisplayAllProducts() {
         try {
-            // Get products from first database
-            const products1 = await getProductsFromDB(db, DB_NAME);
-            
-            // Get products from second database
-            const products2 = await getProductsFromDB(secondDb, SECOND_DB_NAME);
-            
-            // Merge product lists, avoiding duplicates by ID
             const productMap = new Map();
+            let totalProductsFound = 0;
             
-            // Add products from first database
-            products1.forEach(product => {
-                productMap.set(product.id, product);
-            });
-            
-            // Add or override with products from second database
-            products2.forEach(product => {
-                productMap.set(product.id, product);
-            });
+            // Get products from all databases
+            for (const db of allDatabases) {
+                try {
+                    const products = await getProductsFromDB(db.instance, db.name);
+                    totalProductsFound += products.length;
+                    
+                    // Add products to map (avoiding duplicates by ID)
+                    products.forEach(product => {
+                        productMap.set(product.id, product);
+                    });
+                } catch (error) {
+                    console.error(`Error fetching products from ${db.name}:`, error);
+                }
+            }
             
             // Convert map back to array
             const allProducts = Array.from(productMap.values());
             
-            console.log(`Combined ${products1.length} and ${products2.length} products into ${allProducts.length} unique products`);
+            console.log(`Combined ${totalProductsFound} products into ${allProducts.length} unique products`);
             
             // Render the combined product list
             renderProducts(allProducts);
@@ -1376,7 +1428,7 @@ body {
         productsContainer.innerHTML = productsHTML;
     }
     
-    // Fallback to localStorage if IndexedDB fails (original function, unchanged)
+    // Fallback to localStorage if IndexedDB fails
     function fallbackToLocalStorage() {
         console.log('Falling back to localStorage for cart data');
         try {
@@ -1400,7 +1452,7 @@ body {
         }
     }
     
-    // Display empty cart message (original function, unchanged)
+    // Display empty cart message
     function displayEmptyCart() {
         const cartContainer = document.getElementById('cartItemsContainer');
         if (cartContainer) {
@@ -1420,7 +1472,7 @@ body {
         }
     }
     
-    // Render cart items in the DOM (original function, unchanged)
+    // Render cart items in the DOM
     function renderCartItems(items) {
         const cartContainer = document.getElementById('cartItemsContainer');
         if (!cartContainer) {
@@ -1472,7 +1524,7 @@ body {
         }
     }
     
-    // Update cart summary values (original function, unchanged)
+    // Update cart summary values
     function updateCartSummary(subtotal) {
         const subtotalElement = document.getElementById('subtotal');
         const shippingElement = document.getElementById('shipping');
@@ -1506,10 +1558,10 @@ body {
         }
     }
     
-    // Get total number of items in cart (original function, unchanged)
+    // Get total number of items in cart
     async function getCartItemCount() {
         try {
-            const items = await getCartItemsFromDBWithFallback();
+            const items = await getCartItemsWithFallback();
             return items.length;
         } catch (error) {
             console.error('Error getting cart item count:', error);
@@ -1517,16 +1569,16 @@ body {
         }
     }
     
-    // Get cart items with localStorage fallback (original function, unchanged)
-    async function getCartItemsFromDBWithFallback() {
+    // Get cart items with localStorage fallback
+    async function getCartItemsWithFallback() {
         try {
-            if (db) {
-                return await getCartItemsFromDB();
+            if (allDatabases.length > 0) {
+                return await getAllCartItems();
             } else {
-                throw new Error('IndexedDB not available');
+                throw new Error('No IndexedDB databases available');
             }
         } catch (error) {
-            console.log('Falling back to localStorage for cart data');
+            console.log('Falling back to localStorage for cart data:', error);
             try {
                 const cartItemsString = localStorage.getItem('cartItems');
                 if (!cartItemsString) return [];
@@ -1540,7 +1592,7 @@ body {
         }
     }
     
-    // Setup event listeners for cart interactions (original function, unchanged)
+    // Setup event listeners for cart interactions
     function setupCartEventListeners() {
         document.addEventListener('click', async function(event) {
             // Handle quantity decrease
@@ -1575,7 +1627,7 @@ body {
                 deliveryOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
                 
-                const items = await getCartItemsFromDBWithFallback();
+                const items = await getCartItemsWithFallback();
                 const subtotal = calculateSubtotal(items);
                 updateCartSummary(subtotal);
             });
@@ -1585,34 +1637,16 @@ body {
     // Add product to cart
     async function addToCart(productId) {
         try {
-            // First try to get the product from both databases
+            // Find product in any database
             let product = null;
             
-            // Try first database
-            if (db) {
-                try {
-                    const transaction = db.transaction(PRODUCT_STORE_NAME, 'readonly');
-                    const store = transaction.objectStore(PRODUCT_STORE_NAME);
-                    const request = store.get(productId);
-                    
-                    await new Promise((resolve) => {
-                        request.onsuccess = () => {
-                            if (request.result) {
-                                product = request.result;
-                            }
-                            resolve();
-                        };
-                        request.onerror = () => resolve();
-                    });
-                } catch (error) {
-                    console.log('Error checking first database for product:', error);
+            for (const db of allDatabases) {
+                if (!db.instance || !db.instance.objectStoreNames.contains(PRODUCT_STORE_NAME)) {
+                    continue;
                 }
-            }
-            
-            // If not found, try second database
-            if (!product && secondDb) {
+                
                 try {
-                    const transaction = secondDb.transaction(PRODUCT_STORE_NAME, 'readonly');
+                    const transaction = db.instance.transaction(PRODUCT_STORE_NAME, 'readonly');
                     const store = transaction.objectStore(PRODUCT_STORE_NAME);
                     const request = store.get(productId);
                     
@@ -1625,18 +1659,21 @@ body {
                         };
                         request.onerror = () => resolve();
                     });
+                    
+                    if (product) break; // Exit loop if product found
+                    
                 } catch (error) {
-                    console.log('Error checking second database for product:', error);
+                    console.log(`Error checking database ${db.name} for product:`, error);
                 }
             }
             
             if (!product) {
-                console.error('Product not found in either database');
+                console.error('Product not found in any database');
                 return;
             }
             
             // Get current cart
-            const cartItems = await getCartItemsFromDBWithFallback();
+            const cartItems = await getCartItemsWithFallback();
             
             // Check if product already in cart
             const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
@@ -1669,10 +1706,10 @@ body {
         }
     }
     
-    // Update item quantity (original function, unchanged)
+    // Update item quantity
     async function updateQuantity(index, change) {
         try {
-            const items = await getCartItemsFromDBWithFallback();
+            const items = await getCartItemsWithFallback();
             if (!items[index]) return;
             
             items[index].quantity += change;
@@ -1695,10 +1732,10 @@ body {
         }
     }
     
-    // Remove item from cart (original function, unchanged)
+    // Remove item from cart
     async function removeItem(index) {
         try {
-            const items = await getCartItemsFromDBWithFallback();
+            const items = await getCartItemsWithFallback();
             if (!items[index]) return;
             
             items.splice(index, 1);
@@ -1709,44 +1746,68 @@ body {
         }
     }
     
-    // Save cart items to both IndexedDB and localStorage (original function, unchanged)
+    // Save cart items to all connected databases and localStorage
     async function saveCartItems(items) {
         // Save to localStorage as fallback
         localStorage.setItem('cartItems', JSON.stringify(items));
         
-        // Save to IndexedDB if available
-        if (!db) return;
+        // Save to all available IndexedDB databases
+        if (allDatabases.length === 0) return;
         
-        try {
-            const transaction = db.transaction(CART_STORE_NAME, 'readwrite');
-            const store = transaction.objectStore(CART_STORE_NAME);
-            
-            // Clear existing items
-            await clearObjectStore(store);
-            
-            // Add new items
-            for (const item of items) {
-                store.add(item);
+        const savePromises = [];
+        
+        for (const db of allDatabases) {
+            if (!db.instance || !db.instance.objectStoreNames.contains(CART_STORE_NAME)) {
+                continue;
             }
             
-            return new Promise((resolve, reject) => {
-                transaction.oncomplete = () => {
-                    console.log('Cart saved to IndexedDB successfully');
-                    resolve();
-                };
+            try {
+                const savePromise = new Promise((resolve, reject) => {
+                    try {
+                        const transaction = db.instance.transaction(CART_STORE_NAME, 'readwrite');
+                        const store = transaction.objectStore(CART_STORE_NAME);
+                        
+                        // Clear existing items
+                        clearObjectStore(store).then(() => {
+                            // Add new items
+                            for (const item of items) {
+                                store.add(item);
+                            }
+                            
+                            transaction.oncomplete = () => {
+                                console.log(`Cart saved to ${db.name} successfully`);
+                                resolve();
+                            };
+                            
+                            transaction.onerror = (event) => {
+                                console.error(`Error saving cart to ${db.name}:`, event.target.error);
+                                reject(event.target.error);
+                            };
+                        });
+                    } catch (error) {
+                        console.error(`Error accessing ${db.name} for saving:`, error);
+                        reject(error);
+                    }
+                });
                 
-                transaction.onerror = (event) => {
-                    console.error('Error saving cart to IndexedDB:', event.target.error);
-                    reject(event.target.error);
-                };
-            });
-        } catch (error) {
-            console.error('Error accessing IndexedDB for saving:', error);
-            throw error;
+                savePromises.push(savePromise);
+            } catch (error) {
+                console.error(`Error preparing transaction for ${db.name}:`, error);
+            }
+        }
+        
+        // Wait for all save operations to complete
+        if (savePromises.length > 0) {
+            try {
+                await Promise.allSettled(savePromises);
+                console.log('Cart saved to all available databases');
+            } catch (error) {
+                console.error('Error in one or more database saves:', error);
+            }
         }
     }
     
-    // Clear all items from object store (original function, unchanged)
+    // Clear all items from object store
     function clearObjectStore(store) {
         return new Promise((resolve, reject) => {
             const request = store.clear();
@@ -1755,15 +1816,15 @@ body {
         });
     }
     
-    // Calculate subtotal from items (original function, unchanged)
+    // Calculate subtotal from items
     function calculateSubtotal(items) {
         return items.reduce((total, item) => total + (item.price * item.quantity), 0);
     }
     
-    // Display cart contents (original function, unchanged)
+    // Display cart contents
     async function displayCartContents() {
         try {
-            const items = await getCartItemsFromDBWithFallback();
+            const items = await getCartItemsWithFallback();
             renderCartItems(items);
         } catch (error) {
             console.error('Error displaying cart contents:', error);
