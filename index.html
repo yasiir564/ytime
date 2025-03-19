@@ -2872,271 +2872,199 @@ a, button, .watch-card, .service-card, .brand-logo {
 
     <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize IndexedDB
-    initializeDB().then(() => {
-        // After DB is initialized, retrieve cart data from IndexedDB
-        getCart().then(cart => {
+    // Initialize IndexedDB for cart storage
+    initCartDatabase().then(() => {
+        // Load cart from IndexedDB and update cart count
+        getCartFromDB().then(cart => {
             updateCartCount(cart);
-            
-            // Authentication UI update
-            updateAuthUI();
-            
-            // Add click event to all "Add to Cart" buttons
-            initializeCartButtons();
-            
-            // Function to initialize watch image gallery
-            initializeWatchImageGallery();
-            
-            // Initialize Swiper properly with proper error handling
-            initializeSwiper();
-            
-            // Initialize mobile navigation
-            initMobileNav();
-            
-            // Initialize newsletter form
-            initNewsletterForm();
-            
-            // Initialize watch card effects
-            initWatchCardEffects();
-            
-            // Initialize price filter (if on collection page)
-            initPriceFilter();
-            
-            // Initialize smooth scroll
-            initSmoothScroll();
-            
-            // Initialize Back to Top button if it exists
-            initBackToTop();
-            
-            // Initialize checkout page if we're on it
-            if (window.location.pathname.includes('checkout.html')) {
-                initializeCheckoutPage();
-            }
-        }).catch(error => {
-            console.error('Error initializing cart:', error);
         });
+
+        // Authentication UI update
+        updateAuthUI();
+
+        // Add click event to all "Add to Cart" buttons
+        initializeCartButtons();
+        
+        // Function to initialize watch image gallery
+        initializeWatchImageGallery();
+        
+        // Initialize Swiper properly with proper error handling
+        initializeSwiper();
+        
+        // Initialize mobile navigation
+        initMobileNav();
+        
+        // Initialize newsletter form
+        initNewsletterForm();
+        
+        // Initialize watch card effects
+        initWatchCardEffects();
+        
+        // Initialize price filter (if on collection page)
+        initPriceFilter();
+        
+        // Initialize smooth scroll
+        initSmoothScroll();
+        
+        // Initialize Back to Top button if it exists
+        initBackToTop();
+        
+        // Initialize checkout page if we're on it
+        if (window.location.pathname.includes('checkout.html')) {
+            initializeCheckoutPage();
+        }
     }).catch(error => {
-        console.error('Error initializing database:', error);
+        console.error('Error initializing IndexedDB:', error);
         // Fallback to localStorage if IndexedDB fails
-        fallbackToLocalStorage();
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        updateCartCount();
     });
 });
 
-// Initialize IndexedDB
-function initializeDB() {
+// IndexedDB initialization
+function initCartDatabase() {
     return new Promise((resolve, reject) => {
-        // Open a connection to the IndexedDB database
-        const request = indexedDB.open('YtimeShopDB', 1);
+        // Check if IndexedDB is supported
+        if (!window.indexedDB) {
+            console.error("Your browser doesn't support IndexedDB");
+            reject("IndexedDB not supported");
+            return;
+        }
+        
+        // Open/create the database
+        const request = indexedDB.open("ytimeshop.DB", 1);
         
         // Handle database upgrade needed (first time or version change)
         request.onupgradeneeded = function(event) {
             const db = event.target.result;
             
-            // Create object stores if they don't exist
+            // Create object store for cart if it doesn't exist
             if (!db.objectStoreNames.contains('cart')) {
+                // Use an auto-incrementing key for cart items
                 const cartStore = db.createObjectStore('cart', { keyPath: 'id', autoIncrement: true });
-                cartStore.createIndex('brand_name', ['brand', 'name'], { unique: false });
-            }
-            
-            if (!db.objectStoreNames.contains('users')) {
-                const userStore = db.createObjectStore('users', { keyPath: 'email' });
-            }
-            
-            if (!db.objectStoreNames.contains('products')) {
-                const productStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                productStore.createIndex('brand_name', ['brand', 'name'], { unique: true });
-            }
-            
-            if (!db.objectStoreNames.contains('productViews')) {
-                const productViewsStore = db.createObjectStore('productViews', { keyPath: 'id', autoIncrement: true });
-                productViewsStore.createIndex('product_id', 'productId', { unique: false });
-                productViewsStore.createIndex('timestamp', 'timestamp', { unique: false });
-            }
-            
-            if (!db.objectStoreNames.contains('newsletter')) {
-                const newsletterStore = db.createObjectStore('newsletter', { keyPath: 'email' });
-                newsletterStore.createIndex('timestamp', 'timestamp', { unique: false });
+                
+                // Create indexes for quick lookups
+                cartStore.createIndex('brand_name', ['brand', 'name'], { unique: true });
             }
         };
         
-        // Handle success
+        request.onerror = function(event) {
+            console.error("Database error:", event.target.error);
+            reject(event.target.error);
+        };
+        
         request.onsuccess = function(event) {
             const db = event.target.result;
-            resolve(db);
-        };
-        
-        // Handle errors
-        request.onerror = function(event) {
-            reject('IndexedDB error: ' + event.target.errorCode);
+            db.close();
+            resolve();
         };
     });
 }
 
-// Function to get the database connection
-function getDB() {
+// Function to get cart from IndexedDB
+function getCartFromDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('YtimeShopDB', 1);
-        
-        request.onsuccess = function(event) {
-            resolve(event.target.result);
-        };
+        const request = indexedDB.open("ytimeshop.DB", 1);
         
         request.onerror = function(event) {
-            reject('Error opening database: ' + event.target.errorCode);
+            console.error("Database error:", event.target.error);
+            reject(event.target.error);
+        };
+        
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['cart'], 'readonly');
+            const cartStore = transaction.objectStore('cart');
+            const getAll = cartStore.getAll();
+            
+            getAll.onsuccess = function() {
+                db.close();
+                resolve(getAll.result || []);
+            };
+            
+            getAll.onerror = function(event) {
+                db.close();
+                reject(event.target.error);
+            };
         };
     });
 }
 
 // Function to save cart to IndexedDB
-function saveCart(cart) {
+function saveCartToDB(cart) {
     return new Promise((resolve, reject) => {
-        getDB().then(db => {
-            // Start a transaction
+        const request = indexedDB.open("ytimeshop.DB", 1);
+        
+        request.onerror = function(event) {
+            console.error("Database error:", event.target.error);
+            reject(event.target.error);
+        };
+        
+        request.onsuccess = function(event) {
+            const db = event.target.result;
             const transaction = db.transaction(['cart'], 'readwrite');
             const cartStore = transaction.objectStore('cart');
             
-            // Clear existing cart
+            // Clear existing data
             const clearRequest = cartStore.clear();
             
             clearRequest.onsuccess = function() {
-                // Add each item to the cart store
-                let addPromises = [];
+                // Add all items to the cart store
+                let completed = 0;
                 
-                cart.forEach(item => {
-                    // Generate unique ID to prevent duplicates
+                if (cart.length === 0) {
+                    db.close();
+                    resolve();
+                    return;
+                }
+                
+                cart.forEach((item, index) => {
                     const addRequest = cartStore.add(item);
                     
-                    addPromises.push(new Promise((resolveAdd, rejectAdd) => {
-                        addRequest.onsuccess = resolveAdd;
-                        addRequest.onerror = function(event) {
-                            rejectAdd('Error adding item to cart: ' + event.target.errorCode);
-                        };
-                    }));
+                    addRequest.onsuccess = function() {
+                        completed++;
+                        if (completed === cart.length) {
+                            db.close();
+                            resolve();
+                        }
+                    };
+                    
+                    addRequest.onerror = function(event) {
+                        console.error("Error adding item to cart store:", event.target.error);
+                        db.close();
+                        reject(event.target.error);
+                    };
                 });
-                
-                Promise.all(addPromises)
-                    .then(() => resolve(cart))
-                    .catch(error => reject(error));
             };
             
             clearRequest.onerror = function(event) {
-                reject('Error clearing cart: ' + event.target.errorCode);
+                console.error("Error clearing cart store:", event.target.error);
+                db.close();
+                reject(event.target.error);
             };
-            
-            transaction.oncomplete = function() {
-                console.log('Transaction completed: cart updated');
-            };
-            
-            transaction.onerror = function(event) {
-                reject('Transaction error: ' + event.target.errorCode);
-            };
-        }).catch(error => {
-            reject(error);
-        });
-    });
-}
-
-// Function to get cart from IndexedDB
-function getCart() {
-    return new Promise((resolve, reject) => {
-        getDB().then(db => {
-            const transaction = db.transaction(['cart'], 'readonly');
-            const cartStore = transaction.objectStore('cart');
-            const request = cartStore.getAll();
-            
-            request.onsuccess = function() {
-                resolve(request.result || []);
-            };
-            
-            request.onerror = function(event) {
-                reject('Error getting cart: ' + event.target.errorCode);
-            };
-        }).catch(error => {
-            reject(error);
-        });
-    });
-}
-
-// Function to log product view
-function logProductView(productData) {
-    return new Promise((resolve, reject) => {
-        getDB().then(db => {
-            const transaction = db.transaction(['productViews', 'products'], 'readwrite');
-            const productViewsStore = transaction.objectStore('productViews');
-            const productsStore = transaction.objectStore('products');
-            
-            // First ensure product exists in products store
-            const productIndex = productsStore.index('brand_name');
-            const productRequest = productIndex.get([productData.brand, productData.name]);
-            
-            productRequest.onsuccess = function() {
-                let productId;
-                
-                if (!productRequest.result) {
-                    // Product doesn't exist yet, add it
-                    const addProductRequest = productsStore.add({
-                        brand: productData.brand,
-                        name: productData.name,
-                        price: productData.price,
-                        image: productData.image,
-                        dateAdded: new Date()
-                    });
-                    
-                    addProductRequest.onsuccess = function(event) {
-                        productId = event.target.result;
-                        addProductView(productId);
-                    };
-                    
-                    addProductRequest.onerror = function(event) {
-                        reject('Error adding product: ' + event.target.errorCode);
-                    };
-                } else {
-                    // Product exists
-                    productId = productRequest.result.id;
-                    addProductView(productId);
-                }
-                
-                function addProductView(id) {
-                    const viewData = {
-                        productId: id,
-                        timestamp: new Date(),
-                        userAgent: navigator.userAgent
-                    };
-                    
-                    const viewRequest = productViewsStore.add(viewData);
-                    
-                    viewRequest.onsuccess = function() {
-                        resolve();
-                    };
-                    
-                    viewRequest.onerror = function(event) {
-                        reject('Error logging product view: ' + event.target.errorCode);
-                    };
-                }
-            };
-            
-            productRequest.onerror = function(event) {
-                reject('Error finding product: ' + event.target.errorCode);
-            };
-        }).catch(error => {
-            reject(error);
-        });
+        };
     });
 }
 
 // Function to update cart count display
-function updateCartCount(cart = null) {
-    if (cart === null) {
-        getCart().then(cartData => {
-            updateCartCountUI(cartData);
+function updateCartCount(cartItems = null) {
+    if (cartItems === null) {
+        // If cart items not provided, fetch from DB
+        getCartFromDB().then(cart => {
+            updateCartCountUI(cart);
         }).catch(error => {
             console.error('Error getting cart for count update:', error);
+            // Fallback to localStorage
+            const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+            updateCartCountUI(localCart);
         });
     } else {
-        updateCartCountUI(cart);
+        // Use provided cart items
+        updateCartCountUI(cartItems);
     }
 }
 
+// Helper function to update cart count in UI
 function updateCartCountUI(cart) {
     const cartCount = document.querySelector('.cart-count');
     
@@ -3149,199 +3077,216 @@ function updateCartCountUI(cart) {
 
 // Function to show cart overlay
 function showCartOverlay() {
-    getCart().then(cart => {
-        // Remove any existing overlay first to prevent duplicates
-        const existingOverlay = document.querySelector('.cart-overlay');
-        if (existingOverlay) {
-            document.body.removeChild(existingOverlay);
-        }
-        
-        // Create overlay element
-        const overlay = document.createElement('div');
-        overlay.className = 'cart-overlay';
-        
-        // Calculate cart total
-        const cartTotal = cart.reduce((total, item) => {
-            const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
-            return total + (price * item.quantity);
-        }, 0);
-        
-        // Create cart HTML
-        overlay.innerHTML = `
-            <div class="cart-modal">
-                <div class="cart-header">
-                    <h2>Your Shopping Cart</h2>
-                    <button class="close-cart">&times;</button>
-                </div>
-                <div class="cart-items">
-                    ${cart.length === 0 ? 
-                        '<p class="empty-cart">Your cart is empty.</p>' : 
-                        cart.map((item, index) => `
-                            <div class="cart-item">
-                                <div class="cart-item-image">
-                                    <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.jpg'">
-                                </div>
-                                <div class="cart-item-details">
-                                    <h3>${item.brand} ${item.name}</h3>
-                                    <p class="cart-item-price">${item.price}</p>
-                                    <div class="cart-item-quantity">
-                                        <button class="quantity-btn decrease" data-id="${item.id}">-</button>
-                                        <span>${item.quantity}</span>
-                                        <button class="quantity-btn increase" data-id="${item.id}">+</button>
-                                    </div>
-                                </div>
-                                <button class="remove-item" data-id="${item.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        `).join('')
-                    }
-                </div>
-                <div class="cart-footer">
-                    <div class="cart-total">
-                        <span>Total:</span>
-                        <span>Ksh ${cartTotal.toFixed(2)}</span>
-                    </div>
-                    ${cart.length === 0 ? '' : 
-                        '<button class="checkout-btn">Proceed to Checkout</button>'
-                    }
-                </div>
-            </div>
-        `;
-        
-        // Add overlay to the body
-        document.body.appendChild(overlay);
-        
-        // Prevent scrolling on body
-        document.body.style.overflow = 'hidden';
-        
-        // Add close functionality
-        const closeButton = overlay.querySelector('.close-cart');
-        closeButton.addEventListener('click', function() {
-            document.body.removeChild(overlay);
-            document.body.style.overflow = 'auto';
-        });
-        
-        // Close overlay when clicking outside modal
-        overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) {
-                document.body.removeChild(overlay);
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Add checkout button functionality
-        const checkoutButton = overlay.querySelector('.checkout-btn');
-        if (checkoutButton) {
-            checkoutButton.addEventListener('click', function() {
-                window.location.href = 'checkout.html';
-            });
-        }
-        
-        // Add quantity change functionality
-        const increaseButtons = overlay.querySelectorAll('.quantity-btn.increase');
-        const decreaseButtons = overlay.querySelectorAll('.quantity-btn.decrease');
-        const removeButtons = overlay.querySelectorAll('.remove-item');
-        
-        increaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const itemId = parseInt(this.dataset.id);
-                
-                getCart().then(updatedCart => {
-                    const itemIndex = updatedCart.findIndex(item => item.id === itemId);
-                    if (itemIndex !== -1) {
-                        updatedCart[itemIndex].quantity += 1;
-                        saveCart(updatedCart).then(() => {
-                            updateCartCount(updatedCart);
-                            showCartOverlay(); // Refresh the cart overlay
-                        });
-                    }
-                });
-            });
-        });
-        
-        decreaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const itemId = parseInt(this.dataset.id);
-                
-                getCart().then(updatedCart => {
-                    const itemIndex = updatedCart.findIndex(item => item.id === itemId);
-                    if (itemIndex !== -1) {
-                        if (updatedCart[itemIndex].quantity > 1) {
-                            updatedCart[itemIndex].quantity -= 1;
-                            saveCart(updatedCart).then(() => {
-                                updateCartCount(updatedCart);
-                                showCartOverlay(); // Refresh the cart overlay
-                            });
-                        } else {
-                            // Remove item if quantity would be 0
-                            removeCartItem(itemId);
-                        }
-                    }
-                });
-            });
-        });
-        
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const itemId = parseInt(this.dataset.id);
-                
-                if (typeof Swal !== 'undefined') {
-                    getCart().then(updatedCart => {
-                        const itemIndex = updatedCart.findIndex(item => item.id === itemId);
-                        if (itemIndex !== -1) {
-                            Swal.fire({
-                                title: 'Remove Item?',
-                                text: `Are you sure you want to remove ${updatedCart[itemIndex].brand} ${updatedCart[itemIndex].name} from your cart?`,
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonText: 'Yes, remove it',
-                                cancelButtonText: 'Cancel'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    removeCartItem(itemId);
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    // Fallback if SweetAlert is not available
-                    getCart().then(updatedCart => {
-                        const itemIndex = updatedCart.findIndex(item => item.id === itemId);
-                        if (itemIndex !== -1 && confirm(`Are you sure you want to remove ${updatedCart[itemIndex].brand} ${updatedCart[itemIndex].name} from your cart?`)) {
-                            removeCartItem(itemId);
-                        }
-                    });
-                }
-            });
-        });
+    getCartFromDB().then(cart => {
+        createCartOverlay(cart);
     }).catch(error => {
-        console.error('Error showing cart overlay:', error);
+        console.error('Error getting cart for overlay:', error);
+        // Fallback to localStorage
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        createCartOverlay(cart);
     });
 }
 
-// Function to remove item from cart
-function removeCartItem(itemId) {
-    getCart().then(updatedCart => {
-        const newCart = updatedCart.filter(item => item.id !== itemId);
-        saveCart(newCart).then(() => {
-            updateCartCount(newCart);
-            showCartOverlay(); // Refresh the cart overlay
+// Helper function to create cart overlay UI
+function createCartOverlay(cart) {
+    // Remove any existing overlay first to prevent duplicates
+    const existingOverlay = document.querySelector('.cart-overlay');
+    if (existingOverlay) {
+        document.body.removeChild(existingOverlay);
+    }
+    
+    // Create overlay element
+    const overlay = document.createElement('div');
+    overlay.className = 'cart-overlay';
+    
+    // Calculate cart total
+    const cartTotal = cart.reduce((total, item) => {
+        const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
+        return total + (price * item.quantity);
+    }, 0);
+    
+    // Create cart HTML
+    overlay.innerHTML = `
+        <div class="cart-modal">
+            <div class="cart-header">
+                <h2>Your Shopping Cart</h2>
+                <button class="close-cart">&times;</button>
+            </div>
+            <div class="cart-items">
+                ${cart.length === 0 ? 
+                    '<p class="empty-cart">Your cart is empty.</p>' : 
+                    cart.map((item, index) => `
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.jpg'">
+                            </div>
+                            <div class="cart-item-details">
+                                <h3>${item.brand} ${item.name}</h3>
+                                <p class="cart-item-price">${item.price}</p>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn decrease" data-index="${index}" data-id="${item.id || index}">-</button>
+                                    <span>${item.quantity}</span>
+                                    <button class="quantity-btn increase" data-index="${index}" data-id="${item.id || index}">+</button>
+                                </div>
+                            </div>
+                            <button class="remove-item" data-index="${index}" data-id="${item.id || index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')
+                }
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span>Ksh ${cartTotal.toFixed(2)}</span>
+                </div>
+                ${cart.length === 0 ? '' : 
+                    '<button class="checkout-btn">Proceed to Checkout</button>'
+                }
+            </div>
+        </div>
+    `;
+    
+    // Add overlay to the body
+    document.body.appendChild(overlay);
+    
+    // Prevent scrolling on body
+    document.body.style.overflow = 'hidden';
+    
+    // Add close functionality
+    const closeButton = overlay.querySelector('.close-cart');
+    closeButton.addEventListener('click', function() {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+    });
+    
+    // Close overlay when clicking outside modal
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Add checkout button functionality
+    const checkoutButton = overlay.querySelector('.checkout-btn');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function() {
+            window.location.href = 'checkout.html';
+        });
+    }
+    
+    // Add quantity change functionality
+    const increaseButtons = overlay.querySelectorAll('.quantity-btn.increase');
+    const decreaseButtons = overlay.querySelectorAll('.quantity-btn.decrease');
+    const removeButtons = overlay.querySelectorAll('.remove-item');
+    
+    increaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            cart[index].quantity += 1;
+            
+            // Update cart in IndexedDB
+            saveCartToDB(cart).then(() => {
+                updateCartCount(cart);
+                showCartOverlay(); // Refresh the cart overlay
+            }).catch(error => {
+                console.error('Error saving cart after increase:', error);
+                // Fallback to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount(cart);
+                showCartOverlay();
+            });
+        });
+    });
+    
+    decreaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            if (cart[index].quantity > 1) {
+                cart[index].quantity -= 1;
+            } else {
+                cart.splice(index, 1);
+            }
+            
+            // Update cart in IndexedDB
+            saveCartToDB(cart).then(() => {
+                updateCartCount(cart);
+                showCartOverlay(); // Refresh the cart overlay
+            }).catch(error => {
+                console.error('Error saving cart after decrease:', error);
+                // Fallback to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount(cart);
+                showCartOverlay();
+            });
+        });
+    });
+    
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Remove Item?',
+                    text: `Are you sure you want to remove ${cart[index].brand} ${cart[index].name} from your cart?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, remove it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        cart.splice(index, 1);
+                        
+                        // Update cart in IndexedDB
+                        saveCartToDB(cart).then(() => {
+                            updateCartCount(cart);
+                            showCartOverlay(); // Refresh the cart overlay
+                        }).catch(error => {
+                            console.error('Error saving cart after removal:', error);
+                            // Fallback to localStorage
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            updateCartCount(cart);
+                            showCartOverlay();
+                        });
+                    }
+                });
+            } else {
+                // Fallback if SweetAlert is not available
+                if (confirm(`Are you sure you want to remove ${cart[index].brand} ${cart[index].name} from your cart?`)) {
+                    cart.splice(index, 1);
+                    
+                    // Update cart in IndexedDB
+                    saveCartToDB(cart).then(() => {
+                        updateCartCount(cart);
+                        showCartOverlay(); // Refresh the cart overlay
+                    }).catch(error => {
+                        console.error('Error saving cart after removal:', error);
+                        // Fallback to localStorage
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartCount(cart);
+                        showCartOverlay();
+                    });
+                }
+            }
         });
     });
 }
 
 // Function to initialize the checkout page
 function initializeCheckoutPage() {
-    getCart().then(cart => {
-        const checkoutItemsContainer = document.getElementById('checkout-items');
-        const checkoutSummaryContainer = document.getElementById('checkout-summary');
-        
-        if (!checkoutItemsContainer || !checkoutSummaryContainer) return;
-        
-        // Clear any existing content
-        checkoutItemsContainer.innerHTML = '';
-        
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+    const checkoutSummaryContainer = document.getElementById('checkout-summary');
+    
+    if (!checkoutItemsContainer || !checkoutSummaryContainer) return;
+    
+    // Clear any existing content
+    checkoutItemsContainer.innerHTML = '';
+    
+    // Get cart from IndexedDB
+    getCartFromDB().then(cart => {
         if (cart.length === 0) {
             // If cart is empty, show message and redirect after 3 seconds
             checkoutItemsContainer.innerHTML = `
@@ -3359,7 +3304,7 @@ function initializeCheckoutPage() {
         
         // Render checkout items
         let itemsHTML = '';
-        cart.forEach((item) => {
+        cart.forEach((item, index) => {
             const itemTotal = parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity;
             
             itemsHTML += `
@@ -3409,128 +3354,87 @@ function initializeCheckoutPage() {
             checkoutForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Log the order in IndexedDB
-                logOrder(cart, subtotal, shipping, total).then(() => {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Order Placed!',
-                            text: 'Your order has been placed successfully.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            // Clear cart and redirect to home page
-                            clearCart().then(() => {
-                                window.location.href = 'index.html';
-                            });
-                        });
-                    } else {
-                        alert('Your order has been placed successfully.');
-                        clearCart().then(() => {
+                // Process the order here
+                // For demo purposes, we'll just clear the cart and show a success message
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Order Placed!',
+                        text: 'Your order has been placed successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Clear cart from IndexedDB
+                        clearCartFromDB().then(() => {
+                            window.location.href = 'index.html';
+                        }).catch(error => {
+                            console.error('Error clearing cart after order:', error);
+                            // Fallback to localStorage
+                            localStorage.removeItem('cart');
                             window.location.href = 'index.html';
                         });
-                    }
-                }).catch(error => {
-                    console.error('Error placing order:', error);
-                    alert('There was an error processing your order. Please try again.');
-                });
+                    });
+                } else {
+                    alert('Your order has been placed successfully.');
+                    clearCartFromDB().then(() => {
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error('Error clearing cart after order:', error);
+                        localStorage.removeItem('cart');
+                        window.location.href = 'index.html';
+                    });
+                }
             });
         }
     }).catch(error => {
-        console.error('Error initializing checkout page:', error);
-    });
-}
-
-// Function to log order in IndexedDB
-function logOrder(cart, subtotal, shipping, total) {
-    return new Promise((resolve, reject) => {
-        getDB().then(db => {
-            // Create orders object store if it doesn't exist
-            if (!db.objectStoreNames.contains('orders')) {
-                db.close();
-                const request = indexedDB.open('YtimeShopDB', 2);
-                
-                request.onupgradeneeded = function(event) {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('orders')) {
-                        const orderStore = db.createObjectStore('orders', { keyPath: 'id', autoIncrement: true });
-                        orderStore.createIndex('timestamp', 'timestamp', { unique: false });
-                        orderStore.createIndex('email', 'email', { unique: false });
-                    }
-                };
-                
-                request.onsuccess = function() {
-                    const updatedDb = request.result;
-                    addOrder(updatedDb);
-                };
-                
-                request.onerror = function(event) {
-                    reject('Error upgrading database: ' + event.target.errorCode);
-                };
-            } else {
-                addOrder(db);
-            }
+        console.error('Error getting cart for checkout page:', error);
+        // Fallback to localStorage
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        if (cart.length === 0) {
+            // If cart is empty, show message and redirect after 3 seconds
+            checkoutItemsContainer.innerHTML = `
+                <div class="empty-cart-message">
+                    <p>Your cart is empty. Redirecting to shop...</p>
+                </div>
+            `;
             
-            function addOrder(database) {
-                // Get user email if logged in
-                const userEmail = localStorage.getItem('userEmail');
-                
-                // Get form data if on checkout page
-                let customerInfo = {};
-                const checkoutForm = document.getElementById('checkout-form');
-                if (checkoutForm) {
-                    const formData = new FormData(checkoutForm);
-                    formData.forEach((value, key) => {
-                        customerInfo[key] = value;
-                    });
-                }
-                
-                const orderData = {
-                    items: cart,
-                    email: userEmail || (customerInfo.email || 'guest'),
-                    subtotal: subtotal,
-                    shipping: shipping,
-                    total: total,
-                    timestamp: new Date(),
-                    status: 'pending',
-                    customerInfo: customerInfo
-                };
-                
-                const transaction = database.transaction(['orders'], 'readwrite');
-                const orderStore = transaction.objectStore('orders');
-                const request = orderStore.add(orderData);
-                
-                request.onsuccess = function() {
-                    resolve();
-                };
-                
-                request.onerror = function(event) {
-                    reject('Error adding order: ' + event.target.errorCode);
-                };
-            }
-        }).catch(error => {
-            reject(error);
-        });
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        }
+        // Continue with localStorage cart data
+        // (Same checkout rendering code as above would be repeated here)
     });
 }
 
-// Function to clear cart
-function clearCart() {
+// Function to clear cart from IndexedDB
+function clearCartFromDB() {
     return new Promise((resolve, reject) => {
-        getDB().then(db => {
+        const request = indexedDB.open("ytimeshop.DB", 1);
+        
+        request.onerror = function(event) {
+            console.error("Database error:", event.target.error);
+            reject(event.target.error);
+        };
+        
+        request.onsuccess = function(event) {
+            const db = event.target.result;
             const transaction = db.transaction(['cart'], 'readwrite');
             const cartStore = transaction.objectStore('cart');
-            const request = cartStore.clear();
             
-            request.onsuccess = function() {
+            const clearRequest = cartStore.clear();
+            
+            clearRequest.onsuccess = function() {
+                db.close();
                 resolve();
             };
             
-            request.onerror = function(event) {
-                reject('Error clearing cart: ' + event.target.errorCode);
+            clearRequest.onerror = function(event) {
+                db.close();
+                reject(event.target.error);
             };
-        }).catch(error => {
-            reject(error);
-        });
+        };
     });
 }
 
@@ -3587,20 +3491,15 @@ function updateAuthUI() {
     }
 }
 
-// Function to add product to cart
+// Function to add product to cart using IndexedDB
 function addToCart(productData) {
     // Ensure image path is valid
     if (productData.image && productData.image.indexOf('/') === -1) {
         productData.image = 'images/' + productData.image;
     }
     
-    // First log a product view
-    logProductView(productData).catch(error => {
-        console.error('Error logging product view:', error);
-    });
-    
     // Get current cart from IndexedDB
-    getCart().then(cart => {
+    getCartFromDB().then(cart => {
         // Check if product already exists in cart
         const existingProductIndex = cart.findIndex(item => 
             item.brand === productData.brand && item.name === productData.name
@@ -3609,46 +3508,99 @@ function addToCart(productData) {
         if (existingProductIndex !== -1) {
             // Increment quantity if product exists
             cart[existingProductIndex].quantity += 1;
-            saveCart(cart).then(updatedCart => {
-                // Update cart count and show notification
-                updateCartCount(updatedCart);
-                
-                // Show success notification
-                showAddToCartNotification(productData);
-            });
         } else {
             // Add new product to cart
-            saveCart([...cart, productData]).then(updatedCart => {
-                // Update cart count and show notification
-                updateCartCount(updatedCart);
-                
-                // Show success notification
-                showAddToCartNotification(productData);
-            });
+            cart.push(productData);
         }
-    }).catch(error => {
-        console.error('Error adding to cart:', error);
-        // Fallback to alert
-        alert(`Error adding ${productData.brand} ${productData.name} to cart. Please try again.`);
-    });
-}
-
-// Function to show add to cart notification
-function showAddToCartNotification(productData) {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Added to Cart!',
-            text: `${productData.brand} ${productData.name} has been added to your cart.`,
-            icon: 'success',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
+        
+        // Save updated cart to IndexedDB
+        saveCartToDB(cart).then(() => {
+            // Update cart count and show notification
+            updateCartCount(cart);
+            
+            // Show success notification
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                    icon: 'success',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else {
+                alert(`${productData.brand} ${productData.name} has been added to your cart.`);
+            }
+        }).catch(error => {
+            console.error('Error saving cart after adding item:', error);
+            // Fallback to localStorage
+            let localCart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            const existingLocalIndex = localCart.findIndex(item => 
+                item.brand === productData.brand && item.name === productData.name
+            );
+            
+            if (existingLocalIndex !== -1) {
+                localCart[existingLocalIndex].quantity += 1;
+            } else {
+                localCart.push(productData);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(localCart));
+            updateCartCount();
+            
+            // Show notification
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                    icon: 'success',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else {
+                alert(`${productData.brand} ${productData.name} has been added to your cart.`);
+            }
         });
-    } else {
-        alert(`${productData.brand} ${productData.name} has been added to your cart.`);
-    }
+    }).catch(error => {
+        console.error('Error getting cart when adding item:', error);
+        // Fallback to localStorage
+        let localCart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        const existingLocalIndex = localCart.findIndex(item => 
+            item.brand === productData.brand && item.name === productData.name
+        );
+        
+        if (existingLocalIndex !== -1) {
+            localCart[existingLocalIndex].quantity += 1;
+        } else {
+            localCart.push(productData);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(localCart));
+        updateCartCount();
+        
+        // Show notification
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${productData.brand} ${productData.name} has been added to your cart.`,
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            alert(`${productData.brand} ${productData.name} has been added to your cart.`);
+        }
+    });
 }
 
 // Function to initialize cart buttons
@@ -3726,126 +3678,194 @@ function initializeWatchImageGallery() {
     });
 }
 
-// Function to save newsletter subscription to IndexedDB
-function saveNewsletter(email) {
-    return new Promise((resolve, reject) => {
-        getDB().then(db => {
-            const transaction = db.transaction(['newsletter'], 'readwrite');
-            const newsletterStore = transaction.objectStore('newsletter');
-            
-            const subscription = {
-                email: email,
-                timestamp: new Date(),
-                status: 'active'
-            };
-            
-            const request = newsletterStore.add(subscription);
-            
-            request.onsuccess = function() {
-                resolve();
-            };
-            
-            request.onerror = function(event) {
-                // Check if error is due to duplicate email
-                if (event.target.error.name === 'ConstraintError') {
-                    reject('Email already subscribed');
-                } else {
-                    reject('Error adding subscription: ' + event.target.errorCode);
-                }
-            };
-        }).catch(error => {
-            reject(error);
-        });
-    });
-}
-
-// Newsletter subscription form handler
-function initNewsletterForm() {
-    const newsletterForm = document.querySelector('.newsletter-form');
+// Function to initialize Swiper slider
+function initializeSwiper() {
+    // Initialize Swiper with error handling
+    const swiperContainer = document.querySelector('.swiper-container');
     
-    if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+    if (!swiperContainer) return;
+    
+    // Dynamically add swiper slides
+    const watches = [
+        { brand: 'Rolex', name: 'Daytona', price: 'Ksh 10000', image: 'images/rolex1.jpg', tag: 'Limited' },
+        { brand: 'Hublot', name: 'Chronograph', price: 'Ksh 7000 ', image: 'images/hublot1.jpg', tag: 'Featured' },
+        { brand: 'Patek Philippe', name: 'Calatrava', price: 'Ksh 15000', image: 'images/patekphilippe1.jpg', tag: 'New' },
+        { brand: 'Casio', name: 'Casio vintage', price: 'Ksh 3500', image: 'images/casio1.jpg', tag: 'Limited' },
+        { brand: 'Naviforce', name: 'N900', price: 'Ksh 5000', image: 'images/naviforce1.jpg', tag: 'Featured' }
+    ];
+
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    if (swiperWrapper) {
+        // Clear any existing slides
+        swiperWrapper.innerHTML = '';
+        
+        watches.forEach(watch => {
+            // Ensure we have a valid image path
+            const imagePath = watch.image || 'images/placeholder.jpg';
             
-            const emailInput = this.querySelector('input[type="email"]');
-            const submitButton = this.querySelector('button[type="submit"]');
-            const email = emailInput.value.trim();
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
             
-            if (!email) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Please enter your email address.',
-                        icon: 'error'
-                    });
-                } else {
-                    alert('Please enter your email address.');
-                }
-                return;
-            }
+            slide.innerHTML = `
+                <div class="watch-card">
+                    <div class="watch-image-container">
+                        ${watch.tag ? `<span class="watch-tag">${watch.tag}</span>` : ''}
+                        <img src="${imagePath}" alt="${watch.brand} ${watch.name}" class="watch-image active" onerror="this.src='images/placeholder.jpg';">
+                    </div>
+                    <div class="watch-content">
+                        <span class="watch-brand">${watch.brand}</span>
+                        <h3 class="watch-name">${watch.name}</h3>
+                        <p class="watch-description">Exceptional craftsmanship and timeless design make this a collector's favorite.</p>
+                        <div class="watch-footer">
+                            <span class="watch-price">${watch.price}</span>
+                            <button class="add-to-cart" data-brand="${watch.brand}" data-name="${watch.name}" data-price="${watch.price}" data-image="${imagePath}">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            // Disable button and show loading state
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.innerHTML = 'Subscribing...';
-            }
-            
-            // Save to IndexedDB
-            saveNewsletter(email).then(() => {
-                // Success
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Subscribed!',
-                        text: 'Thank you for subscribing to our newsletter.',
-                        icon: 'success'
-                    });
-                } else {
-                    alert('Thank you for subscribing to our newsletter.');
-                }
-                
-                // Reset form
-                emailInput.value = '';
-            }).catch(error => {
-                // Error handling
-                if (error === 'Email already subscribed') {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Already Subscribed',
-                            text: 'This email is already subscribed to our newsletter.',
-                            icon: 'info'
-                        });
-                    } else {
-                        alert('This email is already subscribed to our newsletter.');
-                    }
-                } else {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'There was an error subscribing. Please try again later.',
-                            icon: 'error'
-                        });
-                    } else {
-                        alert('There was an error subscribing. Please try again later.');
-                    }
-                    console.error('Newsletter subscription error:', error);
-                }
-            }).finally(() => {
-                // Re-enable button
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = 'Subscribe';
+            swiperWrapper.appendChild(slide);
+        });
+    }
+    
+    // Initialize Swiper with proper configuration
+    try {
+        if (typeof Swiper !== 'undefined') {
+            new Swiper('.swiper-container', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    992: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                    1200: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
                 }
             });
-        });
+        } else {
+            console.warn('Swiper library not found');
+        }
+    } catch (error) {
+        console.error('Error initializing Swiper:', error);
     }
 }
 
-// Function to initialize watch card hover effects
+// Function to initialize mobile navigation
+function initMobileNav() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    
+    if (!mobileMenuButton || !mobileMenu) return;
+    
+    mobileMenuButton.addEventListener('click', function() {
+        mobileMenu.classList.toggle('active');
+        this.classList.toggle('active');
+        
+        // Add/remove no-scroll class to body
+        if (mobileMenu.classList.contains('active')) {
+            document.body.classList.add('no-scroll');
+        } else {
+            document.body.classList.remove('no-scroll');
+        }
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (mobileMenu.classList.contains('active') &&
+            !mobileMenu.contains(e.target) &&
+            !mobileMenuButton.contains(e.target)) {
+            
+            mobileMenu.classList.remove('active');
+            mobileMenuButton.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        }
+    });
+}
+
+// Function to initialize newsletter form
+function initNewsletterForm() {
+    const newsletterForm = document.querySelector('.newsletter-form');
+    
+    if (!newsletterForm) return;
+    
+    newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const emailInput = this.querySelector('input[type="email"]');
+        const email = emailInput.value.trim();
+        
+        if (!email) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Please enter your email address.',
+                    icon: 'error'
+                });
+            } else {
+                alert('Please enter your email address.');
+            }
+            return;
+        }
+        
+        // Simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Please enter a valid email address.',
+                    icon: 'error'
+                });
+            } else {
+                alert('Please enter a valid email address.');
+            }
+            return;
+        }
+        
+        // This would be where you'd send the form data to your server
+        // For this example, we'll just show a success message
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Thank you for subscribing to our newsletter!',
+                icon: 'success'
+            });
+        } else {
+            alert('Thank you for subscribing to our newsletter!');
+        }
+        
+        // Clear the form
+        emailInput.value = '';
+    });
+}
+
+// Function to initialize watch card effects
 function initWatchCardEffects() {
     const watchCards = document.querySelectorAll('.watch-card');
     
     watchCards.forEach(card => {
-        // Add hover effect
         card.addEventListener('mouseenter', function() {
             this.classList.add('hover');
         });
@@ -3853,51 +3873,83 @@ function initWatchCardEffects() {
         card.addEventListener('mouseleave', function() {
             this.classList.remove('hover');
         });
-        
-        // Make entire card clickable if it has a link
-        const watchLink = card.querySelector('.watch-link');
-        if (watchLink) {
-            card.addEventListener('click', function(e) {
-                // Don't trigger if clicking on button or dot navigation
-                if (!e.target.closest('.add-to-cart') && !e.target.closest('.dot')) {
-                    watchLink.click();
-                }
-            });
-        }
     });
 }
 
-// Function to initialize price filter on collection page
+// Function to initialize price filter
 function initPriceFilter() {
     const priceFilter = document.getElementById('price-filter');
-    const priceOutput = document.getElementById('price-output');
+    const minPrice = document.getElementById('min-price');
+    const maxPrice = document.getElementById('max-price');
+    const priceRange = document.getElementById('price-range');
     
-    if (priceFilter && priceOutput) {
-        // Set initial value
-        priceOutput.textContent = `Ksh ${priceFilter.value}`;
-        
-        // Update value on slider change
-        priceFilter.addEventListener('input', function() {
-            priceOutput.textContent = `Ksh ${this.value}`;
-            
-            // Filter products based on price
-            filterProductsByPrice(this.value);
+    if (!priceFilter || !minPrice || !maxPrice || !priceRange) return;
+    
+    // Initialize noUiSlider if available
+    if (typeof noUiSlider !== 'undefined') {
+        noUiSlider.create(priceRange, {
+            start: [0, 20000],
+            connect: true,
+            step: 100,
+            range: {
+                'min': 0,
+                'max': 20000
+            },
+            format: {
+                to: function(value) {
+                    return Math.round(value);
+                },
+                from: function(value) {
+                    return Math.round(value);
+                }
+            }
         });
+        
+        priceRange.noUiSlider.on('update', function(values, handle) {
+            const value = values[handle];
+            
+            if (handle === 0) {
+                minPrice.textContent = `Ksh ${value}`;
+            } else {
+                maxPrice.textContent = `Ksh ${value}`;
+            }
+            
+            // Filter watches based on price range
+            filterWatchesByPrice(values[0], values[1]);
+        });
+    } else {
+        // Fallback to regular range input
+        priceFilter.innerHTML = `
+            <div class="price-filter-fallback">
+                <input type="range" id="price-range-fallback" min="0" max="20000" step="100" value="10000">
+                <span id="price-value">Ksh 10000</span>
+            </div>
+        `;
+        
+        const priceRangeFallback = document.getElementById('price-range-fallback');
+        const priceValue = document.getElementById('price-value');
+        
+        if (priceRangeFallback && priceValue) {
+            priceRangeFallback.addEventListener('input', function() {
+                priceValue.textContent = `Ksh ${this.value}`;
+                filterWatchesByPrice(0, this.value);
+            });
+        }
     }
 }
 
-// Function to filter products by price
-function filterProductsByPrice(maxPrice) {
+// Function to filter watches by price
+function filterWatchesByPrice(min, max) {
     const watchCards = document.querySelectorAll('.watch-card');
     
     watchCards.forEach(card => {
         const priceElement = card.querySelector('.watch-price');
+        
         if (priceElement) {
-            // Extract numeric price value
             const price = parseFloat(priceElement.textContent.replace(/[^\d.]/g, ''));
             
-            if (price <= maxPrice) {
-                card.style.display = 'block';
+            if (price >= min && price <= max) {
+                card.style.display = '';
             } else {
                 card.style.display = 'none';
             }
@@ -3905,24 +3957,26 @@ function filterProductsByPrice(maxPrice) {
     });
 }
 
-// Function to initialize smooth scroll for anchor links
+// Function to initialize smooth scroll
 function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
+    const smoothScrollLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+    
+    smoothScrollLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            // Skip if href is just "#" or empty
-            if (href === '#' || href === '') return;
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
             
-            const target = document.querySelector(href);
-            
-            if (target) {
-                e.preventDefault();
-                
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+            if (targetElement) {
+                // Scroll smoothly to the target
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80, // Adjust for header height
+                    behavior: 'smooth'
                 });
+                
+                // Update URL without reloading the page
+                window.history.pushState(null, null, targetId);
             }
         });
     });
@@ -3930,170 +3984,373 @@ function initSmoothScroll() {
 
 // Function to initialize back to top button
 function initBackToTop() {
-    const backToTopBtn = document.getElementById('back-to-top');
+    const backToTopButton = document.querySelector('.back-to-top');
     
-    if (backToTopBtn) {
-        // Show/hide button based on scroll position
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopBtn.classList.add('visible');
-            } else {
-                backToTopBtn.classList.remove('visible');
-            }
-        });
-        
-        // Scroll to top when clicked
-        backToTopBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-}
-
-// Function to initialize mobile navigation
-function initMobileNav() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mobileNav = document.querySelector('.mobile-nav');
+    if (!backToTopButton) return;
     
-    if (menuToggle && mobileNav) {
-        menuToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            mobileNav.classList.toggle('active');
-            
-            // Toggle body scroll
-            if (mobileNav.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Close mobile nav when clicking outside
-        document.addEventListener('click', function(e) {
-            if (mobileNav.classList.contains('active') && 
-                !mobileNav.contains(e.target) && 
-                !menuToggle.contains(e.target)) {
-                menuToggle.classList.remove('active');
-                mobileNav.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-}
-
-// Function to initialize Swiper slider
-function initializeSwiper() {
-    if (typeof Swiper !== 'undefined') {
-        try {
-            // Hero slider
-            const heroSlider = document.querySelector('.hero-slider');
-            if (heroSlider) {
-                new Swiper('.hero-slider', {
-                    slidesPerView: 1,
-                    spaceBetween: 0,
-                    loop: true,
-                    autoplay: {
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    }
-                });
-            }
-            
-            // Featured products slider
-            const featuredSlider = document.querySelector('.featured-slider');
-            if (featuredSlider) {
-                new Swiper('.featured-slider', {
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                    loop: true,
-                    autoplay: {
-                        delay: 4000,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    breakpoints: {
-                        640: {
-                            slidesPerView: 2,
-                            spaceBetween: 20,
-                        },
-                        768: {
-                            slidesPerView: 3,
-                            spaceBetween: 30,
-                        },
-                        1024: {
-                            slidesPerView: 4,
-                            spaceBetween: 30,
-                        },
-                    }
-                });
-            }
-            
-            // Testimonials slider
-            const testimonialSlider = document.querySelector('.testimonial-slider');
-            if (testimonialSlider) {
-                new Swiper('.testimonial-slider', {
-                    slidesPerView: 1,
-                    spaceBetween: 30,
-                    loop: true,
-                    autoplay: {
-                        delay: 6000,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Error initializing Swiper:', error);
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.add('active');
+        } else {
+            backToTopButton.classList.remove('active');
         }
-    }
-}
-
-// Fallback to localStorage if IndexedDB fails
-function fallbackToLocalStorage() {
-    console.warn('Falling back to localStorage for data storage');
+    });
     
-    // Override cart functions to use localStorage
-    window.getCart = function() {
-        return new Promise((resolve) => {
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            resolve(cart);
+    backToTopButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
-    };
-    
-    window.saveCart = function(cart) {
-        return new Promise((resolve) => {
-            localStorage.setItem('cart', JSON.stringify(cart));
-            resolve(cart);
-        });
-    };
-    
-    // Initialize with localStorage data
-    getCart().then(cart => {
-        updateCartCount(cart);
-        initializeCartButtons();
     });
 }
+
+// Function to initialize product page
+function initializeProductPage() {
+    const productImageGallery = document.querySelector('.product-image-gallery');
+    const productThumbnails = document.querySelectorAll('.product-thumbnail');
+    const productMainImage = document.querySelector('.product-main-image');
+    
+    if (!productImageGallery || !productThumbnails.length || !productMainImage) return;
+    
+    // Set up thumbnail functionality
+    productThumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            // Update main image
+            productMainImage.src = this.dataset.image;
+            
+            // Update active thumbnail
+            productThumbnails.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Initialize zoom functionality if available
+    if (typeof Drift !== 'undefined') {
+        new Drift(productMainImage, {
+            paneContainer: document.querySelector('.product-image-container'),
+            inlinePane: false,
+            zoomFactor: 3
+        });
+    }
+    
+    // Handle add to cart button
+    const addToCartButton = document.querySelector('.product-add-to-cart');
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', function() {
+            const productData = {
+                brand: document.querySelector('.product-brand').textContent,
+                name: document.querySelector('.product-name').textContent,
+                price: document.querySelector('.product-price').textContent,
+                image: productMainImage.src,
+                quantity: parseInt(document.querySelector('.product-quantity-input').value) || 1
+            };
+            
+            addToCart(productData);
+        });
+    }
+}
+
+// Detect if we're on a product page and initialize
+if (window.location.pathname.includes('product.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeProductPage();
+    });
+}
+        // Function to handle login process
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (!emailInput || !passwordInput) return;
+    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    
+    // Simple validation
+    if (!email || !password) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Please enter both email and password.',
+                icon: 'error'
+            });
+        } else {
+            alert('Please enter both email and password.');
+        }
+        return;
+    }
+    
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Please enter a valid email address.',
+                icon: 'error'
+            });
+        } else {
+            alert('Please enter a valid email address.');
+        }
+        return;
+    }
+    
+    // Here we would normally authenticate with a server
+    // For this example, we'll just simulate a successful login
+    
+    // Store user info in localStorage
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', email.split('@')[0]);
+    
+    // Show success message
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Success!',
+            text: 'You have been successfully logged in.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            // Redirect to homepage
+            window.location.href = 'index.html';
+        });
+    } else {
+        alert('You have been successfully logged in.');
+        window.location.href = 'index.html';
+    }
+}
+
+// Function to handle registration process
+function handleRegistration(event) {
+    event.preventDefault();
+    
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    
+    if (!nameInput || !emailInput || !passwordInput || !confirmPasswordInput) return;
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+    
+    // Simple validation
+    if (!name || !email || !password || !confirmPassword) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Please fill in all fields.',
+                icon: 'error'
+            });
+        } else {
+            alert('Please fill in all fields.');
+        }
+        return;
+    }
+    
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Please enter a valid email address.',
+                icon: 'error'
+            });
+        } else {
+            alert('Please enter a valid email address.');
+        }
+        return;
+    }
+    
+    // Password match validation
+    if (password !== confirmPassword) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Passwords do not match.',
+                icon: 'error'
+            });
+        } else {
+            alert('Passwords do not match.');
+        }
+        return;
+    }
+    
+    // Password strength validation
+    if (password.length < 8) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Password must be at least 8 characters long.',
+                icon: 'error'
+            });
+        } else {
+            alert('Password must be at least 8 characters long.');
+        }
+        return;
+    }
+    
+    // Here we would normally register with a server
+    // For this example, we'll just simulate a successful registration
+    
+    // Store user info in localStorage
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', name);
+    
+    // Show success message
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Success!',
+            text: 'Your account has been created successfully.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            // Redirect to homepage
+            window.location.href = 'index.html';
+        });
+    } else {
+        alert('Your account has been created successfully.');
+        window.location.href = 'index.html';
+    }
+}
+
+// Initialize login form if we're on the login page
+if (window.location.pathname.includes('login.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+    });
+}
+
+// Initialize registration form if we're on the register page
+if (window.location.pathname.includes('register.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', handleRegistration);
+        }
+    });
+}
+
+// Function to load and display featured products
+function loadFeaturedProducts() {
+    const featuredProductsContainer = document.querySelector('.featured-products');
+    if (!featuredProductsContainer) return;
+    
+    // Sample featured products data
+    const featuredProducts = [
+        { brand: 'Rolex', name: 'Datejust', price: 'Ksh 15000', image: 'images/rolex2.jpg', tag: 'Featured' },
+        { brand: 'Omega', name: 'Seamaster', price: 'Ksh 12000', image: 'images/omega1.jpg', tag: 'New' },
+        { brand: 'Breitling', name: 'Navitimer', price: 'Ksh 13500', image: 'images/breitling1.jpg', tag: 'Limited' },
+        { brand: 'Tag Heuer', name: 'Carrera', price: 'Ksh 9800', image: 'images/tagheuer1.jpg', tag: 'Featured' }
+    ];
+    
+    // Create HTML for featured products
+    let featuredProductsHTML = '';
+    
+    featuredProducts.forEach(product => {
+        featuredProductsHTML += `
+            <div class="watch-card">
+                <div class="watch-image-container">
+                    ${product.tag ? `<span class="watch-tag">${product.tag}</span>` : ''}
+                    <img src="${product.image}" alt="${product.brand} ${product.name}" class="watch-image active" onerror="this.src='images/placeholder.jpg';">
+                </div>
+                <div class="watch-content">
+                    <span class="watch-brand">${product.brand}</span>
+                    <h3 class="watch-name">${product.name}</h3>
+                    <p class="watch-description">Exceptional craftsmanship and precision engineering.</p>
+                    <div class="watch-footer">
+                        <span class="watch-price">${product.price}</span>
+                        <button class="add-to-cart" data-brand="${product.brand}" data-name="${product.name}" data-price="${product.price}" data-image="${product.image}">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Update featured products container
+    featuredProductsContainer.innerHTML = featuredProductsHTML;
+}
+
+// Initialize featured products on homepage
+if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFeaturedProducts();
+    });
+}
+
+// Function to initialize product filtering on collection page
+function initProductFiltering() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const watchCards = document.querySelectorAll('.watch-card');
+    
+    if (!filterBtns.length || !watchCards.length) return;
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update active filter button
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filterValue = this.dataset.filter;
+            
+            // Filter watch cards
+            watchCards.forEach(card => {
+                if (filterValue === 'all') {
+                    card.style.display = '';
+                } else {
+                    const brand = card.querySelector('.watch-brand')?.textContent.toLowerCase();
+                    const tag = card.querySelector('.watch-tag')?.textContent.toLowerCase();
+                    
+                    if (brand === filterValue || tag === filterValue) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+}
+
+// Initialize product filtering on collection page
+if (window.location.pathname.includes('collection.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        initProductFiltering();
+    });
+}
+
+// General initialization for all pages
+document.addEventListener('DOMContentLoaded', function() {
+    // Preloader
+    const preloader = document.querySelector('.preloader');
+    if (preloader) {
+        setTimeout(() => {
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        }, 1000);
+    }
+    
+    // Add year to copyright footer
+    const copyrightYear = document.querySelector('.copyright-year');
+    if (copyrightYear) {
+        copyrightYear.textContent = new Date().getFullYear();
+    }
+});
     </script>
 </body>
 </html>
