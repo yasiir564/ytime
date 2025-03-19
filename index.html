@@ -2870,7 +2870,6 @@ a, button, .watch-card, .service-card, .brand-logo {
     <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-    <!-- Custom JS -->
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize IndexedDB
@@ -3764,7 +3763,8 @@ function saveNewsletter(email) {
 function initNewsletterForm() {
     const newsletterForm = document.querySelector('.newsletter-form');
     
-    if (newsletterForm) {newsletterForm.addEventListener('submit', function(e) {
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const emailInput = this.querySelector('input[type="email"]');
