@@ -2926,8 +2926,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Initialize IndexedDB
 function initializeDB() {
     return new Promise((resolve, reject) => {
-        // Open a connection to the IndexedDB database
-        const request = indexedDB.open('WatchShopDB', 1);
+        // Open a connection to the IndexedDB database - changed to ytimeShopDB
+        const request = indexedDB.open('ytimeShopDB', 1);
         
         // Handle database upgrade needed (first time or version change)
         request.onupgradeneeded = function(event) {
@@ -2976,7 +2976,7 @@ function initializeDB() {
 // Function to get the database connection
 function getDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('WatchShopDB', 1);
+        const request = indexedDB.open('ytimeShopDB', 1);
         
         request.onsuccess = function(event) {
             resolve(event.target.result);
@@ -3448,7 +3448,7 @@ function logOrder(cart, subtotal, shipping, total) {
             // Create orders object store if it doesn't exist
             if (!db.objectStoreNames.contains('orders')) {
                 db.close();
-                const request = indexedDB.open('WatchShopDB', 2);
+                const request = indexedDB.open('ytimeShopDB', 2);
                 
                 request.onupgradeneeded = function(event) {
                     const db = event.target.result;
@@ -3764,338 +3764,225 @@ function saveNewsletter(email) {
 function initNewsletterForm() {
     const newsletterForm = document.querySelector('.newsletter-form');
     
-    if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
+    if (newsletterForm) {newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const emailInput = this.querySelector('input[type="email"]');
-            if (!emailInput) return;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const errorMessage = this.querySelector('.newsletter-error') || document.createElement('div');
             
+            if (!errorMessage.classList.contains('newsletter-error')) {
+                errorMessage.className = 'newsletter-error';
+                this.appendChild(errorMessage);
+            }
+            
+            // Validate email
             const email = emailInput.value.trim();
             if (!email) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Please enter a valid email address.',
-                        icon: 'error'
-                    });
-                } else {
-                    alert('Please enter a valid email address.');
-                }
+                errorMessage.textContent = 'Please enter an email address';
+                errorMessage.style.display = 'block';
                 return;
             }
             
-            // Save email to IndexedDB
+            // Disable form elements during submission
+            emailInput.disabled = true;
+            submitBtn.disabled = true;
+            errorMessage.style.display = 'none';
+            
+            // Save subscription to IndexedDB
             saveNewsletter(email).then(() => {
-                // Success notification
+                // Show success message
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
-                        title: 'Thank You!',
-                        text: 'You have successfully subscribed to our newsletter.',
-                        icon: 'success'
+                        title: 'Subscribed!',
+                        text: 'Thank you for subscribing to our newsletter.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
                     });
                 } else {
-                    alert('You have successfully subscribed to our newsletter.');
+                    alert('Thank you for subscribing to our newsletter.');
                 }
                 
-                // Clear input field
+                // Reset form
                 emailInput.value = '';
             }).catch(error => {
-                // Handle error
                 if (error === 'Email already subscribed') {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Already Subscribed',
-                            text: 'This email is already subscribed to our newsletter.',
-                            icon: 'info'
-                        });
-                    } else {
-                        alert('This email is already subscribed to our newsletter.');
-                    }
+                    errorMessage.textContent = 'This email is already subscribed';
                 } else {
-                    console.error('Error saving newsletter subscription:', error);
-                    
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'There was an error subscribing to the newsletter. Please try again later.',
-                            icon: 'error'
-                        });
-                    } else {
-                        alert('There was an error subscribing to the newsletter. Please try again later.');
-                    }
+                    errorMessage.textContent = 'An error occurred. Please try again later.';
+                    console.error('Newsletter subscription error:', error);
                 }
+                
+                errorMessage.style.display = 'block';
+            }).finally(() => {
+                // Re-enable form elements
+                emailInput.disabled = false;
+                submitBtn.disabled = false;
             });
         });
     }
 }
 
-// Function to initialize watch card hover effects
+// Function to initialize Swiper slider
+function initializeSwiper() {
+    if (typeof Swiper !== 'undefined') {
+        try {
+            const featuredSlider = document.querySelector('.featured-slider');
+            if (featuredSlider) {
+                const swiper = new Swiper('.featured-slider', {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    loop: true,
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 2,
+                        },
+                        1024: {
+                            slidesPerView: 3,
+                        }
+                    }
+                });
+            }
+            
+            // Brand logo slider (if exists)
+            const brandSlider = document.querySelector('.brand-slider');
+            if (brandSlider) {
+                const brandSwiper = new Swiper('.brand-slider', {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                    loop: true,
+                    autoplay: {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    },
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 3,
+                        },
+                        768: {
+                            slidesPerView: 4,
+                        },
+                        1024: {
+                            slidesPerView: 5,
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error initializing Swiper:', error);
+        }
+    }
+}
+
+// Initialize mobile navigation
+function initMobileNav() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const closeMenu = document.querySelector('.close-menu');
+    
+    if (menuToggle && mobileNav) {
+        menuToggle.addEventListener('click', function() {
+            mobileNav.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        if (closeMenu) {
+            closeMenu.addEventListener('click', function() {
+                mobileNav.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        }
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (mobileNav.classList.contains('active') && 
+                !mobileNav.contains(e.target) && 
+                e.target !== menuToggle) {
+                mobileNav.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+}
+
+// Function to add hover effects to watch cards
 function initWatchCardEffects() {
     const watchCards = document.querySelectorAll('.watch-card');
     
     watchCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
-            this.classList.add('hover');
+            this.classList.add('hovered');
         });
         
         card.addEventListener('mouseleave', function() {
-            this.classList.remove('hover');
+            this.classList.remove('hovered');
         });
     });
 }
 
-// Function to initialize price filter
+// Function to initialize price filter on collection page
 function initPriceFilter() {
-    const priceFilterContainer = document.querySelector('.price-filter');
-    if (!priceFilterContainer) return;
+    const priceFilter = document.getElementById('price-filter');
+    const priceOutput = document.getElementById('price-output');
     
-    const minSlider = document.getElementById('min-price-slider');
-    const maxSlider = document.getElementById('max-price-slider');
-    const minValueDisplay = document.getElementById('min-price-value');
-    const maxValueDisplay = document.getElementById('max-price-value');
-    const filterButton = document.querySelector('.apply-filter');
-    
-    if (minSlider && maxSlider && minValueDisplay && maxValueDisplay) {
-        // Set initial values
-        minValueDisplay.textContent = `Ksh ${minSlider.value}`;
-        maxValueDisplay.textContent = `Ksh ${maxSlider.value}`;
+    if (priceFilter && priceOutput) {
+        // Set initial value
+        priceOutput.textContent = `Ksh ${priceFilter.value.toLocaleString()}`;
         
-        // Update display when sliders change
-        minSlider.addEventListener('input', function() {
-            const minValue = parseInt(this.value);
-            const maxValue = parseInt(maxSlider.value);
+        priceFilter.addEventListener('input', function() {
+            priceOutput.textContent = `Ksh ${this.value.toLocaleString()}`;
             
-            // Prevent min from exceeding max
-            if (minValue > maxValue) {
-                this.value = maxValue;
-                minValueDisplay.textContent = `Ksh ${maxValue}`;
-            } else {
-                minValueDisplay.textContent = `Ksh ${minValue}`;
-            }
+            // Filter watches based on price
+            filterWatches();
         });
-        
-        maxSlider.addEventListener('input', function() {
-            const maxValue = parseInt(this.value);
-            const minValue = parseInt(minSlider.value);
-            
-            // Prevent max from being less than min
-            if (maxValue < minValue) {
-                this.value = minValue;
-                maxValueDisplay.textContent = `Ksh ${minValue}`;
-            } else {
-                maxValueDisplay.textContent = `Ksh ${maxValue}`;
-            }
-        });
-        
-        // Apply filter button functionality
-        if (filterButton) {
-            filterButton.addEventListener('click', function() {
-                const minPrice = parseInt(minSlider.value);
-                const maxPrice = parseInt(maxSlider.value);
-                
-                filterProductsByPrice(minPrice, maxPrice);
-            });
-        }
-    }
-}
-
-// Function to filter products by price
-function filterProductsByPrice(minPrice, maxPrice) {
-    const watchCards = document.querySelectorAll('.watch-card');
-    
-    watchCards.forEach(card => {
-        const priceElement = card.querySelector('.watch-price');
-        if (priceElement) {
-            // Extract numeric price value
-            const priceText = priceElement.textContent;
-            const price = parseFloat(priceText.replace(/[^\d.]/g, ''));
-            
-            if (price >= minPrice && price <= maxPrice) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
-        }
-    });
-    
-    // Update filtered count
-    const visibleCards = document.querySelectorAll('.watch-card[style=""]');
-    const filteredCount = document.querySelector('.filtered-count');
-    
-    if (filteredCount) {
-        filteredCount.textContent = `Showing ${visibleCards.length} items`;
-    }
-}
-
-// Function to initialize Swiper carousel
-function initializeSwiper() {
-    // Check if Swiper is available and if there's a container
-    if (typeof Swiper === 'undefined') return;
-    
-    // Featured products carousel
-    const featuredSwiper = document.querySelector('.featured-products-swiper');
-    if (featuredSwiper) {
-        try {
-            new Swiper('.featured-products-swiper', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: true,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                    },
-                    768: {
-                        slidesPerView: 3,
-                    },
-                    1024: {
-                        slidesPerView: 4,
-                    },
-                }
-            });
-        } catch (error) {
-            console.error('Error initializing featured products Swiper:', error);
-        }
     }
     
-    // Hero banner carousel
-    const heroSwiper = document.querySelector('.hero-swiper');
-    if (heroSwiper) {
-        try {
-            new Swiper('.hero-swiper', {
-                slidesPerView: 1,
-                spaceBetween: 0,
-                effect: 'fade',
-                loop: true,
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                }
-            });
-        } catch (error) {
-            console.error('Error initializing hero Swiper:', error);
-        }
-    }
-}
-
-// Function to initialize mobile navigation
-function initMobileNav() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mobileNav = document.querySelector('.mobile-nav');
-    
-    if (menuToggle && mobileNav) {
-        menuToggle.addEventListener('click', function(e) {
-            e.preventDefault();
+    // Function to filter watches based on selected filters
+    function filterWatches() {
+        const maxPrice = parseInt(priceFilter.value);
+        const watches = document.querySelectorAll('.watch-card');
+        
+        watches.forEach(watch => {
+            const priceText = watch.querySelector('.watch-price').textContent;
+            const price = parseInt(priceText.replace(/[^\d]/g, ''));
             
-            // Toggle menu visibility
-            mobileNav.classList.toggle('active');
-            
-            // Toggle menu icon
-            this.classList.toggle('active');
-            
-            // Toggle body scroll
-            if (mobileNav.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
+            if (price <= maxPrice) {
+                watch.style.display = '';
             } else {
-                document.body.style.overflow = 'auto';
+                watch.style.display = 'none';
             }
-        });
-        
-        // Close mobile nav when clicking outside or on links
-        document.addEventListener('click', function(e) {
-            if (mobileNav.classList.contains('active')) {
-                if (!mobileNav.contains(e.target) && e.target !== menuToggle && !menuToggle.contains(e.target)) {
-                    mobileNav.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                }
-            }
-        });
-        
-        // Add click events to mobile sub-menu toggles
-        const subMenuToggles = mobileNav.querySelectorAll('.has-submenu > a');
-        
-        subMenuToggles.forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const parent = this.parentElement;
-                const subMenu = parent.querySelector('.submenu');
-                
-                if (parent.classList.contains('active')) {
-                    parent.classList.remove('active');
-                    if (subMenu) {
-                        subMenu.style.maxHeight = '0px';
-                    }
-                } else {
-                    // Close other open submenus
-                    const activeItems = mobileNav.querySelectorAll('.has-submenu.active');
-                    activeItems.forEach(item => {
-                        if (item !== parent) {
-                            item.classList.remove('active');
-                            const openSubMenu = item.querySelector('.submenu');
-                            if (openSubMenu) {
-                                openSubMenu.style.maxHeight = '0px';
-                            }
-                        }
-                    });
-                    
-                    // Open this submenu
-                    parent.classList.add('active');
-                    if (subMenu) {
-                        subMenu.style.maxHeight = subMenu.scrollHeight + 'px';
-                    }
-                }
-            });
         });
     }
 }
 
 // Function to initialize smooth scroll
 function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // Select all links with anchors
+    document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
             
-            // Skip if it's just "#" or it's a submenu toggle
-            if (targetId === '#' || this.closest('.has-submenu')) return;
+            if (targetId === '#') return;
             
             const targetElement = document.querySelector(targetId);
+            
             if (targetElement) {
                 e.preventDefault();
                 
-                // Close mobile menu if open
-                const mobileNav = document.querySelector('.mobile-nav.active');
-                const menuToggle = document.querySelector('.menu-toggle.active');
-                if (mobileNav && menuToggle) {
-                    mobileNav.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                }
-                
-                // Scroll to target
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80, // Offset for header
+                    top: targetElement.offsetTop - 100,
                     behavior: 'smooth'
                 });
             }
@@ -4103,46 +3990,46 @@ function initSmoothScroll() {
     });
 }
 
-// Function to initialize back to top button
+// Initialize Back to Top button
 function initBackToTop() {
-    const backToTopButton = document.querySelector('.back-to-top');
-    if (!backToTopButton) return;
+    const backToTopBtn = document.getElementById('back-to-top');
     
-    // Show/hide button based on scroll position
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            backToTopButton.classList.add('visible');
-        } else {
-            backToTopButton.classList.remove('visible');
-        }
-    });
-    
-    // Scroll to top when clicked
-    backToTopButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    if (backToTopBtn) {
+        // Show button when scrolling down
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
         });
-    });
+        
+        // Scroll to top when button clicked
+        backToTopBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 }
 
 // Fallback to localStorage if IndexedDB fails
 function fallbackToLocalStorage() {
-    console.warn('Using localStorage fallback for cart storage');
+    console.warn('Falling back to localStorage due to IndexedDB failure');
     
-    // Override getCart function
+    // Override getCart and saveCart functions
     window.getCart = function() {
         return new Promise((resolve) => {
-            const cartData = localStorage.getItem('watchShopCart');
+            const cartData = localStorage.getItem('ytimeShopCart');
             resolve(cartData ? JSON.parse(cartData) : []);
         });
     };
     
-    // Override saveCart function
     window.saveCart = function(cart) {
         return new Promise((resolve) => {
-            localStorage.setItem('watchShopCart', JSON.stringify(cart));
+            localStorage.setItem('ytimeShopCart', JSON.stringify(cart));
             resolve(cart);
         });
     };
@@ -4150,6 +4037,23 @@ function fallbackToLocalStorage() {
     // Get initial cart data
     getCart().then(cart => {
         updateCartCount(cart);
+        
+        // Continue initialization
+        updateAuthUI();
+        initializeCartButtons();
+        initializeWatchImageGallery();
+        initializeSwiper();
+        initMobileNav();
+        initNewsletterForm();
+        initWatchCardEffects();
+        initPriceFilter();
+        initSmoothScroll();
+        initBackToTop();
+        
+        // Initialize checkout page if we're on it
+        if (window.location.pathname.includes('checkout.html')) {
+            initializeCheckoutPage();
+        }
     });
 }
     </script>
