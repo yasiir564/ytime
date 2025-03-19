@@ -923,6 +923,7 @@ body {
         grid-template-columns: 1fr;
     }
 }
+        
     </style>
 </head>
 <body>
@@ -1263,7 +1264,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get cart items from all connected databases
     async function getAllCartItems() {
-        const allCartItems = [];
         const cartItemsMap = new Map(); // Use a map to avoid duplicates
         
         if (allDatabases.length === 0) {
@@ -1281,7 +1281,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const items = await getCartItemsFromDB(db.instance, db.name);
                 // Add items to map to avoid duplicates (based on item id)
                 items.forEach(item => {
-                    cartItemsMap.set(item.id, item);
+                    // If item already exists, take the one with the higher quantity
+                    if (cartItemsMap.has(item.id)) {
+                        const existingItem = cartItemsMap.get(item.id);
+                        if (item.quantity > existingItem.quantity) {
+                            cartItemsMap.set(item.id, item);
+                        }
+                    } else {
+                        cartItemsMap.set(item.id, item);
+                    }
                 });
             } catch (error) {
                 console.error(`Error getting cart items from ${db.name}:`, error);
@@ -1367,6 +1375,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Add products to map (avoiding duplicates by ID)
                     products.forEach(product => {
+                        // Make sure the price is a number
+                        if (product.price && typeof product.price === 'string') {
+                            product.price = parseFloat(product.price);
+                        }
+                        // Ensure other required fields are present
+                        if (!product.price || isNaN(product.price)) {
+                            product.price = 0;
+                        }
                         productMap.set(product.id, product);
                     });
                 } catch (error) {
@@ -1374,8 +1390,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Convert map back to array
-            const allProducts = Array.from(productMap.values());
+            // Convert map back to array and sort by name
+            const allProducts = Array.from(productMap.values()).sort((a, b) => a.name.localeCompare(b.name));
             
             console.log(`Combined ${totalProductsFound} products into ${allProducts.length} unique products`);
             
@@ -1411,14 +1427,17 @@ document.addEventListener('DOMContentLoaded', function() {
         let productsHTML = '';
         
         products.forEach(product => {
+            // Ensure price is a number and format it
+            const price = typeof product.price === 'number' ? product.price : 0;
+            
             productsHTML += `
                 <div class="product-card" data-id="${product.id}">
                     <div class="product-image">
-                        <img src="${product.image || '/api/placeholder/200/200'}" alt="${product.name}">
+                        <img src="${product.image || '/api/placeholder/200/200'}" alt="${product.name}" onerror="this.src='/api/placeholder/200/200'">
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
-                        <div class="product-price">KES ${product.price ? product.price.toLocaleString() : '0'}</div>
+                        <div class="product-price">KES ${price.toLocaleString()}</div>
                         <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>
                     </div>
                 </div>
@@ -1426,6 +1445,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         productsContainer.innerHTML = productsHTML;
+        
+        // Add event listeners to the newly created Add to Cart buttons
+        const addToCartButtons = productsContainer.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-id');
+                addToCart(productId);
+            });
+        });
     }
     
     // Fallback to localStorage if IndexedDB fails
@@ -1489,20 +1517,23 @@ document.addEventListener('DOMContentLoaded', function() {
         let subtotal = 0;
         
         items.forEach((item, index) => {
-            const itemTotal = item.price * item.quantity;
+            // Ensure price is a number
+            const price = typeof item.price === 'number' ? item.price : 0;
+            const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+            const itemTotal = price * quantity;
             subtotal += itemTotal;
             
             cartHTML += `
                 <div class="cart-item" data-id="${item.id}">
                     <div class="cart-item-image">
-                        <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}">
+                        <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}" onerror="this.src='/api/placeholder/80/80'">
                     </div>
                     <div class="cart-item-info">
                         <h3 class="cart-item-name">${item.name}</h3>
-                        <div class="cart-item-price">KES ${item.price.toLocaleString()}</div>
+                        <div class="cart-item-price">KES ${price.toLocaleString()}</div>
                         <div class="cart-item-quantity">
                             <button class="quantity-btn decrease" data-index="${index}">-</button>
-                            <span class="quantity-value">${item.quantity}</span>
+                            <span class="quantity-value">${quantity}</span>
                             <button class="quantity-btn increase" data-index="${index}">+</button>
                         </div>
                     </div>
@@ -1538,7 +1569,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let shippingCost = 0;
         const selectedShipping = document.querySelector('.delivery-option.selected');
         if (selectedShipping) {
-            shippingCost = parseInt(selectedShipping.getAttribute('data-fee') || 0);
+            const shippingValue = selectedShipping.getAttribute('data-fee');
+            shippingCost = shippingValue ? parseInt(shippingValue) : 0;
         }
         
         if (shippingElement) {
@@ -1554,6 +1586,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cartCountBadge) {
             getCartItemCount().then(count => {
                 cartCountBadge.textContent = count.toString();
+                
+                // Make the badge visible only if there are items
+                if (count > 0) {
+                    cartCountBadge.style.display = 'block';
+                } else {
+                    cartCountBadge.style.display = 'none';
+                }
             });
         }
     }
@@ -1562,7 +1601,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function getCartItemCount() {
         try {
             const items = await getCartItemsWithFallback();
-            return items.length;
+            return items.reduce((total, item) => total + item.quantity, 0);
         } catch (error) {
             console.error('Error getting cart item count:', error);
             return 0;
@@ -1632,6 +1671,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateCartSummary(subtotal);
             });
         });
+        
+        // Handle checkout button click
+        const checkoutButton = document.querySelector('.checkout-button');
+        if (checkoutButton) {
+            checkoutButton.addEventListener('click', async function() {
+                const items = await getCartItemsWithFallback();
+                if (items.length === 0) {
+                    alert('Your cart is empty');
+                    return;
+                }
+                
+                // Redirect to checkout page or perform checkout action
+                alert('Proceeding to checkout...');
+                // window.location.href = '/checkout.html';
+            });
+        }
     }
     
     // Add product to cart
@@ -1686,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cartItems.push({
                     id: product.id,
                     name: product.name,
-                    price: product.price,
+                    price: typeof product.price === 'number' ? product.price : 0,
                     image: product.image,
                     quantity: 1
                 });
@@ -1699,7 +1754,18 @@ document.addEventListener('DOMContentLoaded', function() {
             await displayCartContents();
             
             // Show confirmation
-            alert(`Added ${product.name} to cart`);
+            const notification = document.createElement('div');
+            notification.className = 'add-to-cart-notification';
+            notification.textContent = `Added ${product.name} to cart`;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('fadeOut');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 2500);
             
         } catch (error) {
             console.error('Error adding product to cart:', error);
@@ -1715,18 +1781,12 @@ document.addEventListener('DOMContentLoaded', function() {
             items[index].quantity += change;
             
             if (items[index].quantity < 1) {
-                // Confirm removal
-                if (confirm(`Remove ${items[index].name} from cart?`)) {
-                    await removeItem(index);
-                } else {
-                    items[index].quantity = 1;
-                    await saveCartItems(items);
-                    await displayCartContents();
-                }
-            } else {
-                await saveCartItems(items);
-                await displayCartContents();
+                // Remove item if quantity is less than 1
+                items.splice(index, 1);
             }
+            
+            await saveCartItems(items);
+            await displayCartContents();
         } catch (error) {
             console.error('Error updating quantity:', error);
         }
@@ -1738,9 +1798,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const items = await getCartItemsWithFallback();
             if (!items[index]) return;
             
+            const itemName = items[index].name;
             items.splice(index, 1);
             await saveCartItems(items);
             await displayCartContents();
+            
+            // Show removal confirmation
+            const notification = document.createElement('div');
+            notification.className = 'remove-from-cart-notification';
+            notification.textContent = `Removed ${itemName} from cart`;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('fadeOut');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 2500);
         } catch (error) {
             console.error('Error removing item:', error);
         }
@@ -1818,7 +1893,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate subtotal from items
     function calculateSubtotal(items) {
-        return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return items.reduce((total, item) => {
+            const price = typeof item.price === 'number' ? item.price : 0;
+            const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+            return total + (price * quantity);
+        }, 0);
     }
     
     // Display cart contents
