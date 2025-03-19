@@ -1875,45 +1875,46 @@ h1, h2, h3, h4, h5, h6 {
     </div>
 </nav>
 
-<!-- Category Submenu (Horizontal) -->
-<div class="category-submenu">
-    <div class="container">
-        <ul class="category-list">
-            <li class="category-item active" data-category="all">
-                <h3>All Watches</h3>
-                <p>Our complete collection</p>
-            </li>
-            <li class="category-item" data-category="mens">
-                <h3>Men's Watches</h3>
-                <p>Bold, sophisticated timepieces</p>
-            </li>
-            <li class="category-item" data-category="ladies">
-                <h3>Ladies Watches</h3>
-                <p>Elegant, stylish designs</p>
-            </li>
-            <li class="category-item" data-category="unisex">
-                <h3>Unisex Watches</h3>
-                <p>Versatile for any style</p>
-            </li>
-            <li class="category-item" data-category="couple">
-                <h3>Couple Sets</h3>
-                <p>Perfect matching pairs</p>
-            </li>
-        </ul>
-    </div>
-</div>
-
 <!-- Main Content -->
 <div class="main-content">
-    <!-- Products Container -->
-    <div class="products-container">
+    <div class="container">
+        <!-- Products Header -->
         <div class="products-header">
             <h1>Our Collection</h1>
             <p class="products-count">Showing <span id="productCount">12</span> products</p>
         </div>
+        
+        <!-- Category Filter (Moved inside main content) -->
+        <div class="category-filter">
+            <ul class="category-list">
+                <li class="category-item active" data-category="all">
+                    <h3>All Watches</h3>
+                    <p>Our complete collection</p>
+                </li>
+                <li class="category-item" data-category="mens">
+                    <h3>Men's Watches</h3>
+                    <p>Bold, sophisticated timepieces</p>
+                </li>
+                <li class="category-item" data-category="ladies">
+                    <h3>Ladies Watches</h3>
+                    <p>Elegant, stylish designs</p>
+                </li>
+                <li class="category-item" data-category="unisex">
+                    <h3>Unisex Watches</h3>
+                    <p>Versatile for any style</p>
+                </li>
+                <li class="category-item" data-category="couple">
+                    <h3>Couple Sets</h3>
+                    <p>Perfect matching pairs</p>
+                </li>
+            </ul>
+        </div>
 
-        <div class="product-grid" id="productGrid">
-            <!-- Products will be populated by JavaScript -->
+        <!-- Products Container -->
+        <div class="products-container">
+            <div class="product-grid" id="productGrid">
+                <!-- Products will be populated by JavaScript -->
+            </div>
         </div>
     </div>
 </div>
@@ -1980,10 +1981,10 @@ h1, h2, h3, h4, h5, h6 {
             <div>
                 <h3 class="footer-heading">Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="shop.html">Collection</a></li>
-                    <li><a href="service.html">Services</a></li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#collection">Collection</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
                 </ul>
             </div>
 
