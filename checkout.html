@@ -1402,14 +1402,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Add products to map (avoiding duplicates by ID)
                     products.forEach(product => {
-                        // Make sure the price is a number
-                        if (product.price && typeof product.price === 'string') {
-                            product.price = parseFloat(product.price);
+                        // Skip products without an ID
+                        if (!product.id) return;
+                        
+                        // Fix for price handling
+                        // First, check if we already have this product with a valid price
+                        const existingProduct = productMap.get(product.id);
+                        if (existingProduct && isValidPrice(existingProduct.price) && !isValidPrice(product.price)) {
+                            // Keep the existing product with valid price
+                            return;
                         }
-                        // Ensure other required fields are present
-                        if (!product.price || isNaN(product.price)) {
-                            product.price = 0;
-                        }
+                        
+                        // Ensure price is a valid number
+                        product.price = parseValidPrice(product.price);
+                        
+                        // Add or update the product in our map
                         productMap.set(product.id, product);
                     });
                 } catch (error) {
@@ -1418,7 +1425,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Convert map back to array and sort by name
-            const allProducts = Array.from(productMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+            const allProducts = Array.from(productMap.values())
+                .filter(product => product.name) // Only include products with names
+                .sort((a, b) => a.name.localeCompare(b.name));
             
             console.log(`Combined ${totalProductsFound} products into ${allProducts.length} unique products`);
             
@@ -1428,6 +1437,39 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error fetching products:', error);
             displayNoProducts();
         }
+    }
+    
+    // Helper function to check if a price is valid
+    function isValidPrice(price) {
+        if (price === undefined || price === null) return false;
+        
+        // Convert to number if it's a string
+        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+        
+        // Check if it's a valid number and greater than or equal to 0
+        return typeof numPrice === 'number' && !isNaN(numPrice) && numPrice >= 0;
+    }
+    
+    // Helper function to parse and validate a price value
+    function parseValidPrice(price) {
+        // If it's a valid number, return it directly
+        if (typeof price === 'number' && !isNaN(price)) {
+            return price;
+        }
+        
+        // If it's a string that can be converted to a number
+        if (typeof price === 'string') {
+            // Remove any non-numeric characters except decimal point
+            const cleanPrice = price.replace(/[^0-9.]/g, '');
+            const numPrice = parseFloat(cleanPrice);
+            
+            if (!isNaN(numPrice)) {
+                return numPrice;
+            }
+        }
+        
+        // Default to 0 if price is invalid
+        return 0;
     }
     
     // Display a message when no products are available
@@ -1455,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         products.forEach(product => {
             // Ensure price is a number and format it
-            const price = typeof product.price === 'number' ? product.price : 0;
+            const price = isValidPrice(product.price) ? product.price : 0;
             
             productsHTML += `
                 <div class="product-card" data-id="${product.id}">
@@ -1545,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         items.forEach((item, index) => {
             // Ensure price is a number
-            const price = typeof item.price === 'number' ? item.price : 0;
+            const price = isValidPrice(item.price) ? item.price : 0;
             const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
             const itemTotal = price * quantity;
             subtotal += itemTotal;
@@ -1760,15 +1802,22 @@ document.addEventListener('DOMContentLoaded', function() {
             // Check if product already in cart
             const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
             
+            // Make sure price is valid
+            const validPrice = parseValidPrice(product.price);
+            
             if (existingItemIndex >= 0) {
                 // Increment quantity if product already in cart
                 cartItems[existingItemIndex].quantity += 1;
+                // Update price if current price is invalid
+                if (!isValidPrice(cartItems[existingItemIndex].price)) {
+                    cartItems[existingItemIndex].price = validPrice;
+                }
             } else {
                 // Add new item to cart
                 cartItems.push({
                     id: product.id,
                     name: product.name,
-                    price: typeof product.price === 'number' ? product.price : 0,
+                    price: validPrice,
                     image: product.image,
                     quantity: 1
                 });
@@ -1921,7 +1970,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calculate subtotal from items
     function calculateSubtotal(items) {
         return items.reduce((total, item) => {
-            const price = typeof item.price === 'number' ? item.price : 0;
+            const price = isValidPrice(item.price) ? item.price : 0;
             const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
             return total + (price * quantity);
         }, 0);
