@@ -2083,7 +2083,7 @@ h1, h2, h3, h4, h5, h6 {
     </footer>
 
     <script>
-       // Sample product data
+      // Sample product data
 const products = [
     {
         id: 1,
@@ -2275,7 +2275,7 @@ const products = [
         }
     }
 ];
-// Cart array
+
 // Cart array
 let cart = [];
 
@@ -2653,11 +2653,12 @@ function openProductModal(product) {
     `;
 
     // Initialize CommentBox for this specific product
-    commentBox('5744603743387648-proj', {
-        className: 'commentbox',
-        defaultBoxId: `product-${product.id}`
-    });
-}
+    if (typeof commentBox !== 'undefined') {
+        commentBox('5744603743387648-proj', {
+            className: 'commentbox',
+            defaultBoxId: `product-${product.id}`
+        });
+    }
     
     // Add event listener to the Add to Cart button
     modalBody.querySelector('.modal-add-cart').addEventListener('click', () => {
@@ -2904,8 +2905,8 @@ function removeFromCart(id) {
 
 // Show added to cart message
 function showAddedToCartMessage(productName) {
-    if (typeof swal !== 'undefined') {
-        swal({
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
             title: "Added to Cart!",
             text: `${productName} has been added to your cart.`,
             icon: "success",
@@ -2979,8 +2980,8 @@ function showAddedToCartMessage(productName) {
 // Proceed to checkout
 function proceedToCheckout() {
     if (cart.length === 0) {
-        if (typeof swal !== 'undefined') {
-            swal({
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
                 title: "Empty Cart",
                 text: "Your cart is empty. Add some products first.",
                 icon: "info",
@@ -2996,8 +2997,8 @@ function proceedToCheckout() {
     saveCartToStorage();
     
     // Redirect to checkout page
-    if (typeof swal !== 'undefined') {
-        swal({
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
             title: "Proceeding to Checkout",
             text: "You'll be redirected to the checkout page.",
             icon: "success",
