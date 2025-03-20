@@ -3181,7 +3181,7 @@ a, button, .watch-card, .service-card, .brand-logo {
         <div class="client-info">
           <div class="client-avatar">A</div>
           <div class="client-details">
-            <h3 class="client-name">abdelmehdi1</h3>
+            <h3 class="client-name">Abdelmehdi</h3>
             <p class="client-title">Satisfied Customer</p>
           </div>
         </div>
@@ -3196,7 +3196,6 @@ a, button, .watch-card, .service-card, .brand-logo {
         
         <div class="testimonial-content">
           <p>I've just received mine yesterday. Thanks @y_timeluxury @ybn_yxseer!</p>
-          <p><strong>Business Response:</strong> That's great! Let us know if you need anything else!</p>
         </div>
         
         <div class="testimonial-footer">
@@ -3204,7 +3203,7 @@ a, button, .watch-card, .service-card, .brand-logo {
             <i class="far fa-heart"></i>
             <span class="like-count">21</span>
           </button>
-          <div class="date">March 18, 2025</div>
+          <div class="date">january 18, 2025</div>
         </div>
       </div>
     </div>
@@ -4395,37 +4394,16 @@ function initializeSwiper() {
     }
 }
 
-// Function to initialize mobile navigation
-function initMobileNav() {
-    const mobileMenuButton = document.querySelector('.mobile-menu-button');
-    const mobileMenu = document.querySelector('.mobile-menu');
+/// Mobile menu toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
     
-    if (!mobileMenuButton || !mobileMenu) return;
-    
-    mobileMenuButton.addEventListener('click', function() {
-        mobileMenu.classList.toggle('active');
-        this.classList.toggle('active');
-        
-        // Add/remove no-scroll class to body
-        if (mobileMenu.classList.contains('active')) {
-            document.body.classList.add('no-scroll');
-        } else {
-            document.body.classList.remove('no-scroll');
-        }
-    });
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (mobileMenu.classList.contains('active') &&
-            !mobileMenu.contains(e.target) &&
-            !mobileMenuButton.contains(e.target)) {
-            
-            mobileMenu.classList.remove('active');
-            mobileMenuButton.classList.remove('active');
-            document.body.classList.remove('no-scroll');
-        }
-    });
-}
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+    }
 
 // Function to initialize newsletter form
 function initNewsletterForm() {
