@@ -2492,6 +2492,235 @@ a, button, .watch-card, .service-card, .brand-logo {
     margin-right: 0;
   }
 }
+
+    .testimonials-section {
+      background-color: #0a192f;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      color: white;
+      position: relative;
+    }
+
+    .section-title h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .gold-accent {
+      color: #ffd700;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #ffd700, #ffcc00);
+      margin: 1rem auto;
+      border-radius: 2px;
+    }
+
+    .testimonials-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background-color: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .testimonial-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #ffd700, #ffcc00);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease-out;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .testimonial-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .client-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .client-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .client-details {
+      margin-left: 1rem;
+    }
+
+    .client-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .client-title {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    .testimonial-content {
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.9);
+      position: relative;
+    }
+
+    .testimonial-content::before {
+      content: """;
+      font-size: 4rem;
+      font-family: Georgia, serif;
+      color: rgba(255, 215, 0, 0.2);
+      position: absolute;
+      top: -1.5rem;
+      left: -0.5rem;
+      z-index: -1;
+    }
+
+    .testimonial-screenshot {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .testimonial-screenshot:hover {
+      transform: scale(1.03);
+    }
+
+    .rating {
+      display: flex;
+      margin-bottom: 1rem;
+    }
+
+    .star {
+      color: #ffd700;
+      font-size: 1.2rem;
+      margin-right: 3px;
+    }
+
+    .testimonial-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .like-btn {
+      display: flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50px;
+      transition: all 0.2s ease;
+    }
+
+    .like-btn:hover {
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    .like-btn.liked {
+      color: #ffd700;
+    }
+
+    .like-btn i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .like-count {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .date {
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+      .testimonials-section {
+        padding: 3rem 1rem;
+      }
+      
+      .testimonial-card {
+        max-width: 100%;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .testimonial-card:nth-child(1) {
+      animation: fadeIn 0.6s ease-out 0.1s forwards;
+      opacity: 0;
+    }
+
+    .testimonial-card:nth-child(2) {
+      animation: fadeIn 0.6s ease-out 0.3s forwards;
+      opacity: 0;
+    }
+
+    .testimonial-card:nth-child(3) {
+      animation: fadeIn 0.6s ease-out 0.5s forwards;
+      opacity: 0;
+    }
     </style>
 </head>
 <body>
@@ -2830,6 +3059,86 @@ a, button, .watch-card, .service-card, .brand-logo {
   </div>
 </section>
 
+    <section class="testimonials-section">
+    <div class="section-title">
+      <h2>What Our <span class="gold-accent">Customers</span> Say</h2>
+      <p>Hear from people who have experienced our services</p>
+    </div>
+    
+    <div class="testimonials-container">
+      <!-- Testimonial 1 -->
+      <div class="testimonial-card">
+        <div class="client-info">
+          <img src="WhatsApp Image 2025-03-19 at 17.11.00_6301699f.jpg" alt="Customer 1" class="client-image">
+          <div class="client-details">
+            <h3 class="client-name">Anonymous</h3>
+            <p class="client-title">Happy Customer</p>
+          </div>
+        </div>
+        
+        <div class="testimonial-content">
+          <p>Thank you, it looks so nice! I like it!</p>
+        </div>
+        
+        <div class="rating">
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+        </div>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="testimonial-card">
+        <div class="client-info">
+          <img src="WhatsApp Image 2025-03-19 at 17.11.00_24283b57.jpg" alt="Customer 2" class="client-image">
+          <div class="client-details">
+            <h3 class="client-name">Anonymous</h3>
+            <p class="client-title">Verified Buyer</p>
+          </div>
+        </div>
+        
+        <div class="testimonial-content">
+          <p>Yes, you can get it by tomorrow InshaAllah. Okay InshaAllah. The blue one. Pay after delivery.</p>
+        </div>
+        
+        <div class="rating">
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+        </div>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="testimonial-card">
+        <div class="client-info">
+          <img src="WhatsApp Image 2025-03-19 at 17.11.00_2467bb9e.jpg" alt="Customer 3" class="client-image">
+          <div class="client-details">
+            <h3 class="client-name">abdelmehdi1</h3>
+            <p class="client-title">Satisfied Customer</p>
+          </div>
+        </div>
+        
+        <div class="testimonial-content">
+          <p>I've just received mine yesterday. Thanks @y_timeluxury @ybn_yxseer!</p>
+          <p><strong>Business Response:</strong> That's great! Let us know if you need anything else!</p>
+        </div>
+        
+        <div class="rating">
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+        </div>
+      </div>
+    </div>
+</section>
+
+
     <!-- Services Section -->
     <section class="services" id="services">
         <div class="container">
@@ -2994,6 +3303,55 @@ a, button, .watch-card, .service-card, .brand-logo {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+      // Initialize like buttons
+      const likeButtons = document.querySelectorAll('.like-btn');
+      
+      likeButtons.forEach(button => {
+        // Get initial like count
+        const likes = parseInt(button.getAttribute('data-likes'));
+        
+        // Set up click event
+        button.addEventListener('click', function() {
+          // Check if already liked (using localStorage to persist state)
+          const testimonialId = Array.from(likeButtons).indexOf(button);
+          const storageKey = `testimonial-liked-${testimonialId}`;
+          
+          if (!localStorage.getItem(storageKey)) {
+            // Update likes count
+            const newLikes = likes + 1;
+            button.setAttribute('data-likes', newLikes);
+            button.querySelector('.like-count').textContent = `${newLikes} likes`;
+            
+            // Add liked class for styling
+            button.classList.add('liked');
+            
+            // Animate heart
+            const heart = button.querySelector('.heart');
+            heart.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+              heart.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Store in localStorage
+            localStorage.setItem(storageKey, 'true');
+          } else {
+            // Already liked - unlike
+            button.classList.remove('liked');
+            button.querySelector('.like-count').textContent = `${likes} likes`;
+            localStorage.removeItem(storageKey);
+          }
+        });
+        
+        // Check if already liked (on page load)
+        const testimonialId = Array.from(likeButtons).indexOf(button);
+        const storageKey = `testimonial-liked-${testimonialId}`;
+        if (localStorage.getItem(storageKey)) {
+          button.classList.add('liked');
+        }
+      });
+    });
 
         // WhatsApp Button Animation Enhancement
 document.addEventListener('DOMContentLoaded', function() {
