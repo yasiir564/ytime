@@ -2505,16 +2505,23 @@ a, button, .watch-card, .service-card, .brand-logo {
   margin-bottom: 3rem;
   color: white;
   position: relative;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .section-title h2 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  text-align: center;
+  width: 100%;
 }
 
 .section-title p {
   font-size: 1.1rem;
   opacity: 0.8;
+  text-align: center;
+  width: 100%;
 }
 
 .gold-accent {
@@ -2607,13 +2614,20 @@ a, button, .watch-card, .service-card, .brand-logo {
   margin-bottom: 1rem;
 }
 
-.client-image {
+/* Letter avatar styling */
+.client-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ffd700;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #0a192f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .client-details {
@@ -2720,6 +2734,10 @@ a, button, .watch-card, .service-card, .brand-logo {
   
   .testimonial-screenshot {
     height: 180px;
+  }
+  
+  .section-title h2 {
+    font-size: 2rem;
   }
 }
 
@@ -3081,7 +3099,7 @@ a, button, .watch-card, .service-card, .brand-logo {
   </div>
 </section>
 
-    <section class="testimonials-section">
+  <section class="testimonials-section">
   <div class="section-title">
     <h2>What Our <span class="gold-accent">Customers</span> Say</h2>
     <p>Hear from people who have experienced our services</p>
@@ -3093,9 +3111,9 @@ a, button, .watch-card, .service-card, .brand-logo {
       <img src="WhatsApp Image 2025-03-19 at 17.11.00_6301699f.jpg" alt="Product Screenshot" class="testimonial-screenshot">
       <div class="testimonial-content-wrapper">
         <div class="client-info">
-          <img src="WhatsApp Image 2025-03-19 at 17.11.00_6301699f.jpg" alt="Customer 1" class="client-image">
+          <div class="client-avatar">A</div>
           <div class="client-details">
-            <h3 class="client-name">Anonymous</h3>
+            <h3 class="client-name">Asmar</h3>
             <p class="client-title">Happy Customer</p>
           </div>
         </div>
@@ -3127,9 +3145,9 @@ a, button, .watch-card, .service-card, .brand-logo {
       <img src="WhatsApp Image 2025-03-19 at 17.11.00_24283b57.jpg" alt="Product Screenshot" class="testimonial-screenshot">
       <div class="testimonial-content-wrapper">
         <div class="client-info">
-          <img src="WhatsApp Image 2025-03-19 at 17.11.00_24283b57.jpg" alt="Customer 2" class="client-image">
+          <div class="client-avatar">M</div>
           <div class="client-details">
-            <h3 class="client-name">Anonymous</h3>
+            <h3 class="client-name">Majid</h3>
             <p class="client-title">Verified Buyer</p>
           </div>
         </div>
@@ -3161,7 +3179,7 @@ a, button, .watch-card, .service-card, .brand-logo {
       <img src="WhatsApp Image 2025-03-19 at 17.11.00_2467bb9e.jpg" alt="Product Screenshot" class="testimonial-screenshot">
       <div class="testimonial-content-wrapper">
         <div class="client-info">
-          <img src="WhatsApp Image 2025-03-19 at 17.11.00_2467bb9e.jpg" alt="Customer 3" class="client-image">
+          <div class="client-avatar">A</div>
           <div class="client-details">
             <h3 class="client-name">abdelmehdi1</h3>
             <p class="client-title">Satisfied Customer</p>
